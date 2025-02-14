@@ -5,7 +5,7 @@ weak_passwords = ["admin", "password", "123456", "password123", "letmein", "welc
 
 # Function to test for weak credentials
 def test_weak_passwords(target_url):
-    print(f"\n🔍 Testing {target_url} for weak login credentials...")
+    print(f"\nTesting {target_url} for weak login credentials...")
 
     for password in weak_passwords:
         data = {"username": "admin", "password": password}
@@ -15,7 +15,7 @@ def test_weak_passwords(target_url):
             print(f"⚠️  Weak credentials found: admin / {password}")
             return True
 
-    print("✅ No weak credentials detected.")
+    print("No weak credentials detected.")
     return False
 
 # Function to check if account lockout is enforced
@@ -27,10 +27,10 @@ def test_brute_force_protection(target_url):
         response = requests.post(target_url, data=data)
 
         if "Locked" in response.text or response.status_code == 429:
-            print("✅ Account lockout is enforced after multiple failed attempts.")
+            print("Account lockout is enforced after multiple failed attempts.")
             return False
 
-    print("⚠️  No account lockout detected! Brute-force attack is possible.")
+    print("No account lockout detected! Brute-force attack is possible.")
     return True
 
 # Function to test if session is properly invalidated after logout
@@ -44,13 +44,13 @@ def test_session_logout(target_url, dashboard_url, logout_url):
     response = session.post(target_url, data=login_data)
 
     if "Invalid" in response.text:
-        print("❌ Cannot log in with test credentials. Skipping session test.")
+        print("Cannot log in with test credentials. Skipping session test.")
         return False
 
     # Check if dashboard is accessible
     dashboard_response = session.get(dashboard_url)
     if "Unauthorized" in dashboard_response.text:
-        print("❌ Session not established correctly.")
+        print("Session not established correctly.")
         return False
 
     # Log out and check if session persists
@@ -58,10 +58,10 @@ def test_session_logout(target_url, dashboard_url, logout_url):
     dashboard_response_after_logout = session.get(dashboard_url)
 
     if "Unauthorized" not in dashboard_response_after_logout.text:
-        print("⚠️  Session persists after logout! Logout is not secure.")
+        print("Session persists after logout! Logout is not secure.")
         return True
 
-    print("✅ Session is properly invalidated after logout.")
+    print("Session is properly invalidated after logout.")
     return False
 
 # Main Function
@@ -75,15 +75,15 @@ def main():
     no_account_lockout = test_brute_force_protection(target_url)
     session_issue = test_session_logout(target_url, dashboard_url, logout_url)
 
-    print("\n🎯 **Scan Summary**:")
+    print("\n**Scan Summary**:")
     if weak_passwords_found:
-        print("⚠️  Weak passwords detected!")
+        print("Weak passwords detected!")
     if no_account_lockout:
-        print("⚠️  No account lockout protection detected!")
+        print("No account lockout protection detected!")
     if session_issue:
-        print("⚠️  Session is not properly invalidated after logout!")
+        print("Session is not properly invalidated after logout!")
     if not (weak_passwords_found or no_account_lockout or session_issue):
-        print("✅ No critical Broken Authentication issues detected.")
+        print("No critical Broken Authentication issues detected.")
 
 if __name__ == "__main__":
     main()

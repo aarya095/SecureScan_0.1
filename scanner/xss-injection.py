@@ -12,7 +12,7 @@ xss_payloads = [
 print(f"\n🔍 Scanning {target_url} for XSS vulnerabilities...\n")
 
 for payload in xss_payloads:
-    print(f"🛠️  Testing: {payload}")
+    print(f"Testing: {payload}")
     
     # Send POST request (since the comment form expects POST)
     data = {vulnerable_param: payload}
@@ -20,7 +20,7 @@ for payload in xss_payloads:
 
     # Check if the payload is reflected in the response
     if payload in response.text:
-        print(f"🚨 XSS Vulnerability Detected with Payload: {payload}")
+        print(f"XSS Vulnerability Detected with Payload: {payload}")
         break
 else:
-    print("✅ No XSS vulnerabilities detected.")
+    print("No XSS vulnerabilities detected.")

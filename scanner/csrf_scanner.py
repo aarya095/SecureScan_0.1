@@ -41,9 +41,9 @@ def test_csrf_vulnerability(url):
         if method == "post":
             has_token = check_csrf_token(form)
             if not has_token:
-                print("⚠️  WARNING: CSRF Token NOT found! This form might be vulnerable.")
+                print("WARNING: CSRF Token NOT found! This form might be vulnerable.")
             else:
-                print("✅ CSRF protection detected.")
+                print("CSRF protection detected.")
         else:
             print("ℹ️ This form uses GET request, CSRF not applicable.")
 

