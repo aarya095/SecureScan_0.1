@@ -21,5 +21,5 @@ def check_http_https(url):
     except requests.RequestException as e:
         return f"Error: {e}", False
 
-result = check_http_https("http://localhost:3000") #testing
+result = check_http_https(input("Enter a url:")) #testing
 print(result)  # Displays the returned value
