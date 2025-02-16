@@ -1,15 +1,34 @@
-[
-    {
-        "url": "http://localhost:3000/comment",
-        "method": "POST",
-        "inputs": []
-    },
-    {
-        "url": "http://localhost:3000/login",
-        "method": "POST",
-        "inputs": [
-            "username",
-            "password"
-        ]
-    }
-]
+{
+    "target_url": "http://localhost:3000",
+    "pages": [
+        {
+            "url": "http://localhost:3000",
+            "links": [
+                "http://localhost:3000/login"
+            ],
+            "forms": [
+                {
+                    "action": "http://localhost:3000/comment",
+                    "method": "POST",
+                    "inputs": [
+                        "comment"
+                    ]
+                }
+            ]
+        },
+        {
+            "url": "http://localhost:3000/login",
+            "links": [],
+            "forms": [
+                {
+                    "action": "http://localhost:3000/login",
+                    "method": "POST",
+                    "inputs": [
+                        "username",
+                        "password"
+                    ]
+                }
+            ]
+        }
+    ]
+}
