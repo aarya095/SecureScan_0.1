@@ -1,5 +1,3 @@
 import requests
-
-response = requests.get("https://example.com", timeout=5)
-print(response.status_code)  # Prints HTTP status code (e.g., 200 for success)
-print(response.text)  # Prints the HTML content of the page
+response1 = requests.get("https://youtube.com")
+print(response1.status_code)  # 200 = Success, 403/401 = Forbidden
