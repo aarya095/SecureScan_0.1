@@ -12,7 +12,7 @@ def crawl_website(target_url, max_depth=2):
     mapped_data = {"target_url": target_url, "pages": []}
     
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)  # Change to False for debugging
+        browser = p.chromium.launch(headless=True)  
         page = browser.new_page()
         
         def visit_page(url, depth=0):
@@ -20,7 +20,7 @@ def crawl_website(target_url, max_depth=2):
             if depth > max_depth or url in visited_links:
                 return  # Stop recursion if depth exceeded or URL already visited
             
-            print(f"\n🌍 Crawling: {url} (Depth: {depth})")
+            print(f"\n Crawling: {url} (Depth: {depth})")
             visited_links.add(url)  # Mark as visited
             
             try:
@@ -65,7 +65,7 @@ def crawl_website(target_url, max_depth=2):
                     visit_page(link, depth + 1)
 
             except Exception as e:
-                print(f"❌ Error crawling {url}: {e}")
+                print(f" Error crawling {url}: {e}")
 
         visit_page(target_url)  # Start crawling from the root URL
 
@@ -74,7 +74,7 @@ def crawl_website(target_url, max_depth=2):
             json.dump(mapped_data, f, indent=4)
 
         browser.close()
-        print("\n✅ Website Mapping Complete! Data saved to mapped_data.json")
+        print("\n Website Mapping Complete! Data saved to mapped_data.json")
 
 # Get target URL from the user
 target_url = input("Enter the target URL (e.g., http://example.com): ")
