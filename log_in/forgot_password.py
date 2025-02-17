@@ -62,23 +62,29 @@ def reset_password(username, new_password):
 def open_forgot_password_window(master):
     forgot_password_window = ctk.CTkToplevel(master)
     forgot_password_window.title("Forgot Password")
+    ctk.set_appearance_mode("light")
+    ctk.set_default_color_theme("green")
     forgot_password_window.geometry("400x300+500+250")
 
     forgot_password_window.lift()
     forgot_password_window.grab_set()
 
-    reset_password_label = ctk.CTkLabel(forgot_password_window, text="Enter Username to reset password", font=("Tahoma", 14))
+    reset_password_label = ctk.CTkLabel(forgot_password_window, 
+                                        text="Enter Username to reset password",
+                                        wraplength=300,
+                                        font=("Tahoma", 30,"bold"))
     reset_password_label.pack(pady=10)
 
-    enter_username = ctk.CTkEntry(forgot_password_window, font=("Arial", 12))
-    enter_username.pack(pady=5)
+    enter_username = ctk.CTkEntry(forgot_password_window, font=("Arial", 20),
+                                  width=250)
+    enter_username.pack(pady=10)
     enter_username.insert(0, "Username")
     enter_username.bind("<FocusIn>", lambda event: clear_username(event, enter_username))
 
-    send_otp_button = ctk.CTkButton(forgot_password_window, text="Send OTP", font=("Tahoma", 12), command=lambda: send_otp(enter_username, forgot_password_window))
+    send_otp_button = ctk.CTkButton(forgot_password_window, text="Send OTP", 
+                                    font=("Tahoma", 20,"bold"), 
+                                    command=lambda: send_otp(enter_username, forgot_password_window))
     send_otp_button.pack(pady=10)
-
-    forgot_password_window.mainloop()
 
 def clear_username(event, entry):
     if entry.get() == "Username":
@@ -94,6 +100,7 @@ def send_otp(enter_username, forgot_password_window):
     if email:
         otp = generate_otp()
         if send_email(email, otp):
+            forgot_password_window.grab_release()
             forgot_password_window.withdraw()
             open_verify_otp_window(forgot_password_window.master, otp, username)
         else:
@@ -107,18 +114,24 @@ def generate_otp():
 def open_verify_otp_window(master, sent_otp, username):
     verify_otp_window = ctk.CTkToplevel(master)
     verify_otp_window.title("Verify OTP")
-    verify_otp_window.geometry("300x200+500+250")
+    verify_otp_window.geometry("400x300+500+250")
+    ctk.set_appearance_mode("light")
+    ctk.set_default_color_theme("green")
 
-    enter_otp_label = ctk.CTkLabel(verify_otp_window, text="Enter OTP to Reset Password", font=("Tahoma", 12))
+    enter_otp_label = ctk.CTkLabel(verify_otp_window, 
+                                   text="Enter OTP to Reset Password", 
+                                   font=("Tahoma", 30,"bold"),
+                                   wraplength=300)
     enter_otp_label.pack(pady=10)
 
-    entered_otp = ctk.CTkEntry(verify_otp_window, font=("Arial", 12))
-    entered_otp.pack(pady=5)
+    entered_otp = ctk.CTkEntry(verify_otp_window, font=("Arial", 20),
+                               width=250)
+    entered_otp.pack(pady=10)
 
-    validate_button = ctk.CTkButton(verify_otp_window, text="Verify OTP", font=("Tahoma", 12), command=lambda: validate_otp(sent_otp, entered_otp.get(), verify_otp_window, username))
+    validate_button = ctk.CTkButton(verify_otp_window, text="Verify OTP",
+                                     font=("Tahoma", 20),
+                                     command=lambda: validate_otp(sent_otp, entered_otp.get(), verify_otp_window, username))
     validate_button.pack(pady=20)
-
-    verify_otp_window.mainloop()
 
 def validate_otp(sent_otp, entered_otp, verify_otp_window, username):
     if verify_otp(sent_otp, entered_otp):
@@ -132,19 +145,25 @@ def open_reset_password_window(master, username):
     reset_password_window.title("Reset Password")
     reset_password_window.geometry("400x300+500+250")
 
-    new_password_label = ctk.CTkLabel(reset_password_window, text="Enter New Password", font=("Tahoma", 14))
+    new_password_label = ctk.CTkLabel(reset_password_window, 
+                                      text="Enter New Password", 
+                                      font=("Tahoma", 20))
     new_password_label.pack(pady=10)
 
-    new_password = ctk.CTkEntry(reset_password_window, font=("Arial", 12), show="*")
-    new_password.pack(pady=5)
+    new_password = ctk.CTkEntry(reset_password_window, 
+                                font=("Arial", 20), show="*"
+                                ,width=250)
+    new_password.pack(pady=10)
 
-    confirm_password = ctk.CTkEntry(reset_password_window, font=("Arial", 12), show="*")
-    confirm_password.pack(pady=5)
+    confirm_password = ctk.CTkEntry(reset_password_window, 
+                                    font=("Arial", 20), show="*",
+                                    width=250)
+    confirm_password.pack(pady=10)
 
-    reset_button = ctk.CTkButton(reset_password_window, text="Reset Password", font=("Tahoma", 12), command=lambda: reset_password_action(username, new_password.get(), confirm_password.get(), reset_password_window))
+    reset_button = ctk.CTkButton(reset_password_window, text="Reset Password", 
+                                 font=("Tahoma", 20,"bold")
+                                 , command=lambda: reset_password_action(username, new_password.get(), confirm_password.get(), reset_password_window))
     reset_button.pack(pady=20)
-
-    reset_password_window.mainloop()
 
 def reset_password_action(username, new_password, confirm_password, reset_password_window):
     validation_error = validate_password(new_password)
