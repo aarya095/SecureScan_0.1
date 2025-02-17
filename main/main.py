@@ -1,32 +1,39 @@
-import sys
+import customtkinter as ctk
 import tkinter as tk
-import os
+from PIL import Image
+import log_in.login as lg
 
-from log_in.login import LoginWindow
+root = ctk.CTk()
+root.title("Welcome To SecureScan")
+root.geometry("700x500+550+200")
+ctk.set_appearance_mode("light")
+ctk.set_default_color_theme("green")
+root.configure(fg_color="#27ae60") 
 
+logo = ctk.CTkImage(light_image=Image.open("icons/main.png"), size=(500, 500))
+logo_label = ctk.CTkLabel(root, image=logo, text="")
+logo_label.place(x=0,y=0)
 
-class MainWindow(tk.Tk):
-    def __init__(self):
-        super().__init__()
+def open_login_window():
+    lg.open_login_window()
 
-        self.title("Secure Scan")
-        self.geometry("700x500+450+150")
-        self.configure(bg="lightblue")
+login_button = ctk.CTkButton(root,
+                                text="Login",
+                                width=100, 
+                                height=50,
+                                fg_color="#27ae60", 
+                                bg_color="#27ae60",
+                                font=("Arial", 20, "bold"))
+login_button.place(x=100,y=400)
 
-        label = tk.Label(self, bg="lightblue")
-        label.pack(pady=20)
+new_user_button = ctk.CTkButton(root,
+                                text="Sign Up",
+                                width=100, 
+                                height=50,
+                                fg_color="#27ae60", 
+                                bg_color="#27ae60",
+                                font=("Arial", 20, "bold"),
+                                command=open_login_window)
+new_user_button.place(x=300,y=400)
 
-        button = tk.Button(self, text="Click Here To Continue", font=("Verdana", 16),
-                           bg="white", fg="black", command=self.open_login_window)
-        button.place(x=220, y=400)
-
-        self.protocol("WM_DELETE_WINDOW", sys.exit)
-
-    def open_login_window(self):
-        self.withdraw()
-        login_window = LoginWindow(self)
-        login_window.grab_set()
-
-if __name__ == "__main__":
-    app = MainWindow()
-    app.mainloop()
+root.mainloop()
