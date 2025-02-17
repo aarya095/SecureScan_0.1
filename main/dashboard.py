@@ -1,6 +1,9 @@
 import customtkinter as ctk
 from PIL import Image
 import tkinter as tk
+import subprocess
+import threading
+import scanner as sc
 
 def open_dashboard():
 
@@ -10,11 +13,12 @@ def open_dashboard():
         splash.title("Loading...")
         splash.overrideredirect(True)
 
-        logo = ctk.CTkImage(light_image=Image.open("icons/SecureScan_dashboard_logo.png"), size=(672, 378))
+        logo = ctk.CTkImage(light_image=Image.open("icons/SecureScan_dashboard_logo.png"), 
+                            size=(672, 378))
         logo_label = ctk.CTkLabel(splash, image=logo, text="")
         logo_label.pack(expand=True)
 
-        splash.after(2500, lambda: [splash.destroy(), show_dashboard()])
+        splash.after(1000, lambda: [splash.destroy(), show_dashboard()])
         splash.mainloop()
 
     def show_dashboard():
@@ -45,7 +49,7 @@ def open_dashboard():
                                 width=250, height=40)
         title_label.place(x=225, y=30)
 
-        url_entry = ctk.CTkEntry(root, width=300, font=("Verdana", 15),
+        url_entry = ctk.CTkEntry(root, width=300, font=("Verdana", 20),
                                 text_color="black",
                                 fg_color="white",  
                                 border_width=2,
@@ -53,10 +57,42 @@ def open_dashboard():
         url_entry.insert(0, placeholder_text)
         url_entry.bind("<FocusIn>", on_entry_click)
         url_entry.bind("<FocusOut>", on_focus_out)
-        url_entry.place(x=150, y=100)
+        url_entry.place(x=200, y=100)
 
-        def analyze_url():
-            print(f"Analyzing: {url_entry.get()}")
+        output_textbox = ctk.CTkTextbox(root, width=650, height=250,
+                                        font=("Arial",15))
+        output_textbox.place(x=25,y=250)
+
+        def run_scripts(script):
+
+            process = subprocess.Popen(["python","-m", sc], 
+                                       stdout=subprocess.PIPE, 
+                                       stderr=subprocess.PIPE, 
+                                       text=True)
+
+            for line in process.stdout:
+                output_textbox.insert(ctk.END, line)
+                output_textbox.see(ctk.END)
+                root.update_idletasks()
+
+            process.stdout.close()
+            process.wait()
+
+        def run_scanners():
+            first_script_crawler = "sc.crawler.py"
+
+            process = subprocess.run(["python", first_script_crawler], shell=True)
+
+            if process.returncode == 0:
+                scanners = ["sc.http.py",
+                            "sc.sql-injection.py",
+                            "sc.xss-injection.py",
+                            "sc.csrf_scanner.py",
+                            "sc.broken-authentication.py"]
+
+                for script in scanners:
+                    thread = threading.Thread(target = run_scripts, args=(script,))
+                    thread.start()
 
         scan_button = ctk.CTkButton(root, text="Analyze",
                                     font=("Arial", 15, "bold"),
@@ -64,7 +100,7 @@ def open_dashboard():
                                     text_color="white",
                                     hover_color="#1ABC9C", 
                                     width=150, height=40,
-                                    command=analyze_url)
+                                    command=run_scanners)
         scan_button.place(x=275, y=160)
 
         root.mainloop()

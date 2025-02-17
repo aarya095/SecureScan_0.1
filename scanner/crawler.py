@@ -7,7 +7,6 @@ from playwright.sync_api import sync_playwright
 visited_links = set()
 
 def crawl_website(target_url, max_depth=2):
-    """Crawls a website, extracts forms and links from all pages."""
     
     mapped_data = {"target_url": target_url, "pages": []}
     
@@ -16,7 +15,7 @@ def crawl_website(target_url, max_depth=2):
         page = browser.new_page()
         
         def visit_page(url, depth=0):
-            """Recursively visits pages and extracts forms & links."""
+            
             if depth > max_depth or url in visited_links:
                 return  # Stop recursion if depth exceeded or URL already visited
             
