@@ -1,9 +1,11 @@
 import customtkinter as ctk
 from PIL import Image
 import tkinter as tk
+from tkinter import messagebox
 import subprocess
 import threading
-import scanner as sc
+import os 
+import queue
 
 def open_dashboard():
 
@@ -63,36 +65,69 @@ def open_dashboard():
                                         font=("Arial",15))
         output_textbox.place(x=25,y=250)
 
-        def run_scripts(script):
+        output_queue = queue.Queue()
 
-            process = subprocess.Popen(["python","-m", sc], 
+        def run_scripts(scanner):
+
+            process = subprocess.Popen(["python","-m", scanner], 
                                        stdout=subprocess.PIPE, 
                                        stderr=subprocess.PIPE, 
                                        text=True)
-
+            
             for line in process.stdout:
-                output_textbox.insert(ctk.END, line)
-                output_textbox.see(ctk.END)
-                root.update_idletasks()
-
-            process.stdout.close()
+                output_queue.put(line)
+            for line in process.stderr:
+                output_queue.put(line)
             process.wait()
 
+        def update_output():
+                try:
+                    while True:
+                        line = output_queue.get_nowait()
+                        output_textbox.insert(ctk.END, line)
+                        output_textbox.see(ctk.END)
+                except queue.Empty:
+                    pass
+                root.after(100, update_output)
+
         def run_scanners():
-            first_script_crawler = "sc.crawler.py"
 
-            process = subprocess.run(["python", first_script_crawler], shell=True)
+            url = url_entry.get().strip()
+            if not url or url == placeholder_text:
+                messagebox.showwarning("Input Error", "Please enter a valid URL.")
+                return
+            
+            def run_crawler():
+                first_script_crawler = os.path.join("scanner","crawler.py")
 
-            if process.returncode == 0:
-                scanners = ["sc.http.py",
-                            "sc.sql-injection.py",
-                            "sc.xss-injection.py",
-                            "sc.csrf_scanner.py",
-                            "sc.broken-authentication.py"]
+                proc = subprocess.Popen(["python", first_script_crawler, url],
+                                        stdin=subprocess.PIPE,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE, 
+                                        text=True)
+                
+                proc.stdin.write(url + '\n')
+                proc.stdin.flush()
 
-                for script in scanners:
-                    thread = threading.Thread(target = run_scripts, args=(script,))
-                    thread.start()
+                stdout, stderr = proc.communicate()
+
+                output_queue.put(stdout)
+                if stderr:
+                     output_queue.put(stderr)
+
+                if proc.returncode !=0:
+                    output_queue.put("Crawler failed. Aborting scanner runs.\n")
+
+                scanner_scripts = ["scanner.http",
+                                "scanner.sql_injection",
+                                "scanner.xss_injection",
+                                "scanner.csrf_scanner",
+                                "scanner.broken_authentication"]
+
+                for script in scanner_scripts:
+                        threading.Thread(target = run_scripts, args=(script,)).start()
+
+            threading.Thread(target = run_crawler).start()
 
         scan_button = ctk.CTkButton(root, text="Analyze",
                                     font=("Arial", 15, "bold"),
@@ -103,6 +138,7 @@ def open_dashboard():
                                     command=run_scanners)
         scan_button.place(x=275, y=160)
 
+        update_output()
         root.mainloop()
 
     show_splash()

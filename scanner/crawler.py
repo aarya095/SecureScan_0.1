@@ -1,5 +1,6 @@
 import json
 import time
+import sys
 from urllib.parse import urljoin, urlparse
 from playwright.sync_api import sync_playwright
 
@@ -7,7 +8,14 @@ from playwright.sync_api import sync_playwright
 visited_links = set()
 
 def crawl_website(target_url, max_depth=2):
-    
+
+    target_url = input("Enter the target URL (e.g., http://example.com): ")
+
+    if len(sys.argv) > 1:
+        target_url = sys.argv[1]
+
+    print(f"URL to crawl: {target_url}")
+
     mapped_data = {"target_url": target_url, "pages": []}
     
     with sync_playwright() as p:
@@ -76,5 +84,6 @@ def crawl_website(target_url, max_depth=2):
         print("\n Website Mapping Complete! Data saved to mapped_data.json")
 
 # Get target URL from the user
-target_url = input("Enter the target URL (e.g., http://example.com): ")
-crawl_website(target_url)
+if __name__ == "__main__":
+    target_url = input("Enter the target URL (e.g., http://example.com): ")
+    crawl_website(target_url)
