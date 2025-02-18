@@ -16,6 +16,8 @@ payloads = [
 
 print("\n🔍 Scanning for SQL Injection vulnerabilities...\n")
 
+scan_results = {}
+
 # Iterate over all discovered forms on each page
 for page in mapped_data["pages"]:
     for form in page["forms"]:
@@ -38,8 +40,26 @@ for page in mapped_data["pages"]:
                     if "Welcome" in response.text or "Dashboard" in response.text:
                         print(f"  Possible SQL Injection Detected at {target_url}!")
                         print(f" Vulnerable payload: {payload}")
+
+                        if target_url not in scan_results:
+                            scan_results[target_url] = []
+                        scan_results[target_url].append({
+                            "payload": payload,
+                            "vulnerable": True
+                        })
+
                         break  # Stop testing if we find a vulnerability
+                
                 except Exception as e:
                     print(f" Error: {e}")
 
-print("\n Scan complete!")
+try:
+    with open("security_scan_results.json", "r") as f:
+        previous_results = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError):
+    previous_results = {}
+
+with open("security_scan_results.json", "w") as f:
+    json.dump(previous_results, f, indent=4)
+
+print("\nScan complete! Results saved in security_scan_results.json")

@@ -1,0 +1,7 @@
+{
+    "http://localhost:3000/login": {
+        "Weak Passwords": true,
+        "No Account Lockout": true,
+        "Session Issue": true
+    }
+}

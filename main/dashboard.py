@@ -20,7 +20,7 @@ def open_dashboard():
         logo_label = ctk.CTkLabel(splash, image=logo, text="")
         logo_label.pack(expand=True)
 
-        splash.after(1000, lambda: [splash.destroy(), show_dashboard()])
+        splash.after(3000, lambda: [splash.destroy(), show_dashboard()])
         splash.mainloop()
 
     def show_dashboard():
@@ -137,6 +137,15 @@ def open_dashboard():
                                     width=150, height=40,
                                     command=run_scanners)
         scan_button.place(x=275, y=160)
+
+        """back_button = ctk.CTkButton(root, text="Back",
+                                    font=("Arial", 15, "bold"),
+                                    fg_color="#16A085", 
+                                    text_color="white",
+                                    hover_color="#1ABC9C", 
+                                    width=150, height=40,
+                                    command=run_scanners)
+        back_button.place(x=600, y=400)"""
 
         update_output()
         root.mainloop()

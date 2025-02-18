@@ -3,7 +3,7 @@ import tkinter as tk
 from PIL import Image
 import log_in.login as lg
 
-def open_main_window():
+def open_start_window():
     root = ctk.CTk()
     root.title("Welcome To SecureScan")
     root.geometry("700x500+550+200")
@@ -42,4 +42,4 @@ def open_main_window():
     root.mainloop()
 
 if __name__ == "__main__":
-    open_main_window()
+    open_start_window()

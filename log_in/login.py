@@ -2,6 +2,7 @@ import customtkinter as ctk
 from tkinter import messagebox
 import Database.db_connection as db 
 import main.dashboard as dashboard
+import main.start as start
 from PIL import Image
 import bcrypt
 
@@ -19,6 +20,10 @@ def open_login_window():
     def open_forgot_password_window():
         from log_in.forgot_password import open_forgot_password_window
         open_forgot_password_window(root)  
+
+    def open_start_window():
+        root.destroy()
+        start.open_start_window()
 
     def verify_user_credentials():
         username = enter_username.get().strip()
@@ -82,6 +87,12 @@ def open_login_window():
                                            height=40, width=200, 
                                             command=open_forgot_password_window)
     forgot_password_button.place(x=430, y=350)
+
+    back_button = ctk.CTkButton(root, text="Back",
+                                    font=("Tahoma", 20, "bold"),
+                                    width=150, height=40,
+                                    command=open_start_window)
+    back_button.place(x=450, y=440)
 
     root.protocol("WM_DELETE_WINDOW", root.destroy)  
 
