@@ -2,7 +2,7 @@ import json
 import requests
 
 # Common weak passwords list
-weak_passwords = ["admin", "password", "123456", "password123", "letmein", "welcome"]
+weak_passwords = ["admin", "password", "123456", "password123", "letmein", "welcome","qwerty","abc123","54321","111111","123123"]
 
 def load_mapped_data(filename="mapped_data.json"):
     """Load and parse URLs from mapped_data.json."""
