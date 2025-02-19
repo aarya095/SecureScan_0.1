@@ -1,7 +1,3 @@
 {
-    "http://localhost:3000/login": {
-        "Weak Passwords": true,
-        "No Account Lockout": true,
-        "Session Issue": true
-    }
+    "2025-02-19_09-32-02": {}
 }

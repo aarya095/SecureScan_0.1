@@ -1,8 +1,8 @@
 import customtkinter as ctk
 from tkinter import messagebox
 import Database.db_connection as db 
-import main.dashboard as dashboard
-import main.start as start
+import GUI.dashboard as dashboard
+import GUI.start as start
 from PIL import Image
 import bcrypt
 

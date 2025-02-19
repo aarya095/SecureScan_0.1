@@ -1,5 +1,6 @@
 import requests
 import json
+from datetime import datetime
 
 # Load mapped website data
 with open("mapped_data.json", "r") as f:
@@ -58,6 +59,9 @@ try:
         previous_results = json.load(f)
 except (FileNotFoundError, json.JSONDecodeError):
     previous_results = {}
+
+current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+previous_results[current_time] = scan_results
 
 with open("security_scan_results.json", "w") as f:
     json.dump(previous_results, f, indent=4)
