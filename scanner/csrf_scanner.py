@@ -4,9 +4,16 @@ import urllib.parse
 import json
 from datetime import datetime
 
-# Load mapped website data
-with open("mapped_data.json", "r") as f:
-    mapped_data = json.load(f)
+TOKEN_NAMES = ["csrf", "token", "authenticity_token", "_csrf"]
+
+def load_mapped_data(filename="mapped_data.json"):
+    """Load mapped website data from JSON file."""
+    try:
+        with open(filename, "r") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"⚠️ Error loading JSON file: {e}")
+        return None
 
 def get_forms(url):
     """Extract all forms from a webpage."""
@@ -20,15 +27,11 @@ def get_forms(url):
 
 def check_csrf_token(form):
     """Check if the form contains a CSRF token."""
-    token_names = ["csrf", "token", "authenticity_token", "_csrf"]
-    
-    # Find all input fields
     inputs = form.find_all("input")
-    
     for field in inputs:
         if field.get("type") == "hidden":
             name = field.get("name", "").lower()
-            if any(token in name for token in token_names):
+            if any(token in name for token in TOKEN_NAMES):
                 return True  # CSRF token found
     return False  # No CSRF token found
 
@@ -39,57 +42,70 @@ def test_csrf_vulnerability(url):
     forms = get_forms(url)
     if not forms:
         print("❌ No forms found on the page.")
-        return None  # Return None if no forms found
+        return None
 
     results = []
     
     for i, form in enumerate(forms, start=1):
-        action = form.get("action")
+        action = form.get("action") or url
         method = form.get("method", "get").lower()
-        full_action = urllib.parse.urljoin(url, action) if action else url
-        
+        full_action = urllib.parse.urljoin(url, action)
+
         print(f"📝 Form {i}: Method = {method.upper()}, Action = {full_action}")
 
         if method == "post":
             has_token = check_csrf_token(form)
-            vulnerability_status = "Vulnerable" if not has_token else "Protected"
-            print(f"⚠️ WARNING: CSRF Token NOT found!" if not has_token else "✅ CSRF protection detected.")
+            status = "Protected" if has_token else "Vulnerable"
+            print(f"✅ CSRF Protection Detected." if has_token else f"⚠️ WARNING: CSRF Token NOT found!")
             
             results.append({
                 "form_number": i,
                 "method": method.upper(),
                 "action": full_action,
-                "csrf_protection": not has_token
+                "csrf_protection": has_token
             })
         else:
-            print("ℹ️ This form uses GET request, CSRF not applicable.")
+            print("ℹ️ This form uses GET request, CSRF is not applicable.")
 
     return results
 
-# Load previous scan results
-try:
-    with open("security_scan_results.json", "r") as f:
-        previous_results = json.load(f)
-except (FileNotFoundError, json.JSONDecodeError):
-    previous_results = {}
+def save_results(scan_results, filename="security_scan_results.json"):
+    """Save scan results to a JSON file."""
+    try:
+        with open(filename, "r") as f:
+            previous_results = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        previous_results = {}
 
-# Run the CSRF scan on all pages in mapped_data.json
-scan_results = {}
+    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    previous_results[current_time] = {"CSRF_Scan": scan_results}
 
-for page in mapped_data["pages"]:
-    url = page.get("url")
-    if not url:
-        continue  # Skip if no URL found
+    with open(filename, "w") as f:
+        json.dump(previous_results, f, indent=4)
 
-    csrf_results = test_csrf_vulnerability(url)
-    if csrf_results:
-        scan_results[url] = csrf_results
+    print("\n✅ CSRF scan complete! Results saved in security_scan_results.json")
 
-# Save the results with a timestamp
-current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-previous_results[current_time] = {"CSRF_Scan": scan_results}
+def run():
+    """Run the CSRF scanner."""
+    print("\n🚀 Scanning...\n")
 
-with open("security_scan_results.json", "w") as f:
-    json.dump(previous_results, f, indent=4)
+    mapped_data = load_mapped_data()
+    if not mapped_data:
+        print("❌ No mapped data found. Exiting CSRF scan.")
+        return
 
-print("\n✅ Scan complete! Results saved in security_scan_results.json")
+    scan_results = {}
+
+    for page in mapped_data.get("pages", []):
+        url = page.get("url")
+        if not url:
+            continue  # Skip if no URL found
+
+        csrf_results = test_csrf_vulnerability(url)
+        if csrf_results:
+            scan_results[url] = csrf_results
+
+    save_results(scan_results)
+
+if __name__ == "__main__":
+    run()

@@ -1,8 +1,12 @@
 import json
 import requests
+from datetime import datetime
 
 # Common weak passwords list
-weak_passwords = ["admin", "password", "123456", "password123", "letmein", "welcome","qwerty","abc123","54321","111111","123123"]
+WEAK_PASSWORDS = [
+    "admin", "password", "123456", "password123", "letmein", "welcome",
+    "qwerty", "abc123", "54321", "111111", "123123"
+]
 
 def load_mapped_data(filename="mapped_data.json"):
     """Load and parse URLs from mapped_data.json."""
@@ -29,13 +33,17 @@ def test_weak_passwords(target_url):
     """Check for weak credentials."""
     print(f"\n🔍 Testing {target_url} for weak login credentials...")
 
-    for password in weak_passwords:
+    for password in WEAK_PASSWORDS:
         data = {"username": "admin", "password": password}
-        response = requests.post(target_url, data=data)
+        try:
+            response = requests.post(target_url, data=data, timeout=5)
 
-        if "Invalid" not in response.text and response.status_code == 200:
-            print(f"⚠️ Weak credentials found: admin / {password}")
-            return True
+            if "Invalid" not in response.text and response.status_code == 200:
+                print(f"⚠️ Weak credentials found: admin / {password}")
+                return True
+        except requests.RequestException as e:
+            print(f"❌ Error testing weak passwords: {e}")
+            return False
 
     print("✅ No weak credentials detected.")
     return False
@@ -46,10 +54,14 @@ def test_brute_force_protection(target_url):
 
     for _ in range(5):  # Simulating multiple failed login attempts
         data = {"username": "admin", "password": "wrongpassword"}
-        response = requests.post(target_url, data=data)
+        try:
+            response = requests.post(target_url, data=data, timeout=5)
 
-        if "Locked" in response.text or response.status_code == 429:
-            print("✅ Account lockout is enforced.")
+            if "Locked" in response.text or response.status_code == 429:
+                print("✅ Account lockout is enforced.")
+                return False
+        except requests.RequestException as e:
+            print(f"❌ Error testing brute-force protection: {e}")
             return False
 
     print("❌ No account lockout detected! Brute-force attack is possible.")
@@ -63,31 +75,61 @@ def test_session_logout(target_url, dashboard_url, logout_url):
 
     # Log in with test credentials
     login_data = {"username": "admin", "password": "password123"}
-    response = session.post(target_url, data=login_data)
+    try:
+        response = session.post(target_url, data=login_data, timeout=5)
 
-    if "Invalid" in response.text:
-        print("⚠️ Cannot log in with test credentials. Skipping session test.")
+        if "Invalid" in response.text:
+            print("⚠️ Cannot log in with test credentials. Skipping session test.")
+            return False
+    except requests.RequestException as e:
+        print(f"❌ Error logging in: {e}")
         return False
 
     # Check if dashboard is accessible
-    dashboard_response = session.get(dashboard_url)
-    if "Unauthorized" in dashboard_response.text:
-        print("❌ Session not established correctly.")
+    try:
+        dashboard_response = session.get(dashboard_url, timeout=5)
+        if "Unauthorized" in dashboard_response.text:
+            print("❌ Session not established correctly.")
+            return False
+    except requests.RequestException as e:
+        print(f"❌ Error accessing dashboard: {e}")
         return False
 
     # Log out and check if session persists
-    session.get(logout_url)
-    dashboard_response_after_logout = session.get(dashboard_url)
+    try:
+        session.get(logout_url, timeout=5)
+        dashboard_response_after_logout = session.get(dashboard_url, timeout=5)
 
-    if "Unauthorized" not in dashboard_response_after_logout.text:
-        print("❌ Session persists after logout! Logout is not secure.")
-        return True
+        if "Unauthorized" not in dashboard_response_after_logout.text:
+            print("❌ Session persists after logout! Logout is not secure.")
+            return True
+    except requests.RequestException as e:
+        print(f"❌ Error testing session logout: {e}")
+        return False
 
     print("✅ Session is properly invalidated after logout.")
     return False
 
-def main():
+def save_results(results, filename="security_scan_results.json"):
+    """Save results to a JSON file with a timestamp."""
+    try:
+        with open(filename, "r") as file:
+            previous_results = json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        previous_results = {}
+
+    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    previous_results[current_time] = {"Broken_Auth_Scan": results}
+
+    with open(filename, "w") as file:
+        json.dump(previous_results, file, indent=4)
+
+    print("\n✅ Authentication Tests Complete! Results saved in security_scan_results.json")
+
+def run():
     """Main function to run authentication tests on detected login pages."""
+    print("\n🚀 Scanning...\n")
+
     mapped_data = load_mapped_data()
 
     if not mapped_data:
@@ -120,11 +162,7 @@ def main():
             "Session Issue": session_issue
         }
 
-    # Save results to JSON
-    with open("security_scan_results.json", "w") as file:
-        json.dump(results, file, indent=4)
-
-    print("\n✅ Authentication Tests Complete! Results saved in security_scan_results.json")
+    save_results(results)
 
 if __name__ == "__main__":
-    main()
+    run()
