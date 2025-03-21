@@ -1,14 +1,13 @@
 import json
 import sys
 import time
+import subprocess
 from urllib.parse import urljoin, urlparse
 from playwright.sync_api import sync_playwright
 
-# Global set to store visited links to avoid duplicate crawling
 visited_links = set()
 
 def extract_links(page, base_url):
-    """Extracts and returns a list of unique internal links from the page."""
     links = set()
     for link in page.locator("a").all():
         href = link.get_attribute("href")
@@ -17,14 +16,12 @@ def extract_links(page, base_url):
             parsed_absolute = urlparse(absolute_url)
             parsed_base = urlparse(base_url)
 
-            # Ensure the link belongs to the same domain and is not visited
             if parsed_absolute.netloc == parsed_base.netloc and absolute_url not in visited_links:
                 links.add(absolute_url)
     
     return list(links)
 
 def extract_forms(page, base_url):
-    """Extracts form details from the page."""
     forms = []
     for form in page.locator("form").all():
         action = form.get_attribute("action") or base_url
@@ -45,7 +42,6 @@ def extract_forms(page, base_url):
     return forms
 
 def visit_page(page, url, base_url, depth, max_depth, max_pages, mapped_data):
-    """Recursively visits pages, extracts data, and respects depth/page limits."""
     global visited_links
     if depth > max_depth or url in visited_links or len(mapped_data["pages"]) >= max_pages:
         return
@@ -54,13 +50,11 @@ def visit_page(page, url, base_url, depth, max_depth, max_pages, mapped_data):
     visited_links.add(url)
 
     try:
-        page.goto(url, wait_until="domcontentloaded", timeout=15000)  # 15 seconds timeout
+        page.goto(url, wait_until="domcontentloaded", timeout=15000)
 
-        # Scroll down to load dynamic content
         page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-        page.wait_for_timeout(1500)  # Wait for lazy-loaded elements
+        page.wait_for_timeout(1500)
 
-        # Extract data
         page_data = {
             "url": url,
             "links": extract_links(page, base_url),
@@ -69,7 +63,6 @@ def visit_page(page, url, base_url, depth, max_depth, max_pages, mapped_data):
 
         mapped_data["pages"].append(page_data)
 
-        # Recursively visit extracted links
         for link in page_data["links"]:
             visit_page(page, link, base_url, depth + 1, max_depth, max_pages, mapped_data)
 
@@ -77,7 +70,6 @@ def visit_page(page, url, base_url, depth, max_depth, max_pages, mapped_data):
         print(f"❌ Error crawling {url}: {e}")
 
 def crawl_website(target_url, max_depth=2, max_pages=50):
-    """Main function to start the crawling process."""
     mapped_data = {"target_url": target_url, "pages": []}
 
     with sync_playwright() as p:
@@ -93,6 +85,10 @@ def crawl_website(target_url, max_depth=2, max_pages=50):
 
             browser.close()
             print("\n✅ Website Mapping Complete! Data saved to mapped_data.json")
+
+            # Run security scanners after crawling is complete
+            print("\n🚀 Running Security Scanners...")
+            subprocess.run(["python", "run_scanners.py"], check=True)
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
