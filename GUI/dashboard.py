@@ -17,8 +17,7 @@ def open_dashboard():
         logo_label.pack(expand=True)
 
         splash.after(3000, lambda: [splash.destroy(), show_dashboard()])
-        splash.mainloop()
-
+        
     def show_dashboard():
         ctk.set_appearance_mode("light") 
         ctk.set_default_color_theme("green") 
@@ -45,7 +44,7 @@ def open_dashboard():
                 messagebox.showinfo("Processing", f"Scanning {url}... Please wait.")
                 
                 # Run crawler.py with the URL as an argument
-                subprocess.run(["python", "crawler.py", url], check=True)
+                subprocess.run(["python", "scanner/crawler.py", url], check=True)
 
                 # Run run_scanners.py after crawling is complete
                 subprocess.run(["python", "run_scanners.py"], check=True)
