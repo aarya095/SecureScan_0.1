@@ -1,5 +1,6 @@
 import json
 import sys
+import os
 import time
 import subprocess
 from urllib.parse import urljoin, urlparse
@@ -8,6 +9,7 @@ from playwright.sync_api import sync_playwright
 visited_links = set()
 
 def extract_links(page, base_url):
+    """Extracts all valid internal links from the page."""
     links = set()
     for link in page.locator("a").all():
         href = link.get_attribute("href")
@@ -16,12 +18,14 @@ def extract_links(page, base_url):
             parsed_absolute = urlparse(absolute_url)
             parsed_base = urlparse(base_url)
 
+            # Ensure only internal links are added
             if parsed_absolute.netloc == parsed_base.netloc and absolute_url not in visited_links:
                 links.add(absolute_url)
     
     return list(links)
 
 def extract_forms(page, base_url):
+    """Extracts form details from the page."""
     forms = []
     for form in page.locator("form").all():
         action = form.get_attribute("action") or base_url
@@ -42,6 +46,7 @@ def extract_forms(page, base_url):
     return forms
 
 def visit_page(page, url, base_url, depth, max_depth, max_pages, mapped_data):
+    """Visits a page and extracts links and forms."""
     global visited_links
     if depth > max_depth or url in visited_links or len(mapped_data["pages"]) >= max_pages:
         return
@@ -63,13 +68,16 @@ def visit_page(page, url, base_url, depth, max_depth, max_pages, mapped_data):
 
         mapped_data["pages"].append(page_data)
 
+        # Recursively visit new links
         for link in page_data["links"]:
-            visit_page(page, link, base_url, depth + 1, max_depth, max_pages, mapped_data)
+            if len(mapped_data["pages"]) < max_pages:  # Ensure we don't exceed the max page limit
+                visit_page(page, link, base_url, depth + 1, max_depth, max_pages, mapped_data)
 
     except Exception as e:
         print(f"❌ Error crawling {url}: {e}")
 
 def crawl_website(target_url, max_depth=2, max_pages=50):
+    """Main function to start crawling a website."""
     mapped_data = {"target_url": target_url, "pages": []}
 
     with sync_playwright() as p:
@@ -80,15 +88,23 @@ def crawl_website(target_url, max_depth=2, max_pages=50):
         try:
             visit_page(page, target_url, target_url, 0, max_depth, max_pages, mapped_data)
         finally:
+            # Save the mapped data to a JSON file
             with open("mapped_data.json", "w") as f:
                 json.dump(mapped_data, f, indent=4)
 
             browser.close()
             print("\n✅ Website Mapping Complete! Data saved to mapped_data.json")
 
+            BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Get the path of scanner/
+            scanner_path = os.path.join(BASE_DIR,"run_scanners.py")
+            print(scanner_path)
+
             # Run security scanners after crawling is complete
             print("\n🚀 Running Security Scanners...")
-            subprocess.run(["python", "run_scanners.py"], check=True)
+            try:
+                subprocess.run(["python", os.path.join(BASE_DIR,"run_scanners.py")], check=True, cwd=BASE_DIR)
+            except subprocess.CalledProcessError as e:
+                print(f"❌ Error running security scanners: {e}")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

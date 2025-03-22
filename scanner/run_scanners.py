@@ -1,13 +1,17 @@
 import json
 import time
 import os
-from . import http_scanner
-from . import sql_injection
-from . import xss_injection
-from . import csrf_scanner
-from . import broken_authentication
+import sys
 
-SECURITY_SCAN_RESULTS_FILE = "security_scan_results.json"
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if PROJECT_ROOT not in sys.path:
+    sys.path.append(PROJECT_ROOT)
+
+print("🔍 Updated sys.path:", sys.path)
+
+from scanner import http_scanner, sql_injection, xss_injection, csrf_scanner, broken_authentication
+
+SECURITY_SCAN_RESULTS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "security_scan_results.json")
 
 def read_security_results():
     """Reads and returns the security scan results from JSON file."""
@@ -25,12 +29,15 @@ def read_security_results():
 def check_sql_injection_results():
     """Checks if SQL Injection was detected in the security scan results."""
     results = read_security_results()
-    
-    for timestamp, scan_data in results.items():
-        if isinstance(scan_data, dict):  # Ensure valid structure
+
+    if not isinstance(results, dict):
+        return False  # Avoids crashing if file is empty
+
+    for scan_data in results.values():
+        if isinstance(scan_data, dict):  
             for url, vulnerabilities in scan_data.items():
                 if isinstance(vulnerabilities, list):
-                    if any(entry.get("vulnerable", False) for entry in vulnerabilities):
+                    if any(isinstance(entry, dict) and entry.get("vulnerable", False) for entry in vulnerabilities):
                         print(f"\n⚠️ SQL Injection detected on {url}! Skipping XSS Scanner.")
                         return True
 

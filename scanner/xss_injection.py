@@ -23,14 +23,29 @@ def check_sql_vulnerabilities(filename="security_scan_results.json"):
     try:
         with open(filename, "r") as f:
             scan_results = json.load(f)
+
+        if not isinstance(scan_results, dict):  # Ensure scan_results is a dictionary
+            print("❌ Error: Unexpected data format in security_scan_results.json")
+            return False
+
         for timestamp, results in scan_results.items():
+            if not isinstance(results, dict):  # Ensure each entry is a dictionary
+                continue
+
             for url, issues in results.items():
+                if not isinstance(issues, list):  # Ensure issues is a list
+                    continue
+
                 for issue in issues:
-                    if issue.get("vulnerable", False):
+                    if isinstance(issue, dict) and issue.get("vulnerable", False):  
                         print(f"❌ SQL Injection detected at {url}. Skipping XSS scan.")
                         return True
-    except (FileNotFoundError, json.JSONDecodeError):
-        pass
+
+    except FileNotFoundError:
+        print("❌ Error: security_scan_results.json not found.")
+    except json.JSONDecodeError:
+        print("❌ Error: security_scan_results.json is corrupted or not in valid JSON format.")
+    
     return False
 
 def detect_xss(target_url, form):
