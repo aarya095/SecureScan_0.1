@@ -1,19 +1,28 @@
 {
-    "scan_datetime": "2025-03-24 15:49:45",
+    "scan_datetime": "2025-03-24 18:38:54",
     "website_info": {},
     "scan_results": {
+        "execution_times": {
+            "total_scan_time": 6.72,
+            "scanner_time": 3.3,
+            "store_time": 0.17
+        },
         "scans": {
-            "URLSecurityScanner": {
+            "HTTP Scanner": {
                 "http://localhost:3000": {
                     "protocol": "HTTP",
-                    "secure": false
+                    "secure": false,
+                    "severity": "High",
+                    "severity_description": "Insecure connection using HTTP. HTTPS is recommended for security."
                 }
             },
             "SQLInjectionScanner": {
                 "http://localhost:3000/login": [
                     {
                         "payload": "' OR '1'='1",
-                        "vulnerable": true
+                        "vulnerable": true,
+                        "severity": "High",
+                        "severity_description": "SQL Injection is critical and can lead to complete database compromise."
                     }
                 ]
             },
@@ -23,15 +32,25 @@
                         "form_number": 1,
                         "method": "POST",
                         "action": "http://localhost:3000/comment",
-                        "csrf_protection": false
+                        "csrf_protection": false,
+                        "severity": "High",
+                        "severity_description": "Critical CSRF vulnerability. A malicious user can perform actions on behalf of another user."
                     }
                 ]
             },
             "BrokenAuthScanner": {
                 "http://localhost:3000/login": {
-                    "Weak Passwords": true,
-                    "No Account Lockout": true,
-                    "Session Issue": true
+                    "Weak Passwords Severity": "High",
+                    "Brute Force Protection Severity": "High",
+                    "Session Management Severity": "High"
+                }
+            },
+            "URLSecurityScanner": {
+                "http://localhost:3000": {
+                    "protocol": "HTTP",
+                    "secure": false,
+                    "severity": "High",
+                    "severity_description": "Insecure connection using HTTP. HTTPS is recommended for security."
                 }
             }
         }

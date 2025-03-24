@@ -44,6 +44,19 @@ class SecurityScanner:
             print(f"\n❌ Error reading {self.SECURITY_SCAN_RESULTS_FILE}: {e}")
             return {}
 
+    def store_scan_results(self, scan_results):
+        """Store the scan results into the JSON file."""
+        if not scan_results:
+            print("❌ No scan results to store.")
+            return
+
+        try:
+            with open(self.SECURITY_SCAN_RESULTS_FILE, "w") as file:
+                json.dump(scan_results, file, indent=4)
+            print("✅ Scan results saved successfully.")
+        except Exception as e:
+            print(f"❌ Error saving scan results: {e}")
+
     def check_sql_injection_results(self):
         """Checks if SQL Injection was detected in the security scan results."""
         results = self.read_security_results()
@@ -51,7 +64,6 @@ class SecurityScanner:
         if not isinstance(results, dict):
             return False  # Avoids crashing if file is empty
 
-        # ✅ Ensure we're checking the correct scanner results
         sql_injection_results = results.get("scans", {}).get("SQLInjectionScanner", {})
 
         for url, vulnerabilities in sql_injection_results.items():
@@ -62,14 +74,13 @@ class SecurityScanner:
 
         return False
 
-
-        return False
     def run_all_scanners(self):
         """Runs all security scanners in sequence."""
         print("\n🚀 Running Security Scanners...\n")
 
         total_start_time = time.time()  # Start time for the entire scanning process
         execution_times = {}
+        scans_results = {"scans": {}}
 
         # Run HTTP Scanner
         start_time = time.time()
@@ -77,6 +88,7 @@ class SecurityScanner:
         http_scanner = URLSecurityScanner()
         http_scanner.run()
         execution_times["HTTP Scanner"] = time.time() - start_time
+        scans_results["scans"]["HTTP Scanner"] = http_scanner.scan_results
 
         # Run SQL Injection Scanner
         start_time = time.time()
@@ -84,6 +96,7 @@ class SecurityScanner:
         sql_scanner = SQLInjectionScanner()
         sql_scanner.run()
         execution_times["SQL Injection Scanner"] = time.time() - start_time
+        scans_results["scans"]["SQLInjectionScanner"] = sql_scanner.scan_results
 
         # Allow time for results to be updated before checking
         time.sleep(3)
@@ -97,6 +110,7 @@ class SecurityScanner:
             xss_scanner = XSSScanner()
             xss_scanner.run()
             execution_times["XSS Scanner"] = time.time() - start_time
+            scans_results["scans"]["XSSScanner"] = xss_scanner.scan_results
         else:
             print("\n⏭️ Skipping XSS Scanner due to SQL Injection detection.")
 
@@ -106,6 +120,7 @@ class SecurityScanner:
         csrf_scanner = CSRFScanner()
         csrf_scanner.run()
         execution_times["CSRF Scanner"] = time.time() - start_time
+        scans_results["scans"]["CSRFScanner"] = csrf_scanner.scan_results
 
         # Run Broken Authentication Scanner
         start_time = time.time()
@@ -113,6 +128,7 @@ class SecurityScanner:
         auth_scanner = BrokenAuthScanner()
         auth_scanner.run()
         execution_times["Broken Authentication Scanner"] = time.time() - start_time
+        scans_results["scans"]["BrokenAuthScanner"] = auth_scanner.scan_results
 
         # Calculate total scan time (the total execution time of all scanners)
         total_scan_time = time.time() - total_start_time
@@ -123,12 +139,49 @@ class SecurityScanner:
             print(f"   - {scanner}: {exec_time:.2f} seconds")
 
         # Save the execution_times to a JSON file (includes the total scan time)
-        scan_results = {"execution_times": {"total_scan_time": total_scan_time}}
-        with open(self.SECURITY_SCAN_RESULTS_FILE, "w") as file:
-            json.dump(scan_results, file, indent=4)
+        scan_results = {"execution_times": {"total_scan_time": total_scan_time}, **scans_results}
+        
+        # Store the results in the JSON file
+        self.store_scan_results(scan_results)
 
         # Display total scan time once at the end
         print(f"\n🚀 **Total Scan Time:** {total_scan_time:.2f} seconds")
+
+    @staticmethod
+    def count_vulnerabilities(scan_results):
+        """Count the number of vulnerabilities and categorize them by risk level."""
+        vulnerability_count = {
+            "vulnerabilities_found": 0,
+            "high_risk_vulnerabilities": 0,
+            "medium_risk_vulnerabilities": 0,
+            "low_risk_vulnerabilities": 0
+        }
+
+        # Loop through the scan results and count vulnerabilities
+        for scanner_name, scanner_results in scan_results.get("scans", {}).items():
+            for url, vulnerabilities in scanner_results.items():
+                if isinstance(vulnerabilities, list):
+                    for entry in vulnerabilities:
+                        if entry.get("vulnerable", False):
+                            vulnerability_count["vulnerabilities_found"] += 1
+                            
+                            # Check for 'severity'
+                            severity = entry.get("severity", "").lower()
+                            if severity == "high":
+                                vulnerability_count["high_risk_vulnerabilities"] += 1
+                            elif severity == "medium":
+                                vulnerability_count["medium_risk_vulnerabilities"] += 1
+                            elif severity == "low":
+                                vulnerability_count["low_risk_vulnerabilities"] += 1
+                            
+                elif isinstance(vulnerabilities, dict):  # For BrokenAuthScanner, where vulnerabilities are not in a list
+                    for vuln_type, severity in vulnerabilities.items():
+                        if isinstance(severity, str) and severity.lower() == "high":
+                            vulnerability_count["vulnerabilities_found"] += 1
+                            vulnerability_count["high_risk_vulnerabilities"] += 1
+
+        return vulnerability_count
+
 
 
 if __name__ == "__main__":

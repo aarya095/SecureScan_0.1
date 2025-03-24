@@ -51,11 +51,11 @@ class ScanReportGenerator:
         print(f"📄 Report saved as JSON: {output_file}")
 
     def save_as_pdf(self, output_file="scan_report.pdf"):
-        """Generate a PDF report without emojis."""
+        """Generate a structured and well-formatted PDF report."""
         pdf = FPDF()
         pdf.set_auto_page_break(auto=True, margin=15)
         pdf.add_page()
-        pdf.set_font("Arial", "B", 16)
+        pdf.set_font("Arial", "B", 30)
 
         # Title
         pdf.cell(200, 10, "Security Scan Report", ln=True, align="C")
@@ -63,36 +63,68 @@ class ScanReportGenerator:
 
         # Scan Date & Time
         pdf.set_font("Arial", "B", 12)
-        pdf.cell(0, 10, (f" Scan Date & Time: {self.report_data['scan_datetime']}"), ln=True)
+        pdf.cell(0, 10, f"Scan Date & Time: {self.report_data['scan_datetime']}", ln=True)
         pdf.ln(5)
+
+        # Execution Times
+        pdf.set_font("Arial", "B", 12)
+        pdf.cell(0, 10, "Execution Times:", ln=True)
+        pdf.set_font("Arial", "", 11)
+
+        execution_times = self.report_data["scan_results"].get("execution_times", {})
+        total_scan_time = execution_times.get("total_scan_time", "N/A")
+        scanner_time = execution_times.get("scanner_time", "N/A")
+        store_time = execution_times.get("store_time", "N/A")
+
+        pdf.cell(0, 10, f"  - Total Scan Time: {total_scan_time} seconds", ln=True)
+        pdf.cell(0, 10, f"  - Scanner Time: {scanner_time} seconds", ln=True)
+        pdf.cell(0, 10, f"  - Store Time: {store_time} seconds", ln=True)
+
+        pdf.ln(10)
 
         # Website Information
         pdf.set_font("Arial", "B", 12)
-        pdf.cell(0, 10, (" Website Information:"), ln=True)
-        pdf.set_font("Arial", "", 10)
+        pdf.cell(0, 10, "Website Information:", ln=True)
+        pdf.set_font("Arial", "", 11)
         website_info = self.report_data["website_info"]
 
         if isinstance(website_info, dict):
             for key, value in website_info.items():
-                pdf.cell(0, 10, f"  - {(key)}: {(str(value))}", ln=True)
+                pdf.cell(0, 10, f"  - {key}: {str(value)}", ln=True)
         else:
-            pdf.cell(0, 10, ("No website information available."), ln=True)
+            pdf.cell(0, 10, "  - No website information available.", ln=True)
 
         pdf.ln(10)
 
         # Security Scan Results
         pdf.set_font("Arial", "B", 12)
-        pdf.cell(0, 10, (" Security Scan Results:"), ln=True)
-        pdf.set_font("Arial", "", 10)
+        pdf.cell(0, 10, "Security Scan Results:", ln=True)
+        pdf.set_font("Arial", "", 11)
 
-        scan_results = self.report_data["scan_results"]
-        if isinstance(scan_results, dict):
-            for test, result in scan_results.items():
-                pdf.cell(0, 10, f"  - {(test)}: {(json.dumps(result, indent=2))}", ln=True)
-        else:
-            pdf.cell(0, 10, ("No scan results available."), ln=True)
+        scan_results = self.report_data["scan_results"].get("scans", {})
+        for scanner_name, scanner_results in scan_results.items():
+            pdf.set_font("Arial", "B", 12)
+            pdf.cell(0, 10, f"\n{scanner_name}", ln=True)
+            pdf.set_font("Arial", "B", 11)
 
-        pdf.ln(10)
+            for url, vulnerabilities in scanner_results.items():
+                pdf.set_font("Arial", "I", 11)
+                pdf.cell(0, 10, f"  - URL: {url}", ln=True)
+                pdf.set_font("Arial", "B", 11)
+
+                if isinstance(vulnerabilities, list):  # For scanners that return lists of vulnerabilities (e.g., SQLInjectionScanner)
+                    for entry in vulnerabilities:
+                        pdf.set_font("Arial", "B", 11)
+                        pdf.cell(0, 10, f"    Vulnerable: {entry.get('vulnerable', False)}", ln=True)
+                        pdf.set_font("Arial", "B", 11)
+                        pdf.cell(0, 10, f"    Severity: {entry.get('severity', 'N/A')}", ln=True)
+                        pdf.cell(0, 10, f"    Description: {entry.get('severity_description', 'No description available.')}", ln=True)
+                        pdf.ln(5)
+                elif isinstance(vulnerabilities, dict):  # For scanners like BrokenAuthScanner
+                    for vuln_type, severity in vulnerabilities.items():
+                        pdf.set_font("Arial", "B", 11)
+                        pdf.cell(0, 10, f"    {vuln_type}: {severity}", ln=True)
+                    pdf.ln(5)
 
         # Save the PDF
         pdf.output(output_file)
