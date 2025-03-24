@@ -1,7 +1,6 @@
 import json
 from urllib.parse import urlparse
 
-
 class URLSecurityScanner:
     """A class to validate URLs and check if they use HTTP or HTTPS."""
 

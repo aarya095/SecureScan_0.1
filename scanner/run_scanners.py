@@ -2,8 +2,11 @@ import json
 import time
 import os
 import sys
-from scanner import http_scanner, sql_injection, xss_injection, csrf_scanner, broken_authentication
-
+from scanner.http_scanner import URLSecurityScanner
+from scanner.sql_injection import SQLInjectionScanner
+from scanner.xss_injection import XSSScanner
+from scanner.broken_authentication import BrokenAuthScanner
+from scanner.csrf_scanner import CSRFScanner
 
 class SecurityScanner:
     """Class to manage and run multiple security scanners."""
@@ -63,10 +66,10 @@ class SecurityScanner:
         print("\n🚀 Running Security Scanners...\n")
 
         print("\n🔹 Running HTTP Scanner...")
-        http_scanner.run()
+        URLSecurityScanner.http_scanner.run()
 
         print("\n🔹 Running SQL Injection Scanner...")
-        sql_injection.run()
+        SQLInjectionScanner.sql_injection.run()
 
         # Allow time for results to be updated before checking
         time.sleep(3)
@@ -75,15 +78,15 @@ class SecurityScanner:
 
         if not sql_injection_detected:
             print("\n🔹 Running XSS Scanner...")
-            xss_injection.run()
+            XSSScanner.xss_injection.run()
         else:
             print("\n⏭️ Skipping XSS Scanner due to SQL Injection detection.")
 
         print("\n🔹 Running CSRF Scanner...")
-        csrf_scanner.run()
+        CSRFScanner.csrf_scanner.run()
 
         print("\n🔹 Running Broken Authentication Scanner...")
-        broken_authentication.run()
+        BrokenAuthScanner.broken_authentication.run()
 
 
 if __name__ == "__main__":
