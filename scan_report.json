@@ -1,0 +1,39 @@
+{
+    "scan_datetime": "2025-03-24 15:49:45",
+    "website_info": {},
+    "scan_results": {
+        "scans": {
+            "URLSecurityScanner": {
+                "http://localhost:3000": {
+                    "protocol": "HTTP",
+                    "secure": false
+                }
+            },
+            "SQLInjectionScanner": {
+                "http://localhost:3000/login": [
+                    {
+                        "payload": "' OR '1'='1",
+                        "vulnerable": true
+                    }
+                ]
+            },
+            "CSRFScanner": {
+                "http://localhost:3000": [
+                    {
+                        "form_number": 1,
+                        "method": "POST",
+                        "action": "http://localhost:3000/comment",
+                        "csrf_protection": false
+                    }
+                ]
+            },
+            "BrokenAuthScanner": {
+                "http://localhost:3000/login": {
+                    "Weak Passwords": true,
+                    "No Account Lockout": true,
+                    "Session Issue": true
+                }
+            }
+        }
+    }
+}

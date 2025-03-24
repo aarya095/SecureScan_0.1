@@ -31,5 +31,11 @@
                 "Session Issue": true
             }
         }
+    },
+    "execution_times": {
+        "crawler_time": 0.0,
+        "scanner_time": 3.31,
+        "store_time": 0.29,
+        "total_scan_time": 5.85
     }
 }

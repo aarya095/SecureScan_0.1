@@ -20,28 +20,28 @@ class ScanResultHandler:
             scan_results["scan_time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             return scan_results
         
-        except FileNotFoundError:
-            print("❌ Error: Scan results file not found.")
-            return None
-        except json.JSONDecodeError:
-            print("❌ Error: Invalid JSON format in scan results file.")
+        except (FileNotFoundError, json.JSONDecodeError):
+            print("❌ Error: Unable to read scan results file.")
             return None
 
     def store_scan_results(self):
-        """Save scan results to the database."""
+        """Save scan results to the database, including total execution time."""
         scan_results = self.load_scan_results()
         if not scan_results:
             return
 
-        # Extract the first URL key instead of looking for 'target_url'
-        website_url = next(iter(scan_results.keys()), "Unknown")
+        # Extract website URL from the JSON data (default to "Unknown" if missing)
+        website_url = next(iter(scan_results.get("scans", {}).keys()), "Unknown")
+
+        # Extract total execution time from "execution_times"
+        total_execution_time = scan_results.get("execution_times", {}).get("total_scan_time", None)
 
         # Convert scan results to JSON string for storage
         scan_json = json.dumps(scan_results)
 
-        # Insert query
-        query = "INSERT INTO scan_results (website_url, scan_data) VALUES (%s, %s)"
-        values = (website_url, scan_json)
+        # Insert query including total execution time
+        query = "INSERT INTO scan_results (website_url, scan_data, execution_time) VALUES (%s, %s, %s)"
+        values = (website_url, scan_json, total_execution_time)
 
         # Connect, execute, and close
         self.db.connect()
@@ -49,6 +49,8 @@ class ScanResultHandler:
         self.db.close()
 
         print(f"✅ Scan result stored successfully for {website_url}!")
+        if total_execution_time is not None:
+            print(f"🕒 Total Execution Time Stored: {total_execution_time} seconds")
 
 
 # Example usage

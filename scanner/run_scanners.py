@@ -68,13 +68,20 @@ class SecurityScanner:
         """Runs all security scanners in sequence."""
         print("\n🚀 Running Security Scanners...\n")
 
+        total_start_time = time.time()
+        execution_times = {}
+
+        start_time = time.time()
         print("\n🔹 Running HTTP Scanner...")
         http_scanner = URLSecurityScanner()  # ✅ Create an instance
         http_scanner.run()  # ✅ Call run() on the instance
+        execution_times["HTTP Scanner"] = time.time() - start_time
 
+        start_time = time.time()
         print("\n🔹 Running SQL Injection Scanner...")
         sql_scanner = SQLInjectionScanner()  # ✅ Create an instance
         sql_scanner.run()  # ✅ Call run() on the instance
+        execution_times["SQL Injection Scanner"] = time.time() - start_time
 
         # Allow time for results to be updated before checking
         time.sleep(3)
@@ -82,21 +89,32 @@ class SecurityScanner:
         sql_injection_detected = self.check_sql_injection_results()
 
         if not sql_injection_detected:
+            start_time = time.time()
             print("\n🔹 Running XSS Scanner...")
             xss_scanner = XSSScanner()  # ✅ Create an instance
             xss_scanner.run()  # ✅ Call run() on the instance
+            execution_times["XSS Scanner"] = time.time() - start_time
         else:
             print("\n⏭️ Skipping XSS Scanner due to SQL Injection detection.")
 
+        start_time = time.time()
         print("\n🔹 Running CSRF Scanner...")
         csrf_scanner = CSRFScanner()  # ✅ Create an instance
         csrf_scanner.run()  # ✅ Call run() on the instance
+        execution_times["CSRF Scanner"] = time.time() - start_time
 
+        start_time = time.time()
         print("\n🔹 Running Broken Authentication Scanner...")
         auth_scanner = BrokenAuthScanner()  # ✅ Create an instance
         auth_scanner.run()  # ✅ Call run() on the instance
+        execution_times["Broken Authentication Scanner"] = time.time() - start_time
 
+        total_time = time.time() - total_start_time
 
+        # ✅ Display execution times for each scanner
+        print("\n⏱️ **Execution Time Summary:**")
+        for scanner, exec_time in execution_times.items():
+            print(f"   - {scanner}: {exec_time:.2f} seconds")
 
 if __name__ == "__main__":
     scanner = SecurityScanner()
