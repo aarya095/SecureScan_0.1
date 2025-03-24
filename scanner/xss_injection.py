@@ -12,6 +12,11 @@ class XSSScanner:
         "<svg onload=alert('XSS')>"
     ]
 
+    SEVERITY = {
+        "High": "Critical XSS vulnerability that can easily be exploited. Immediate action is required.",
+        "Low": "XSS vulnerability with minimal impact, but still a potential risk."
+    }
+
     def __init__(self, mapped_data_file="mapped_data.json", results_file="security_scan_results.json"):
         self.mapped_data_file = mapped_data_file
         self.results_file = results_file
@@ -77,10 +82,15 @@ class XSSScanner:
 
                         if target_url not in self.scan_results:
                             self.scan_results[target_url] = []
+
+                        severity = "High" if "alert" in payload.lower() else "Low"
+                        
                         self.scan_results[target_url].append({
                             "parameter": param,
                             "payload": payload,
-                            "vulnerable": True
+                            "vulnerable": True,
+                            "severity": severity,
+                            "severity_description": self.SEVERITY[severity]
                         })
 
                         break  # Stop testing if a vulnerability is found

@@ -4,6 +4,11 @@ from urllib.parse import urlparse
 class URLSecurityScanner:
     """A class to validate URLs and check if they use HTTP or HTTPS."""
 
+    SEVERITY = {
+        "High": "Insecure connection using HTTP. HTTPS is recommended for security.",
+        "Low": "Secure connection using HTTPS."
+    }
+
     def __init__(self, mapped_data_file="mapped_data.json", results_file="security_scan_results.json"):
         self.mapped_data_file = mapped_data_file
         self.results_file = results_file
@@ -52,7 +57,12 @@ class URLSecurityScanner:
 
         for url in self.urls:
             protocol, is_secure = self.extract_protocol(url)
-            self.scan_results[url] = {"protocol": protocol, "secure": is_secure}
+            severity = "Low" if is_secure else "High"
+
+            self.scan_results[url] = {"protocol": protocol, 
+                                      "secure": is_secure,
+                                      "severity": severity,
+                "severity_description": self.SEVERITY[severity]}
             print(f"{url} -> {protocol}")
 
     def save_scan_results(self):

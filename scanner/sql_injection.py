@@ -58,7 +58,7 @@ class SQLInjectionScanner:
 
                     self.scan_results[target_url].append({
                         "payload": payload,
-                        "vulnerable": True
+                        "vulnerable": True,
                         "severity": severity,
                         "severity_description": self.SEVERITY[severity]
                     })

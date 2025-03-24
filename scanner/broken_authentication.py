@@ -9,6 +9,11 @@ class BrokenAuthScanner:
         "qwerty", "abc123", "54321", "111111", "123123"
     ]
 
+    SEVERITY = {
+        "High": "Critical vulnerability that poses a major risk.",
+        "Low": "The vulnerability is either mitigated or less impactful."
+    }
+
     def __init__(self, mapped_data_file="mapped_data.json", results_file="security_scan_results.json"):
         self.mapped_data_file = mapped_data_file
         self.results_file = results_file
@@ -46,13 +51,13 @@ class BrokenAuthScanner:
 
                 if "Invalid" not in response.text and response.status_code == 200:
                     print(f"⚠️ Weak credentials found: admin / {password}")
-                    return True
+                    return "High"
             except requests.RequestException as e:
                 print(f"❌ Error testing weak passwords: {e}")
-                return False
+                return "Low"
 
         print("✅ No weak credentials detected.")
-        return False
+        return "Low"
 
     def test_brute_force_protection(self, target_url):
         """Check if account lockout is enforced."""
@@ -65,13 +70,13 @@ class BrokenAuthScanner:
 
                 if "Locked" in response.text or response.status_code == 429:
                     print("✅ Account lockout is enforced.")
-                    return False
+                    return "Low"
             except requests.RequestException as e:
                 print(f"❌ Error testing brute-force protection: {e}")
-                return False
+                return "High"
 
         print("❌ No account lockout detected! Brute-force attack is possible.")
-        return True
+        return "High"
 
     def test_session_logout(self, target_url, dashboard_url, logout_url):
         """Check if session is properly invalidated after logout."""
@@ -86,20 +91,20 @@ class BrokenAuthScanner:
 
             if "Invalid" in response.text:
                 print("⚠️ Cannot log in with test credentials. Skipping session test.")
-                return False
+                return "Low"
         except requests.RequestException as e:
             print(f"❌ Error logging in: {e}")
-            return False
+            return "Low"
 
         # Check if dashboard is accessible
         try:
             dashboard_response = session.get(dashboard_url, timeout=5)
             if "Unauthorized" in dashboard_response.text:
                 print("❌ Session not established correctly.")
-                return False
+                return "Low"
         except requests.RequestException as e:
             print(f"❌ Error accessing dashboard: {e}")
-            return False
+            return "Low"
 
         # Log out and check if session persists
         try:
@@ -108,13 +113,13 @@ class BrokenAuthScanner:
 
             if "Unauthorized" not in dashboard_response_after_logout.text:
                 print("❌ Session persists after logout! Logout is not secure.")
-                return True
+                return "High"
         except requests.RequestException as e:
             print(f"❌ Error testing session logout: {e}")
-            return False
+            return "Low"
 
         print("✅ Session is properly invalidated after logout.")
-        return False
+        return "Low"
 
     def save_scan_results(self):
         """Save scan results to a JSON file without overwriting previous results."""
@@ -158,14 +163,14 @@ class BrokenAuthScanner:
             dashboard_url = f"{base_url}/dashboard"
             logout_url = f"{base_url}/logout"
 
-            weak_passwords_found = self.test_weak_passwords(login_url)
-            no_account_lockout = self.test_brute_force_protection(login_url)
-            session_issue = self.test_session_logout(login_url, dashboard_url, logout_url)
-
+            weak_password_severity = self.test_weak_passwords(login_url)
+            brute_force_severity = self.test_brute_force_protection(login_url)
+            session_severity = self.test_session_logout(login_url, dashboard_url, logout_url)
+            
             self.scan_results[login_url] = {
-                "Weak Passwords": weak_passwords_found,
-                "No Account Lockout": no_account_lockout,
-                "Session Issue": session_issue
+                "Weak Passwords Severity": weak_password_severity,
+                "Brute Force Protection Severity": brute_force_severity,
+                "Session Management Severity": session_severity
             }
 
         self.save_scan_results()

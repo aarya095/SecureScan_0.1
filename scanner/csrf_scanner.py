@@ -10,6 +10,11 @@ class CSRFScanner:
 
     TOKEN_NAMES = ["csrf", "token", "authenticity_token", "_csrf"]
 
+    SEVERITY = {
+        "High": "Critical CSRF vulnerability. A malicious user can perform actions on behalf of another user.",
+        "Low": "CSRF vulnerability is mitigated with a CSRF token or the form uses a GET method."
+    }
+
     def __init__(self, mapped_data_file="mapped_data.json", results_file="security_scan_results.json"):
         self.mapped_data_file = mapped_data_file
         self.results_file = results_file
@@ -66,15 +71,27 @@ class CSRFScanner:
                 has_token = self.check_csrf_token(form)
                 status = "Protected" if has_token else "Vulnerable"
                 print(f"✅ CSRF Protection Detected." if has_token else f"⚠️ WARNING: CSRF Token NOT found!")
+                severity = "Low" if has_token else "High"
 
                 results.append({
                     "form_number": i,
                     "method": method.upper(),
                     "action": full_action,
-                    "csrf_protection": has_token
+                    "csrf_protection": has_token,
+                    "severity": severity,
+                    "severity_description": self.SEVERITY[severity]
                 })
             else:
                 print("ℹ️ This form uses GET request, CSRF is not applicable.")
+                severity = "Low"
+                results.append({
+                    "form_number": i,
+                    "method": method.upper(),
+                    "action": full_action,
+                    "csrf_protection": True,  # GET methods don't need CSRF tokens
+                    "severity": severity,
+                    "severity_description": self.SEVERITY[severity]
+                })
 
         return results
 
