@@ -13,6 +13,12 @@ class SQLInjectionScanner:
         "' UNION SELECT NULL, user() --"
     ]
 
+    SEVERITY = {
+        "High": "SQL Injection is critical and can lead to complete database compromise.",
+        "Medium": "Possible vulnerability but might be harder to exploit.",
+        "Low": "Minor issue with SQL query, unlikely to be exploitable."
+    }
+
     def __init__(self, mapped_data_file="mapped_data.json", results_file="security_scan_results.json"):
         self.mapped_data_file = mapped_data_file
         self.results_file = results_file
@@ -47,9 +53,14 @@ class SQLInjectionScanner:
 
                     if target_url not in self.scan_results:
                         self.scan_results[target_url] = []
+
+                    severity = "High"
+
                     self.scan_results[target_url].append({
                         "payload": payload,
                         "vulnerable": True
+                        "severity": severity,
+                        "severity_description": self.SEVERITY[severity]
                     })
 
                     self.sql_injection_detected = True  # ✅ Set flag to True if SQLi is detected
