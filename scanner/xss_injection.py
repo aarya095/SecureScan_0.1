@@ -2,133 +2,128 @@ import requests
 import json
 from datetime import datetime
 
-# Define XSS payloads
-XSS_PAYLOADS = [
-    "<script>alert('XSS')</script>",
-    "<img src=x onerror=alert('XSS')>",
-    "<svg onload=alert('XSS')>"
-]
 
-def load_mapped_data(filename="mapped_data.json"):
-    """Load mapped website data from JSON file."""
-    try:
-        with open(filename, "r") as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        print(f"⚠️ Error loading JSON file: {e}")
-        return None
+class XSSScanner:
+    """Class to scan for XSS vulnerabilities in web forms."""
 
-def check_sql_vulnerabilities(filename="security_scan_results.json"):
-    """Check if previous SQL Injection scan found vulnerabilities."""
-    try:
-        with open(filename, "r") as f:
-            scan_results = json.load(f)
+    XSS_PAYLOADS = [
+        "<script>alert('XSS')</script>",
+        "<img src=x onerror=alert('XSS')>",
+        "<svg onload=alert('XSS')>"
+    ]
 
-        if not isinstance(scan_results, dict):  # Ensure scan_results is a dictionary
-            print("❌ Error: Unexpected data format in security_scan_results.json")
-            return False
+    def __init__(self, mapped_data_file="mapped_data.json", results_file="security_scan_results.json"):
+        self.mapped_data_file = mapped_data_file
+        self.results_file = results_file
+        self.scan_results = {}
 
-        for timestamp, results in scan_results.items():
-            if not isinstance(results, dict):  # Ensure each entry is a dictionary
-                continue
+    def load_mapped_data(self):
+        """Load mapped website data from JSON file."""
+        try:
+            with open(self.mapped_data_file, "r") as f:
+                return json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(f"⚠️ Error loading JSON file: {e}")
+            return None
 
-            for url, issues in results.items():
-                if not isinstance(issues, list):  # Ensure issues is a list
+    def check_sql_vulnerabilities(self):
+        """Check if previous SQL Injection scan found vulnerabilities."""
+        try:
+            with open(self.results_file, "r") as f:
+                scan_results = json.load(f)
+
+            if not isinstance(scan_results, dict):
+                print("❌ Error: Unexpected data format in security_scan_results.json")
+                return False
+
+            for timestamp, results in scan_results.items():
+                if not isinstance(results, dict):
                     continue
 
-                for issue in issues:
-                    if isinstance(issue, dict) and issue.get("vulnerable", False):  
-                        print(f"❌ SQL Injection detected at {url}. Skipping XSS scan.")
-                        return True
+                for url, issues in results.items():
+                    if not isinstance(issues, list):
+                        continue
 
-    except FileNotFoundError:
-        print("❌ Error: security_scan_results.json not found.")
-    except json.JSONDecodeError:
-        print("❌ Error: security_scan_results.json is corrupted or not in valid JSON format.")
-    
-    return False
+                    for issue in issues:
+                        if isinstance(issue, dict) and issue.get("vulnerable", False):
+                            print(f"❌ SQL Injection detected at {url}. Skipping XSS scan.")
+                            return True
 
-def detect_xss(target_url, form):
-    """Test for XSS vulnerabilities in a given form."""
-    print(f"\n📌 Testing: {target_url}")
+        except FileNotFoundError:
+            print("❌ Error: security_scan_results.json not found.")
+        except json.JSONDecodeError:
+            print("❌ Error: security_scan_results.json is corrupted or not in valid JSON format.")
 
-    scan_results = {}
+        return False
 
-    # Test each input field
-    for param in form["inputs"]:
-        print(f"🛠️  Testing parameter: {param}")
+    def detect_xss(self, target_url, form):
+        """Test for XSS vulnerabilities in a given form."""
+        print(f"\n📌 Testing: {target_url}")
 
-        for payload in XSS_PAYLOADS:
-            print(f"🚀 Injecting: {payload}")
-            data = {param: payload}
+        for param in form["inputs"]:
+            print(f"🛠️  Testing parameter: {param}")
 
-            try:
-                response = requests.post(target_url, data=data, timeout=5)
+            for payload in self.XSS_PAYLOADS:
+                print(f"🚀 Injecting: {payload}")
+                data = {param: payload}
 
-                # Check vulnerability based on response content and length
-                if payload in response.text or len(response.text) > 500:
-                    print(f"  ⚠️ XSS Vulnerability Detected in {target_url}!")
-                    print(f"  🔹 Vulnerable Parameter: {param}")
-                    print(f"  🔹 Payload: {payload}\n")
+                try:
+                    response = requests.post(target_url, data=data, timeout=5)
 
-                    if target_url not in scan_results:
-                        scan_results[target_url] = []
-                    scan_results[target_url].append({
-                        "parameter": param,
-                        "payload": payload,
-                        "vulnerable": True
-                    })
+                    if payload in response.text or len(response.text) > 500:
+                        print(f"  ⚠️ XSS Vulnerability Detected in {target_url}!")
+                        print(f"  🔹 Vulnerable Parameter: {param}")
+                        print(f"  🔹 Payload: {payload}\n")
 
-                    break  # Stop testing if a vulnerability is found
+                        if target_url not in self.scan_results:
+                            self.scan_results[target_url] = []
+                        self.scan_results[target_url].append({
+                            "parameter": param,
+                            "payload": payload,
+                            "vulnerable": True
+                        })
 
-            except requests.RequestException as e:
-                print(f"  ❌ Error: {e}")
+                        break  # Stop testing if a vulnerability is found
 
-    return scan_results
+                except requests.RequestException as e:
+                    print(f"  ❌ Error: {e}")
 
-def save_results(scan_results, filename="security_scan_results.json"):
-    """Save scan results to a JSON file."""
-    try:
-        with open(filename, "r") as f:
-            previous_results = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        previous_results = {}
+    def save_results(self):
+        """Save scan results to a JSON file."""
+        try:
+            with open(self.results_file, "r") as f:
+                previous_results = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            previous_results = {}
 
-    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    previous_results[current_time] = scan_results
+        current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        previous_results[current_time] = self.scan_results
 
-    with open(filename, "w") as f:
-        json.dump(previous_results, f, indent=4)
+        with open(self.results_file, "w") as f:
+            json.dump(previous_results, f, indent=4)
 
-    print("\n✅ XSS scan complete! Results saved in security_scan_results.json")
+        print("\n✅ XSS scan complete! Results saved in security_scan_results.json")
 
-def run():
-    """Run the XSS scanner."""
-    print("\n🚀 Scanning...\n")
+    def run(self):
+        """Run the XSS scanner."""
+        print("\n🚀 Scanning for XSS vulnerabilities...\n")
 
-    # Stop if SQL Injection is found
-    if check_sql_vulnerabilities():
-        return
+        if self.check_sql_vulnerabilities():
+            return
 
-    mapped_data = load_mapped_data()
-    if not mapped_data:
-        print("❌ No mapped data found. Exiting XSS scan.")
-        return
+        mapped_data = self.load_mapped_data()
+        if not mapped_data:
+            print("❌ No mapped data found. Exiting XSS scan.")
+            return
 
-    scan_results = {}
+        for page in mapped_data.get("pages", []):
+            for form in page.get("forms", []):
+                if form["method"] == "POST" and form["inputs"]:
+                    self.detect_xss(form["action"], form)
 
-    # Iterate over discovered forms
-    for page in mapped_data.get("pages", []):
-        for form in page.get("forms", []): 
-            if form["method"] == "POST" and form["inputs"]:
-                target_url = form["action"]
-                result = detect_xss(target_url, form)
+        self.save_results()
 
-                if result:
-                    scan_results.update(result)
 
-    save_results(scan_results)
-
-# Ensure script only runs when executed directly
 if __name__ == "__main__":
-    run()
+    scanner = XSSScanner()
+    scanner.run()

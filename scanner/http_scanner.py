@@ -1,62 +1,74 @@
 import json
 from urllib.parse import urlparse
 
-def validate_url(url):
-    """Ensure the URL is valid and formatted correctly."""
-    if not url.startswith(('http://', 'https://')):
-        url = 'http://' + url  # Default to HTTP if no scheme is provided
-    parsed_url = urlparse(url)
-    if not parsed_url.netloc:
-        raise ValueError("Invalid URL format.")
-    return url
 
-def extract_protocol(url):
-    """Determine if the URL is using HTTP or HTTPS."""
-    parsed_url = urlparse(url)
-    protocol = parsed_url.scheme.upper()  # Extract 'http' or 'https' and convert to uppercase
-    is_secure = protocol == "HTTPS"
-    return protocol, is_secure
+class URLSecurityScanner:
+    """A class to validate URLs and check if they use HTTP or HTTPS."""
 
-def load_urls_from_json(filename="mapped_data.json"):
-    """Load target URLs from a JSON file."""
-    try:
-        with open(filename, "r") as file:
-            data = json.load(file)
+    def __init__(self, mapped_data_file="mapped_data.json", results_file="security_scan_results.json"):
+        self.mapped_data_file = mapped_data_file
+        self.results_file = results_file
+        self.urls = set()  # Store unique URLs
+        self.results = {}
 
-        urls = set()
-        urls.add(validate_url(data["target_url"]))
+    def validate_url(self, url):
+        """Ensure the URL is valid and formatted correctly."""
+        if not url.startswith(('http://', 'https://')):
+            url = 'http://' + url  # Default to HTTP if no scheme is provided
+        parsed_url = urlparse(url)
+        if not parsed_url.netloc:
+            raise ValueError("Invalid URL format.")
+        return url
 
-        for page in data.get("pages", []):
-            urls.add(validate_url(page["url"]))
-            for link in page.get("links", []):
-                urls.add(validate_url(link))
+    def extract_protocol(self, url):
+        """Determine if the URL is using HTTP or HTTPS."""
+        parsed_url = urlparse(url)
+        protocol = parsed_url.scheme.upper()  # Extract 'http' or 'https' and convert to uppercase
+        is_secure = protocol == "HTTPS"
+        return protocol, is_secure
 
-        return list(urls)
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        print(f"Error loading JSON file: {e}")
-        return []
+    def load_urls_from_json(self):
+        """Load target URLs from a JSON file."""
+        try:
+            with open(self.mapped_data_file, "r") as file:
+                data = json.load(file)
 
-def run():
-    """Run the HTTP/HTTPS security scanner using local data."""
-    print("\n🔹 Scanning...")
+            self.urls.add(self.validate_url(data["target_url"]))
 
-    urls = load_urls_from_json()
+            for page in data.get("pages", []):
+                self.urls.add(self.validate_url(page["url"]))
+                for link in page.get("links", []):
+                    self.urls.add(self.validate_url(link))
 
-    if not urls:
-        print("No URLs found in mapped_data.json")
-        return
-    
-    results = {}
-    for url in urls:
-        protocol, is_secure = extract_protocol(url)
-        results[url] = {"protocol": protocol, "secure": is_secure}
-        print(f"{url} -> {protocol}")
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(f"Error loading JSON file: {e}")
 
-    with open("security_scan_results.json", "w") as file:
-        json.dump(results, file, indent=4)
+    def scan_urls(self):
+        """Perform the security check for HTTP/HTTPS protocols."""
+        print("\n🔹 Scanning URLs...")
 
-    print("\n✅ HTTP/HTTPS check complete! Results saved in security_scan_results.json")
+        if not self.urls:
+            print("No URLs found in mapped_data.json")
+            return
 
-# Ensure this script runs only when executed directly (not when imported)
+        for url in self.urls:
+            protocol, is_secure = self.extract_protocol(url)
+            self.results[url] = {"protocol": protocol, "secure": is_secure}
+            print(f"{url} -> {protocol}")
+
+    def save_results(self):
+        """Save the results of the HTTP/HTTPS check to a JSON file."""
+        with open(self.results_file, "w") as file:
+            json.dump(self.results, file, indent=4)
+        print("\n✅ HTTP/HTTPS check complete! Results saved in security_scan_results.json")
+
+    def run(self):
+        """Main method to execute the URL security scan."""
+        self.load_urls_from_json()
+        self.scan_urls()
+        self.save_results()
+
+
 if __name__ == "__main__":
-    run()
+    scanner = URLSecurityScanner()
+    scanner.run()

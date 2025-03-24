@@ -1,9 +1,14 @@
 import json
 from datetime import datetime
-from Database.db_connection import connect_to_database, close_connection, execute_query
+import os
+import sys
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if PROJECT_ROOT not in sys.path:
+    sys.path.append(PROJECT_ROOT)
+import Database.db_connection as db
 
 # Connect to the database
-connect_to_database()
+db.connect_to_database()
 
 # Load scan results from JSON file
 with open("security_scan_results.json", "r") as file:
@@ -17,12 +22,12 @@ scan_json = json.dumps(scan_results)
 
 # Insert query
 query = "INSERT INTO scan_results (website_url, scan_data) VALUES (%s, %s)"
-values = (scan_results["website"], scan_json)
+values = (scan_results.get("target_url", "Unknown"), scan_json)
 
 # Execute the query
-execute_query(query, values)
+db.execute_query(query, values)
 
 print("Scan result stored successfully!")
 
 # Close the database connection
-close_connection()
+db.close_connection()

@@ -3,8 +3,21 @@
         "protocol": "HTTP",
         "secure": false
     },
-    "2025-03-24_09-11-47": {},
-    "2025-03-24_09-11-50": {
-        "CSRF_Scan": {}
+    "2025-03-24_10-57-48": {
+        "http://localhost:3000/login": [
+            {
+                "payload": "' OR '1'='1",
+                "vulnerable": true
+            }
+        ]
+    },
+    "2025-03-24_10-57-51": {
+        "Broken_Auth_Scan": {
+            "http://localhost:3000/login": {
+                "Weak Passwords": true,
+                "No Account Lockout": true,
+                "Session Issue": true
+            }
+        }
     }
 }
