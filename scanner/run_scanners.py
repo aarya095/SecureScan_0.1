@@ -2,7 +2,7 @@ import json
 import time
 import os
 import sys
-from .scanner import http_scanner, sql_injection, xss_injection, csrf_scanner, broken_authentication
+from scanner import http_scanner, sql_injection, xss_injection, csrf_scanner, broken_authentication
 
 
 class SecurityScanner:
