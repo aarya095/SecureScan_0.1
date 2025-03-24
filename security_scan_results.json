@@ -1,4 +1,9 @@
 {
+    "execution_times": {
+        "total_scan_time": 6.25,
+        "scanner_time": 3.34,
+        "store_time": 0.19
+    },
     "scans": {
         "URLSecurityScanner": {
             "http://localhost:3000": {
@@ -7,41 +12,6 @@
                 "severity": "High",
                 "severity_description": "Insecure connection using HTTP. HTTPS is recommended for security."
             }
-        },
-        "SQLInjectionScanner": {
-            "http://localhost:3000/login": [
-                {
-                    "payload": "' OR '1'='1",
-                    "vulnerable": true,
-                    "severity": "High",
-                    "severity_description": "SQL Injection is critical and can lead to complete database compromise."
-                }
-            ]
-        },
-        "CSRFScanner": {
-            "http://localhost:3000": [
-                {
-                    "form_number": 1,
-                    "method": "POST",
-                    "action": "http://localhost:3000/comment",
-                    "csrf_protection": false,
-                    "severity": "High",
-                    "severity_description": "Critical CSRF vulnerability. A malicious user can perform actions on behalf of another user."
-                }
-            ]
-        },
-        "BrokenAuthScanner": {
-            "http://localhost:3000/login": {
-                "Weak Passwords Severity": "High",
-                "Brute Force Protection Severity": "High",
-                "Session Management Severity": "High"
-            }
         }
-    },
-    "execution_times": {
-        "crawler_time": 0.0,
-        "scanner_time": 3.26,
-        "store_time": 0.17,
-        "total_scan_time": 6.68
     }
 }

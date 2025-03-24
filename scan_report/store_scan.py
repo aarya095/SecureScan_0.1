@@ -33,15 +33,15 @@ class ScanResultHandler:
         # Extract website URL from the JSON data (default to "Unknown" if missing)
         website_url = next(iter(scan_results.get("scans", {}).keys()), "Unknown")
 
-        # Extract total execution time from "execution_times"
-        total_execution_time = scan_results.get("execution_times", {}).get("total_scan_time", None)
+        # Extract total scan time (single value) from "execution_times"
+        total_scan_time = scan_results.get("execution_times", {}).get("total_scan_time", None)
 
         # Convert scan results to JSON string for storage
         scan_json = json.dumps(scan_results)
 
         # Insert query including total execution time
         query = "INSERT INTO scan_results (website_url, scan_data, execution_time) VALUES (%s, %s, %s)"
-        values = (website_url, scan_json, total_execution_time)
+        values = (website_url, scan_json, total_scan_time)
 
         # Connect, execute, and close
         self.db.connect()
@@ -49,11 +49,9 @@ class ScanResultHandler:
         self.db.close()
 
         print(f"✅ Scan result stored successfully for {website_url}!")
-        if total_execution_time is not None:
-            print(f"🕒 Total Execution Time Stored: {total_execution_time} seconds")
+        if total_scan_time is not None:
+            print(f"🕒 Total Scan Time Stored: {total_scan_time:.2f} seconds")
 
-
-# Example usage
 if __name__ == "__main__":
     scan_handler = ScanResultHandler("security_scan_results.json")
     scan_handler.store_scan_results()

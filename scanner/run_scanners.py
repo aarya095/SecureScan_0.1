@@ -68,53 +68,68 @@ class SecurityScanner:
         """Runs all security scanners in sequence."""
         print("\n🚀 Running Security Scanners...\n")
 
-        total_start_time = time.time()
+        total_start_time = time.time()  # Start time for the entire scanning process
         execution_times = {}
 
+        # Run HTTP Scanner
         start_time = time.time()
         print("\n🔹 Running HTTP Scanner...")
-        http_scanner = URLSecurityScanner()  # ✅ Create an instance
-        http_scanner.run()  # ✅ Call run() on the instance
+        http_scanner = URLSecurityScanner()
+        http_scanner.run()
         execution_times["HTTP Scanner"] = time.time() - start_time
 
+        # Run SQL Injection Scanner
         start_time = time.time()
         print("\n🔹 Running SQL Injection Scanner...")
-        sql_scanner = SQLInjectionScanner()  # ✅ Create an instance
-        sql_scanner.run()  # ✅ Call run() on the instance
+        sql_scanner = SQLInjectionScanner()
+        sql_scanner.run()
         execution_times["SQL Injection Scanner"] = time.time() - start_time
 
         # Allow time for results to be updated before checking
         time.sleep(3)
 
+        # Check SQL Injection results and conditionally run XSS scanner
         sql_injection_detected = self.check_sql_injection_results()
 
         if not sql_injection_detected:
             start_time = time.time()
             print("\n🔹 Running XSS Scanner...")
-            xss_scanner = XSSScanner()  # ✅ Create an instance
-            xss_scanner.run()  # ✅ Call run() on the instance
+            xss_scanner = XSSScanner()
+            xss_scanner.run()
             execution_times["XSS Scanner"] = time.time() - start_time
         else:
             print("\n⏭️ Skipping XSS Scanner due to SQL Injection detection.")
 
+        # Run CSRF Scanner
         start_time = time.time()
         print("\n🔹 Running CSRF Scanner...")
-        csrf_scanner = CSRFScanner()  # ✅ Create an instance
-        csrf_scanner.run()  # ✅ Call run() on the instance
+        csrf_scanner = CSRFScanner()
+        csrf_scanner.run()
         execution_times["CSRF Scanner"] = time.time() - start_time
 
+        # Run Broken Authentication Scanner
         start_time = time.time()
         print("\n🔹 Running Broken Authentication Scanner...")
-        auth_scanner = BrokenAuthScanner()  # ✅ Create an instance
-        auth_scanner.run()  # ✅ Call run() on the instance
+        auth_scanner = BrokenAuthScanner()
+        auth_scanner.run()
         execution_times["Broken Authentication Scanner"] = time.time() - start_time
 
-        total_time = time.time() - total_start_time
+        # Calculate total scan time (the total execution time of all scanners)
+        total_scan_time = time.time() - total_start_time
 
         # ✅ Display execution times for each scanner
         print("\n⏱️ **Execution Time Summary:**")
         for scanner, exec_time in execution_times.items():
             print(f"   - {scanner}: {exec_time:.2f} seconds")
+
+        # Save the execution_times to a JSON file (includes the total scan time)
+        scan_results = {"execution_times": {"total_scan_time": total_scan_time}}
+        with open(self.SECURITY_SCAN_RESULTS_FILE, "w") as file:
+            json.dump(scan_results, file, indent=4)
+
+        # Display total scan time once at the end
+        print(f"\n🚀 **Total Scan Time:** {total_scan_time:.2f} seconds")
+
 
 if __name__ == "__main__":
     scanner = SecurityScanner()
