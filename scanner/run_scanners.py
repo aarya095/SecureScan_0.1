@@ -51,25 +51,30 @@ class SecurityScanner:
         if not isinstance(results, dict):
             return False  # Avoids crashing if file is empty
 
-        for scan_data in results.values():
-            if isinstance(scan_data, dict):
-                for url, vulnerabilities in scan_data.items():
-                    if isinstance(vulnerabilities, list):
-                        if any(isinstance(entry, dict) and entry.get("vulnerable", False) for entry in vulnerabilities):
-                            print(f"\n⚠️ SQL Injection detected on {url}! Skipping XSS Scanner.")
-                            return True
+        # ✅ Ensure we're checking the correct scanner results
+        sql_injection_results = results.get("scans", {}).get("SQLInjectionScanner", {})
+
+        for url, vulnerabilities in sql_injection_results.items():
+            if isinstance(vulnerabilities, list):
+                if any(entry.get("vulnerable", False) for entry in vulnerabilities):
+                    print(f"\n⚠️ SQL Injection detected on {url}! Skipping XSS Scanner.")
+                    return True
 
         return False
 
+
+        return False
     def run_all_scanners(self):
         """Runs all security scanners in sequence."""
         print("\n🚀 Running Security Scanners...\n")
 
         print("\n🔹 Running HTTP Scanner...")
-        URLSecurityScanner.http_scanner.run()
+        http_scanner = URLSecurityScanner()  # ✅ Create an instance
+        http_scanner.run()  # ✅ Call run() on the instance
 
         print("\n🔹 Running SQL Injection Scanner...")
-        SQLInjectionScanner.sql_injection.run()
+        sql_scanner = SQLInjectionScanner()  # ✅ Create an instance
+        sql_scanner.run()  # ✅ Call run() on the instance
 
         # Allow time for results to be updated before checking
         time.sleep(3)
@@ -78,15 +83,19 @@ class SecurityScanner:
 
         if not sql_injection_detected:
             print("\n🔹 Running XSS Scanner...")
-            XSSScanner.xss_injection.run()
+            xss_scanner = XSSScanner()  # ✅ Create an instance
+            xss_scanner.run()  # ✅ Call run() on the instance
         else:
             print("\n⏭️ Skipping XSS Scanner due to SQL Injection detection.")
 
         print("\n🔹 Running CSRF Scanner...")
-        CSRFScanner.csrf_scanner.run()
+        csrf_scanner = CSRFScanner()  # ✅ Create an instance
+        csrf_scanner.run()  # ✅ Call run() on the instance
 
         print("\n🔹 Running Broken Authentication Scanner...")
-        BrokenAuthScanner.broken_authentication.run()
+        auth_scanner = BrokenAuthScanner()  # ✅ Create an instance
+        auth_scanner.run()  # ✅ Call run() on the instance
+
 
 
 if __name__ == "__main__":

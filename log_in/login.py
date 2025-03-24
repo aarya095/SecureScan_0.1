@@ -1,13 +1,14 @@
 import customtkinter as ctk
 from tkinter import messagebox
-import Database.db_connection as db
+from Database.db_connection import DatabaseConnection
 import GUI.dashboard as dashboard
-import GUI.start as start
+from log_in.forgot_password import ForgotPasswordWindow
 from PIL import Image
 import bcrypt
 
-
 class LoginWindow:
+    """Class-based GUI for the Login Window."""
+
     def __init__(self):
         self.root = ctk.CTk()
         self.root.title("Log In")
@@ -62,18 +63,21 @@ class LoginWindow:
             messagebox.showwarning("Login Failed", "Please enter both username and password")
             return
 
-        db.connect_to_database()
+        db = DatabaseConnection()
+        db.connect()
+
         if db.connection:
             query = "SELECT password FROM login WHERE username=%s"
             result = db.fetch_all(query, (username,))
-            db.close_connection()
+            db.close()
 
             if result:
                 stored_hashed_password = result[0][0]
                 if bcrypt.checkpw(password.encode(), stored_hashed_password.encode()):
                     messagebox.showinfo("Login Success", "Welcome to Secure Scan")
+                    from GUI.dashboard import Dashboard
                     self.root.destroy()
-                    dashboard.open_dashboard()
+                    Dashboard().open_dashboard()
                 else:
                     messagebox.showerror("Login Failed", "Invalid username or password")
             else:
@@ -88,8 +92,9 @@ class LoginWindow:
 
     def open_start_window(self):
         """Go back to start window."""
+        from GUI.start import SecureScanApp  # Import here to avoid circular import
         self.root.destroy()
-        start.open_start_window()
+        SecureScanApp().run()
 
 
 if __name__ == "__main__":

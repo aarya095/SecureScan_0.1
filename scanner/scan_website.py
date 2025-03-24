@@ -1,7 +1,8 @@
-import subprocess
 import json
 import os
-
+from scanner.crawler import WebCrawler
+from scanner.run_scanners import SecurityScanner
+from scan_report.store_scan import ScanResultHandler
 
 class SecurityScanManager:
     """Class to manage security scans, read results, and store findings."""
@@ -11,42 +12,27 @@ class SecurityScanManager:
     def __init__(self):
         self.project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
-    def read_security_results(self):
-        """Reads and returns the security scan results from the JSON file."""
-        if not os.path.exists(self.SECURITY_SCAN_RESULTS_FILE):
-            print("\n❌ Security results file not found.")
-            return {}
-
-        try:
-            with open(self.SECURITY_SCAN_RESULTS_FILE, "r") as file:
-                return json.load(file)
-        except (json.JSONDecodeError, FileNotFoundError) as e:
-            print(f"\n❌ Error reading {self.SECURITY_SCAN_RESULTS_FILE}: {e}")
-            return {}
-
     def run_crawler(self):
-        """Runs the web crawler to gather target URLs."""
+        """Runs the web crawler."""
         print("🚀 Running Crawler...")
-        try:
-            subprocess.run(["python", os.path.join(self.project_root, "scanner", "crawler.py")], check=True)
-        except subprocess.CalledProcessError as e:
-            print(f"❌ Error running crawler: {e}")
+        target_url = input("Enter the target URL (e.g., http://example.com): ")
+        WebCrawler(target_url)  # Direct function call from the crawler module
 
     def run_scanners(self):
         """Runs the security scanners."""
         print("\n🚀 Running Security Scanners...")
-        try:
-            subprocess.run(["python", os.path.join(self.project_root, "scanner", "run_scanners.py")], check=True)
-        except subprocess.CalledProcessError as e:
-            print(f"❌ Error running security scanners: {e}")
+        scanner = SecurityScanner()
+        scanner.run_all_scanners()  # Call the scanner function directly
+
+        from scanner.http_scanner import URLSecurityScanner
+        url_scanner = URLSecurityScanner()  # ✅ Create an instance
+        url_scanner.run()
 
     def store_results(self):
-        """Runs the script to store security scan results."""
+        """Stores scan results in the database."""
         print("\n🚀 Storing Results...")
-        try:
-            subprocess.run(["python", os.path.join(self.project_root, "scan_report", "store_scan.py")], check=True)
-        except subprocess.CalledProcessError as e:
-            print(f"❌ Error storing scan results: {e}")
+        scan_handler = ScanResultHandler(self.SECURITY_SCAN_RESULTS_FILE)
+        scan_handler.store_scan_results()  # Call the function directly
 
     def run_full_scan(self):
         """Runs the full scan process: crawler, security scans, and result storage."""

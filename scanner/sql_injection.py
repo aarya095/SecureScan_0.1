@@ -1,6 +1,5 @@
 import requests
 import json
-from datetime import datetime
 
 
 class SQLInjectionScanner:
@@ -18,6 +17,7 @@ class SQLInjectionScanner:
         self.mapped_data_file = mapped_data_file
         self.results_file = results_file
         self.scan_results = {}
+        self.sql_injection_detected = False  # ✅ Added flag
 
     def load_mapped_data(self):
         """Load mapped website data from JSON file."""
@@ -52,21 +52,24 @@ class SQLInjectionScanner:
                         "vulnerable": True
                     })
 
+                    self.sql_injection_detected = True  # ✅ Set flag to True if SQLi is detected
                     return  # Stop testing once a vulnerability is found
 
             except requests.RequestException as e:
                 print(f"  ❌ Error: {e}")
 
-    def save_results(self):
-        """Save scan results to a JSON file."""
+    def save_scan_results(self):
+        """Save scan results to a JSON file without overwriting previous results."""
         try:
             with open(self.results_file, "r") as f:
                 previous_results = json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
             previous_results = {}
 
-        current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        previous_results[current_time] = self.scan_results
+        if "scans" not in previous_results:
+            previous_results["scans"] = {}
+
+        previous_results["scans"][self.__class__.__name__] = self.scan_results
 
         with open(self.results_file, "w") as f:
             json.dump(previous_results, f, indent=4)
@@ -80,15 +83,15 @@ class SQLInjectionScanner:
         mapped_data = self.load_mapped_data()
         if not mapped_data:
             print("❌ No mapped data found. Exiting SQL injection scan.")
-            return
+            return False  # ✅ Return False if no scan is possible
 
         for page in mapped_data.get("pages", []):
             for form in page.get("forms", []):
                 if form["method"] == "POST" and "username" in form["inputs"] and "password" in form["inputs"]:
                     self.detect_sql_injection(form["action"], form)
 
-        self.save_results()
-
+        self.save_scan_results()
+        return self.sql_injection_detected  # ✅ Return True if SQLi was found, else False
 
 if __name__ == "__main__":
     scanner = SQLInjectionScanner()

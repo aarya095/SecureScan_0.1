@@ -2,7 +2,7 @@ import mysql.connector
 import os
 from mysql.connector import Error
 
-class Database:
+class DatabaseConnection:
     def __init__(self):
         """Initialize database connection using environment variables."""
         self.host = os.getenv('DB_HOST')
@@ -40,29 +40,37 @@ class Database:
         """Execute an SQL query (INSERT, UPDATE, DELETE)."""
         if not self.connection:
             raise ValueError("❌ Database connection is not established.")
-        cursor = self.connection.cursor()
-
         try:
-            cursor.execute(query, params)
-            self.connection.commit()
+            with self.connection.cursor() as cursor:
+                cursor.execute(query, params)
+                self.connection.commit()
         except Error as e:
             print(f"❌ Error executing query: {e}")
-        finally:
-            cursor.close()
 
     def fetch_all(self, query, params=None):
         """Fetch all results from a SELECT query."""
         if not self.connection:
             raise ValueError("❌ Database connection is not established.")
         try:
-            cursor = self.connection.cursor()
-            cursor.execute(query, params)
-            result = cursor.fetchall()
-            cursor.close()
-            return result
+            with self.connection.cursor() as cursor:
+                cursor.execute(query, params)
+                return cursor.fetchall()
         except Error as e:
             print(f"❌ Database error: {e}")
             return None
+        
+    def fetch_one(self, query, params=None):
+        """Fetch a single row from a SELECT query."""
+        if not self.connection:
+            raise ValueError("❌ Database connection is not established.")
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(query, params)
+                return cursor.fetchone()  # ✅ Fetch only one row
+        except Error as e:
+            print(f"❌ Database error: {e}")
+            return None
+
 
     def fetch_user_email(self, username):
         """Fetch user email based on username."""
@@ -73,9 +81,9 @@ class Database:
 
 # Example usage
 if __name__ == "__main__":
-    db = Database()
+    db = DatabaseConnection()  # ✅ Fixed class name
     db.connect()
-    
+
     # Example: Fetch user email
     email = db.fetch_user_email("testuser")
     if email:

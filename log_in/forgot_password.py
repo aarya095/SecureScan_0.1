@@ -2,6 +2,7 @@ import customtkinter as ctk
 from tkinter import messagebox
 import random
 import bcrypt
+import re
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart

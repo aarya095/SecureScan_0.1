@@ -8,7 +8,7 @@ class URLSecurityScanner:
         self.mapped_data_file = mapped_data_file
         self.results_file = results_file
         self.urls = set()  # Store unique URLs
-        self.results = {}
+        self.scan_results = {}
 
     def validate_url(self, url):
         """Ensure the URL is valid and formatted correctly."""
@@ -52,20 +52,34 @@ class URLSecurityScanner:
 
         for url in self.urls:
             protocol, is_secure = self.extract_protocol(url)
-            self.results[url] = {"protocol": protocol, "secure": is_secure}
+            self.scan_results[url] = {"protocol": protocol, "secure": is_secure}
             print(f"{url} -> {protocol}")
 
-    def save_results(self):
-        """Save the results of the HTTP/HTTPS check to a JSON file."""
-        with open(self.results_file, "w") as file:
-            json.dump(self.results, file, indent=4)
+    def save_scan_results(self):
+        """Save scan results to a JSON file without overwriting previous results."""
+        try:
+            with open(self.results_file, "r") as f:
+                previous_results = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            previous_results = {}
+
+        # Ensure all results are stored under a common structure
+        if "scans" not in previous_results:
+            previous_results["scans"] = {}
+
+        # Add current scan results under the scanner's name
+        previous_results["scans"][self.__class__.__name__] = self.scan_results  # Using self.results now
+
+        with open(self.results_file, "w") as f:
+            json.dump(previous_results, f, indent=4)
+
         print("\n✅ HTTP/HTTPS check complete! Results saved in security_scan_results.json")
 
     def run(self):
         """Main method to execute the URL security scan."""
         self.load_urls_from_json()
         self.scan_urls()
-        self.save_results()
+        self.save_scan_results()
 
 
 if __name__ == "__main__":

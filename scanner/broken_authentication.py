@@ -13,7 +13,7 @@ class BrokenAuthScanner:
         self.mapped_data_file = mapped_data_file
         self.results_file = results_file
         self.mapped_data = self.load_mapped_data()
-        self.results = {}
+        self.scan_results = {}
 
     def load_mapped_data(self):
         """Load and parse URLs from mapped_data.json."""
@@ -116,23 +116,27 @@ class BrokenAuthScanner:
         print("✅ Session is properly invalidated after logout.")
         return False
 
-    def save_results(self):
-        """Save results to a JSON file with a timestamp."""
+    def save_scan_results(self):
+        """Save scan results to a JSON file without overwriting previous results."""
         try:
-            with open(self.results_file, "r") as file:
-                previous_results = json.load(file)
+            with open(self.results_file, "r") as f:
+                previous_results = json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
             previous_results = {}
 
-        current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        previous_results[current_time] = {"Broken_Auth_Scan": self.results}
+        # Ensure all results are stored under a common structure
+        if "scans" not in previous_results:
+            previous_results["scans"] = {}
 
-        with open(self.results_file, "w") as file:
-            json.dump(previous_results, file, indent=4)
+        # Add current scan results under the scanner's name
+        previous_results["scans"][self.__class__.__name__] = self.scan_results  # Using self.results now
+
+        with open(self.results_file, "w") as f:
+            json.dump(previous_results, f, indent=4)
 
         print("\n✅ Authentication Tests Complete! Results saved in security_scan_results.json")
 
-    def run_scan(self):
+    def run(self):
         """Run authentication tests on detected login pages."""
         print("\n🚀 Scanning...\n")
 
@@ -158,13 +162,13 @@ class BrokenAuthScanner:
             no_account_lockout = self.test_brute_force_protection(login_url)
             session_issue = self.test_session_logout(login_url, dashboard_url, logout_url)
 
-            self.results[login_url] = {
+            self.scan_results[login_url] = {
                 "Weak Passwords": weak_passwords_found,
                 "No Account Lockout": no_account_lockout,
                 "Session Issue": session_issue
             }
 
-        self.save_results()
+        self.save_scan_results()
 
 
 if __name__ == "__main__":

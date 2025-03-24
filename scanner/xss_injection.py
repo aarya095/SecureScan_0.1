@@ -88,21 +88,26 @@ class XSSScanner:
                 except requests.RequestException as e:
                     print(f"  ❌ Error: {e}")
 
-    def save_results(self):
-        """Save scan results to a JSON file."""
+    def save_scan_results(self):
+        """Save scan results to a JSON file without overwriting previous results."""
         try:
             with open(self.results_file, "r") as f:
                 previous_results = json.load(f)
         except (FileNotFoundError, json.JSONDecodeError):
             previous_results = {}
 
-        current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        previous_results[current_time] = self.scan_results
+        # Ensure all results are stored under a common structure
+        if "scans" not in previous_results:
+            previous_results["scans"] = {}
+
+        # Add current scan results under the scanner's name
+        previous_results["scans"][self.__class__.__name__] = self.scan_results  # Using self.results now
 
         with open(self.results_file, "w") as f:
             json.dump(previous_results, f, indent=4)
 
-        print("\n✅ XSS scan complete! Results saved in security_scan_results.json")
+        print("\n✅ XSS Injection scan complete! Results saved in security_scan_results.json")
+
 
     def run(self):
         """Run the XSS scanner."""
@@ -121,7 +126,7 @@ class XSSScanner:
                 if form["method"] == "POST" and form["inputs"]:
                     self.detect_xss(form["action"], form)
 
-        self.save_results()
+        self.save_scan_results()
 
 
 if __name__ == "__main__":

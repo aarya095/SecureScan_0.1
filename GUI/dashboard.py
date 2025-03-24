@@ -15,7 +15,7 @@ if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
 
-class SecureScanApp:
+class Dashboard:
     def __init__(self):
         """Initialize the SecureScan application."""
         self.menu_visible = False
