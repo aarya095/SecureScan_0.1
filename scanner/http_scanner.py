@@ -1,26 +1,21 @@
 import json
-import requests
 from urllib.parse import urlparse
 
 def validate_url(url):
     """Ensure the URL is valid and formatted correctly."""
     if not url.startswith(('http://', 'https://')):
-        url = 'http://' + url
+        url = 'http://' + url  # Default to HTTP if no scheme is provided
     parsed_url = urlparse(url)
     if not parsed_url.netloc:
         raise ValueError("Invalid URL format.")
     return url
 
-def check_http_https(url):
-    """Check if the URL uses HTTP or HTTPS."""
-    try:
-        response = requests.get(url, timeout=5)
-        if response.url.startswith('https://'):
-            return 'HTTPS', True
-        else:
-            return 'HTTP', False
-    except requests.RequestException as e:
-        return f"Error: {e}", False
+def extract_protocol(url):
+    """Determine if the URL is using HTTP or HTTPS."""
+    parsed_url = urlparse(url)
+    protocol = parsed_url.scheme.upper()  # Extract 'http' or 'https' and convert to uppercase
+    is_secure = protocol == "HTTPS"
+    return protocol, is_secure
 
 def load_urls_from_json(filename="mapped_data.json"):
     """Load target URLs from a JSON file."""
@@ -42,7 +37,7 @@ def load_urls_from_json(filename="mapped_data.json"):
         return []
 
 def run():
-    """Run the HTTP/HTTPS security scanner."""
+    """Run the HTTP/HTTPS security scanner using local data."""
     print("\n🔹 Scanning...")
 
     urls = load_urls_from_json()
@@ -53,9 +48,9 @@ def run():
     
     results = {}
     for url in urls:
-        status, is_secure = check_http_https(url)
-        results[url] = {"protocol": status, "secure": is_secure}
-        print(f"{url} -> {status}")
+        protocol, is_secure = extract_protocol(url)
+        results[url] = {"protocol": protocol, "secure": is_secure}
+        print(f"{url} -> {protocol}")
 
     with open("security_scan_results.json", "w") as file:
         json.dump(results, file, indent=4)

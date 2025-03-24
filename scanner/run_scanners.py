@@ -11,7 +11,7 @@ print("🔍 Updated sys.path:", sys.path)
 
 from scanner import http_scanner, sql_injection, xss_injection, csrf_scanner, broken_authentication
 
-SECURITY_SCAN_RESULTS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "security_scan_results.json")
+SECURITY_SCAN_RESULTS_FILE = "/../security_scan_results.json"
 
 def read_security_results():
     """Reads and returns the security scan results from JSON file."""
@@ -68,8 +68,6 @@ def run_all_scanners():
 
     print("\n🔹 Running Broken Authentication Scanner...")
     broken_authentication.run()
-
-    print("\n✅ Security Scan Completed! Results saved in", SECURITY_SCAN_RESULTS_FILE)
 
 if __name__ == "__main__":
     run_all_scanners()

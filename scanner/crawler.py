@@ -99,12 +99,6 @@ def crawl_website(target_url, max_depth=2, max_pages=50):
             scanner_path = os.path.join(BASE_DIR,"run_scanners.py")
             print(scanner_path)
 
-            # Run security scanners after crawling is complete
-            print("\n🚀 Running Security Scanners...")
-            try:
-                subprocess.run(["python", os.path.join(BASE_DIR,"run_scanners.py")], check=True, cwd=BASE_DIR)
-            except subprocess.CalledProcessError as e:
-                print(f"❌ Error running security scanners: {e}")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

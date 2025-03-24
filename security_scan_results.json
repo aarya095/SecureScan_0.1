@@ -3,17 +3,8 @@
         "protocol": "HTTP",
         "secure": false
     },
-    "2025-03-22_10-19-58": {},
-    "2025-03-22_10-20-01": {
-        "CSRF_Scan": {
-            "http://localhost:3000": [
-                {
-                    "form_number": 1,
-                    "method": "POST",
-                    "action": "http://localhost:3000/login",
-                    "csrf_protection": false
-                }
-            ]
-        }
+    "2025-03-24_09-11-47": {},
+    "2025-03-24_09-11-50": {
+        "CSRF_Scan": {}
     }
 }
