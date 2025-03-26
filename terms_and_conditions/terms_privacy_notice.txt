@@ -1,0 +1,86 @@
+SecureScan - Terms of Use and Privacy Notice
+
+Terms of Use
+
+1. Introduction
+
+Welcome to SecureScan! SecureScan is a website security scanner designed to help users identify potential vulnerabilities in websites. By using SecureScan, you agree to these Terms of Use.
+
+2. Permitted Use
+
+SecureScan is intended only for ethical security testing. You must have explicit authorization from the website owner before conducting any scans.
+
+You may not use SecureScan to test websites without proper permission or engage in any illegal activities.
+
+3. Restrictions
+
+You agree not to:
+
+Use SecureScan for malicious purposes, hacking, or unauthorized access.
+
+Conduct any tests that may disrupt, crash, or overload a website or server.
+
+Attempt to reverse engineer, modify, or resell SecureScan without permission.
+
+Use SecureScan for any activity that violates local, national, or international laws.
+
+4. No Liability
+
+SecureScan does not guarantee that all vulnerabilities will be detected.
+
+We are not responsible for any damage or legal issues arising from misuse.
+
+You assume full responsibility for how you use SecureScan.
+
+5. Changes to Terms
+
+SecureScan reserves the right to update these Terms at any time. Continued use after updates means you accept the new Terms.
+
+
+
+Privacy Notice
+
+1. Data We Collect
+
+When you use SecureScan, we may collect:
+
+Website URLs you scan
+
+Scan results, including detected vulnerabilities
+
+Usage data, such as timestamps and scan frequency
+
+User-provided information, such as settings and preferences
+
+2. How We Use Your Data
+
+We use collected data to:
+
+Provide and improve SecureScan’s functionality
+
+Store scan history for your reference
+
+Ensure compliance with security and legal standards
+
+Analyze usage trends for improvements
+
+3. Data Security
+
+We implement encryption and security measures to protect stored data.
+
+We do not sell, share, or disclose scan results to third parties.
+
+4. Your Rights
+
+You may request deletion of your stored scan data.
+
+You can contact us for corrections or concerns regarding your data privacy.
+
+5. Changes to Privacy Policy
+
+We may update this Privacy Notice periodically. Continued use of SecureScan means you accept the updated policy.
+
+For any questions regarding these Terms or Privacy Notice, please contact us at [your contact email].
+
+By using SecureScan, you acknowledge that you have read, understood, and agreed to these Terms and Privacy Notice.
+

@@ -132,6 +132,8 @@ class Ui_MainWindow(object):
         self.uesrname_txtfield.setObjectName("uesrname_txtfield")
         self.password_txtfield = QtWidgets.QLineEdit(parent=self.main_frame)
         self.password_txtfield.setGeometry(QtCore.QRect(320, 310, 361, 41))
+        self.password_txtfield.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
+
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
