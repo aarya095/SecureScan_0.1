@@ -21,14 +21,32 @@ class Ui_MainWindow(object):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("../SecureScan_01/icons/S_logo.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         MainWindow.setWindowIcon(icon)
-        MainWindow.setStyleSheet("QMainWindow {\n"
-"    background-color:rgb(255, 255, 255);\n"
-"}")
+        MainWindow.setStyleSheet("""
+    QMainWindow {  
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+""")
+
         MainWindow.setTabShape(QtWidgets.QTabWidget.TabShape.Rounded)
         MainWindow.setDockNestingEnabled(False)
 
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         MainWindow.setCentralWidget(self.centralwidget)
+
+        self.bg_label = QtWidgets.QLabel(self.centralwidget)
+        self.bg_label.setGeometry(0, 0, MainWindow.width(), MainWindow.height())  
+        self.bg_label.setPixmap(QtGui.QPixmap("../SecureScan_01/icons/blur_login3.png").scaled(
+            MainWindow.width(), MainWindow.height(), QtCore.Qt.AspectRatioMode.KeepAspectRatioByExpanding
+        ))
+
+        def resize_bg():
+            self.bg_label.setGeometry(0, 0, MainWindow.width(), MainWindow.height())
+            self.bg_label.setPixmap(QtGui.QPixmap("../SecureScan_01/icons/blur_login3.png").scaled(
+                MainWindow.width(), MainWindow.height(), QtCore.Qt.AspectRatioMode.KeepAspectRatioByExpanding
+            ))
+
+        MainWindow.resizeEvent = lambda event: resize_bg()
 
         self.main_frame = QtWidgets.QFrame(parent=self.centralwidget)
         self.main_frame.setMinimumSize(QtCore.QSize(1001, 621))
@@ -38,6 +56,8 @@ class Ui_MainWindow(object):
         self.main_frame.setObjectName("main_frame")
 
         self.central_layout = QtWidgets.QVBoxLayout(self.centralwidget)
+        self.central_layout.setContentsMargins(0, 0, 0, 0)  # Remove margins
+        self.central_layout.setSpacing(0)  # Remove spacing
         self.central_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter) 
         self.centralwidget.setLayout(self.central_layout)
         self.central_layout.addWidget(self.main_frame, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
@@ -55,7 +75,7 @@ class Ui_MainWindow(object):
         self.image_label.setScaledContents(True)
         self.image_label.setObjectName("image_label")
         self.welcome_label = QtWidgets.QLabel(parent=self.main_frame)
-        self.welcome_label.setGeometry(QtCore.QRect(190, 60, 641, 131))
+        self.welcome_label.setGeometry(QtCore.QRect(270, 60, 641, 131))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -73,7 +93,7 @@ class Ui_MainWindow(object):
 "}")
         self.welcome_label.setObjectName("welcome_label")
         self.enter_cred_label = QtWidgets.QLabel(parent=self.main_frame)
-        self.enter_cred_label.setGeometry(QtCore.QRect(360, 200, 275, 28))
+        self.enter_cred_label.setGeometry(QtCore.QRect(390, 200, 275, 28))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
