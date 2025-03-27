@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'login.ui'
+# Form implementation generated from reading ui file 'signup.ui'
 #
 # Created by: PyQt6 UI code generator 6.8.1
 #
@@ -27,7 +27,6 @@ class Ui_MainWindow(object):
         background-position: center;
     }
 """)
-
         MainWindow.setTabShape(QtWidgets.QTabWidget.TabShape.Rounded)
         MainWindow.setDockNestingEnabled(False)
 
@@ -51,8 +50,8 @@ class Ui_MainWindow(object):
         self.main_frame = QtWidgets.QFrame(parent=self.centralwidget)
         self.main_frame.setMinimumSize(QtCore.QSize(1001, 621))
         self.main_frame.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.main_frame.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
-        self.main_frame.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.main_frame.setFrameShape(QtWidgets.QFrame.Shape.Box)
+        self.main_frame.setFrameShadow(QtWidgets.QFrame.Shadow.Plain)
         self.main_frame.setObjectName("main_frame")
 
         self.central_layout = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -74,44 +73,180 @@ class Ui_MainWindow(object):
         self.image_label.setPixmap(QtGui.QPixmap("../SecureScan_01/icons/login3.jpg"))
         self.image_label.setScaledContents(True)
         self.image_label.setObjectName("image_label")
-        self.welcome_label = QtWidgets.QLabel(parent=self.main_frame)
-        self.welcome_label.setGeometry(QtCore.QRect(270, 60, 641, 131))
+        self.get_started_label = QtWidgets.QLabel(parent=self.main_frame)
+        self.get_started_label.setGeometry(QtCore.QRect(330, 10, 471, 131))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.welcome_label.sizePolicy().hasHeightForWidth())
-        self.welcome_label.setSizePolicy(sizePolicy)
+        sizePolicy.setHeightForWidth(self.get_started_label.sizePolicy().hasHeightForWidth())
+        self.get_started_label.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setPointSize(48)
         font.setBold(True)
         font.setWeight(75)
-        self.welcome_label.setFont(font)
-        self.welcome_label.setStyleSheet("QLabel{\n"
+        self.get_started_label.setFont(font)
+        self.get_started_label.setStyleSheet("QLabel{\n"
 "    color:white;\n"
 "    background-color: rgba(255, 255, 255, 0);\n"
 "    font-weight:bold;\n"
 "}")
-        self.welcome_label.setObjectName("welcome_label")
-        self.enter_cred_label = QtWidgets.QLabel(parent=self.main_frame)
-        self.enter_cred_label.setGeometry(QtCore.QRect(390, 200, 275, 28))
+        self.get_started_label.setObjectName("get_started_label")
+        self.catch_line_label = QtWidgets.QLabel(parent=self.main_frame)
+        self.catch_line_label.setGeometry(QtCore.QRect(280, 120, 451, 28))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.enter_cred_label.sizePolicy().hasHeightForWidth())
-        self.enter_cred_label.setSizePolicy(sizePolicy)
+        sizePolicy.setHeightForWidth(self.catch_line_label.sizePolicy().hasHeightForWidth())
+        self.catch_line_label.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setFamily("Nirmala Text")
         font.setPointSize(12)
         font.setBold(True)
         font.setWeight(75)
-        self.enter_cred_label.setFont(font)
-        self.enter_cred_label.setStyleSheet("QLabel {\n"
+        self.catch_line_label.setFont(font)
+        self.catch_line_label.setStyleSheet("QLabel {\n"
 "    color:white;\n"
 "    font-weight:bold;\n"
 "}")
-        self.enter_cred_label.setObjectName("enter_cred_label")
+        self.catch_line_label.setObjectName("catch_line_label")
+        self.email_txtfield = QtWidgets.QLineEdit(parent=self.main_frame)
+        self.email_txtfield.setGeometry(QtCore.QRect(320, 260, 361, 41))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.email_txtfield.sizePolicy().hasHeightForWidth())
+        self.email_txtfield.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setFamily("Nirmala Text")
+        font.setPointSize(14)
+        self.email_txtfield.setFont(font)
+        self.email_txtfield.setStyleSheet("QLineEdit {\n"
+"    border: solid;\n"
+"    border-radius: 20px;\n"
+"    border-width: 0.5px;\n"
+"    border-color: grey;\n"
+"    padding-left: 20px; \n"
+"    padding-right: 20px;\n"
+"}")
+        self.email_txtfield.setInputMask("")
+        self.email_txtfield.setText("")
+        self.email_txtfield.setMaxLength(32763)
+        self.email_txtfield.setObjectName("email_txtfield")
+        self.password_txtfield = QtWidgets.QLineEdit(parent=self.main_frame)
+        self.password_txtfield.setGeometry(QtCore.QRect(320, 320, 361, 41))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.password_txtfield.sizePolicy().hasHeightForWidth())
+        self.password_txtfield.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setFamily("Nirmala Text")
+        font.setPointSize(14)
+        self.password_txtfield.setFont(font)
+        self.password_txtfield.setStyleSheet("QLineEdit {\n"
+"    border: solid;\n"
+"    border-radius: 20px;\n"
+"    border-width: 0.5px;\n"
+"    border-color: grey;\n"
+"    padding-left: 20px;        \n"
+"    padding-right: 20px;\n"
+"}")
+        self.password_txtfield.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
+        self.password_txtfield.setObjectName("password_txtfield")
+        self.next_button = QtWidgets.QPushButton(parent=self.main_frame)
+        self.next_button.setGeometry(QtCore.QRect(320, 470, 361, 41))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.next_button.sizePolicy().hasHeightForWidth())
+        self.next_button.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setFamily("Nirmala UI")
+        font.setPointSize(15)
+        font.setBold(True)
+        font.setItalic(False)
+        font.setWeight(75)
+        self.next_button.setFont(font)
+        self.next_button.setStyleSheet("QPushButton {\n"
+"    background-color:rgb(35, 222, 104);\n"
+"    color: white;\n"
+"    border: solid;\n"
+"    border-radius: 20px;\n"
+"    border-width: 0.1px;\n"
+"    transition: all 0.2s ease;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: #27ae60;  /* Darker green */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: #1e8449;\n"
+"    transform: scale(0.95);  /* Slight shrink effect */\n"
+"}")
+        self.next_button.setObjectName("next_button")
+        self.line = QtWidgets.QFrame(parent=self.main_frame)
+        self.line.setGeometry(QtCore.QRect(290, 520, 421, 16))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.line.sizePolicy().hasHeightForWidth())
+        self.line.setSizePolicy(sizePolicy)
+        self.line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        self.line.setObjectName("line")
+        self.already_have_acc_label = QtWidgets.QLabel(parent=self.main_frame)
+        self.already_have_acc_label.setGeometry(QtCore.QRect(350, 540, 221, 41))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.already_have_acc_label.sizePolicy().hasHeightForWidth())
+        self.already_have_acc_label.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setPointSize(-1)
+        font.setBold(True)
+        font.setWeight(75)
+        self.already_have_acc_label.setFont(font)
+        self.already_have_acc_label.setStyleSheet("QLabel{\n"
+"    color:white;\n"
+"    font-size: 17px;\n"
+"    font-weight:bold;\n"
+"}")
+        self.already_have_acc_label.setObjectName("already_have_acc_label")
+        self.login_commandLinkButton = QtWidgets.QCommandLinkButton(parent=self.main_frame)
+        self.login_commandLinkButton.setGeometry(QtCore.QRect(570, 540, 71, 31))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.login_commandLinkButton.sizePolicy().hasHeightForWidth())
+        self.login_commandLinkButton.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setFamily("57")
+        font.setPointSize(-1)
+        font.setBold(True)
+        font.setItalic(False)
+        font.setUnderline(True)
+        font.setWeight(75)
+        self.login_commandLinkButton.setFont(font)
+        self.login_commandLinkButton.setStyleSheet("QCommandLinkButton {\n"
+"    color: white;\n"
+"    qproperty-icon: none;\n"
+"    font: Nirmala text;\n"
+"    font-size: 17px;\n"
+"    font-weight:bold;\n"
+"    text-decoration: underline;\n"
+"    background-color: rgba(255, 255, 255, 0);\n"
+"}\n"
+"\n"
+"QCommandLinkButton:pressed {\n"
+"    background-color: lightgray;\n"
+"    border: 2px solid gray;\n"
+"    padding-left: 5px;  /* Slight move effect */\n"
+"    padding-top: 3px;\n"
+"}")
+        self.login_commandLinkButton.setObjectName("login_commandLinkButton")
         self.uesrname_txtfield = QtWidgets.QLineEdit(parent=self.main_frame)
-        self.uesrname_txtfield.setGeometry(QtCore.QRect(320, 250, 361, 41))
+        self.uesrname_txtfield.setGeometry(QtCore.QRect(320, 200, 361, 41))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -130,45 +265,20 @@ class Ui_MainWindow(object):
 "    padding-right: 20px;\n"
 "}")
         self.uesrname_txtfield.setObjectName("uesrname_txtfield")
-        self.password_txtfield = QtWidgets.QLineEdit(parent=self.main_frame)
-        self.password_txtfield.setGeometry(QtCore.QRect(320, 310, 361, 41))
-        self.password_txtfield.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
-
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.password_txtfield.sizePolicy().hasHeightForWidth())
-        self.password_txtfield.setSizePolicy(sizePolicy)
-        font = QtGui.QFont()
-        font.setFamily("Nirmala Text")
-        font.setPointSize(14)
-        self.password_txtfield.setFont(font)
-        self.password_txtfield.setStyleSheet("QLineEdit {\n"
-"    border: solid;\n"
-"    border-radius: 20px;\n"
-"    border-width: 0.5px;\n"
-"    border-color: grey;\n"
-"    padding-left: 20px;        \n"
-"    padding-right: 20px;\n"
-"}")    
-        self.password_txtfield.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
-        self.password_txtfield.setObjectName("password_txtfield")
-        self.forgot_pass_linkbutton = QtWidgets.QCommandLinkButton(parent=self.main_frame)
-        self.forgot_pass_linkbutton.setGeometry(QtCore.QRect(520, 350, 161, 41))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.forgot_pass_linkbutton.sizePolicy().hasHeightForWidth())
-        self.forgot_pass_linkbutton.setSizePolicy(sizePolicy)
-        font = QtGui.QFont()
-        font.setFamily("57")
-        font.setPointSize(-1)
-        font.setBold(True)
-        font.setItalic(False)
-        font.setUnderline(True)
-        font.setWeight(75)
-        self.forgot_pass_linkbutton.setFont(font)
-        self.forgot_pass_linkbutton.setStyleSheet("QCommandLinkButton {\n"
+        self.I_agree_checkBox = QtWidgets.QCheckBox(parent=self.main_frame)
+        self.I_agree_checkBox.setGeometry(QtCore.QRect(340, 420, 131, 41))
+        self.I_agree_checkBox.setStyleSheet("QCheckBox {\n"
+"    color: white;\n"
+"    qproperty-icon: none;\n"
+"    font: Nirmala text;\n"
+"    font-size: 17px;\n"
+"    font-weight:bold;\n"
+"    background-color: rgba(255, 255, 255, 0);\n"
+"}")
+        self.I_agree_checkBox.setObjectName("I_agree_checkBox")
+        self.terms_conditions_commandLinkButton = QtWidgets.QCommandLinkButton(parent=self.main_frame)
+        self.terms_conditions_commandLinkButton.setGeometry(QtCore.QRect(460, 420, 191, 31))
+        self.terms_conditions_commandLinkButton.setStyleSheet("QCommandLinkButton {\n"
 "    color: white;\n"
 "    qproperty-icon: none;\n"
 "    font: Nirmala text;\n"
@@ -184,93 +294,28 @@ class Ui_MainWindow(object):
 "    padding-left: 5px;  /* Slight move effect */\n"
 "    padding-top: 3px;\n"
 "}")
-        self.forgot_pass_linkbutton.setDescription("")
-        self.forgot_pass_linkbutton.setObjectName("forgot_pass_linkbutton")
-        self.login_button = QtWidgets.QPushButton(parent=self.main_frame)
-        self.login_button.setGeometry(QtCore.QRect(320, 400, 361, 41))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.terms_conditions_commandLinkButton.setObjectName("terms_conditions_commandLinkButton")
+        self.confirm_password_txtfield = QtWidgets.QLineEdit(parent=self.main_frame)
+        self.confirm_password_txtfield.setGeometry(QtCore.QRect(320, 380, 361, 41))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.login_button.sizePolicy().hasHeightForWidth())
-        self.login_button.setSizePolicy(sizePolicy)
+        sizePolicy.setHeightForWidth(self.confirm_password_txtfield.sizePolicy().hasHeightForWidth())
+        self.confirm_password_txtfield.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
-        font.setFamily("Nirmala UI")
-        font.setPointSize(15)
-        font.setBold(True)
-        font.setItalic(False)
-        font.setWeight(75)
-        self.login_button.setFont(font)
-        self.login_button.setStyleSheet("QPushButton {\n"
-"    background-color:rgb(35, 222, 104);\n"
-"    color: white;\n"
+        font.setFamily("Nirmala Text")
+        font.setPointSize(14)
+        self.confirm_password_txtfield.setFont(font)
+        self.confirm_password_txtfield.setStyleSheet("QLineEdit {\n"
 "    border: solid;\n"
 "    border-radius: 20px;\n"
-"    border-width: 0.1px;\n"
-"    transition: all 0.2s ease;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background-color: #27ae60;  /* Darker green */\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"    background-color: #1e8449;\n"
-"    transform: scale(0.95);  /* Slight shrink effect */\n"
+"    border-width: 0.5px;\n"
+"    border-color: grey;\n"
+"    padding-left: 20px; \n"
+"    padding-right: 20px;\n"
 "}")
-        self.login_button.setObjectName("login_button")
-        self.line = QtWidgets.QFrame(parent=self.main_frame)
-        self.line.setGeometry(QtCore.QRect(290, 470, 421, 16))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.line.sizePolicy().hasHeightForWidth())
-        self.line.setSizePolicy(sizePolicy)
-        self.line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
-        self.line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.line.setObjectName("line")
-        self.new_usr_label = QtWidgets.QLabel(parent=self.main_frame)
-        self.new_usr_label.setGeometry(QtCore.QRect(350, 490, 181, 41))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.new_usr_label.sizePolicy().hasHeightForWidth())
-        self.new_usr_label.setSizePolicy(sizePolicy)
-        font = QtGui.QFont()
-        font.setPointSize(-1)
-        font.setBold(True)
-        font.setWeight(75)
-        self.new_usr_label.setFont(font)
-        self.new_usr_label.setStyleSheet("QLabel{\n"
-"    color:white;\n"
-"    font-size: 17px;\n"
-"    font-weight:bold;\n"
-"}")
-        self.new_usr_label.setObjectName("new_usr_label")
-        self.signup_commandLinkButton = QtWidgets.QCommandLinkButton(parent=self.main_frame)
-        self.signup_commandLinkButton.setGeometry(QtCore.QRect(520, 490, 91, 48))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.signup_commandLinkButton.sizePolicy().hasHeightForWidth())
-        self.signup_commandLinkButton.setSizePolicy(sizePolicy)
-        font = QtGui.QFont()
-        font.setFamily("57")
-        font.setPointSize(-1)
-        font.setBold(True)
-        font.setItalic(False)
-        font.setUnderline(True)
-        font.setWeight(75)
-        self.signup_commandLinkButton.setFont(font)
-        self.signup_commandLinkButton.setStyleSheet("QCommandLinkButton {\n"
-"    color: white;\n"
-"    qproperty-icon: none;\n"
-"    font: Nirmala text;\n"
-"    font-size: 17px;\n"
-"    font-weight:bold;\n"
-"    text-decoration: underline;\n"
-"    background-color: rgba(255, 255, 255, 0);\n"
-"}")
-        self.signup_commandLinkButton.setObjectName("signup_commandLinkButton")
+        self.confirm_password_txtfield.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
+        self.confirm_password_txtfield.setObjectName("confirm_password_txtfield")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -279,14 +324,17 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.welcome_label.setText(_translate("MainWindow", "Welcome back!"))
-        self.enter_cred_label.setText(_translate("MainWindow", "Please enter your credentials"))
-        self.uesrname_txtfield.setPlaceholderText(_translate("MainWindow", "Username"))
+        self.get_started_label.setText(_translate("MainWindow", "Get Started"))
+        self.catch_line_label.setText(_translate("MainWindow", "Smart Scans. Stronger Security. Sign Up Today!"))
+        self.email_txtfield.setPlaceholderText(_translate("MainWindow", "Email"))
         self.password_txtfield.setPlaceholderText(_translate("MainWindow", "Password"))
-        self.forgot_pass_linkbutton.setText(_translate("MainWindow", "forgot password?"))
-        self.login_button.setText(_translate("MainWindow", "LOG IN"))
-        self.new_usr_label.setText(_translate("MainWindow", "New to SecureScan?"))
-        self.signup_commandLinkButton.setText(_translate("MainWindow", "Sign Up"))
+        self.next_button.setText(_translate("MainWindow", "NEXT"))
+        self.already_have_acc_label.setText(_translate("MainWindow", "Already have an account?"))
+        self.login_commandLinkButton.setText(_translate("MainWindow", "Log In"))
+        self.uesrname_txtfield.setPlaceholderText(_translate("MainWindow", "Username"))
+        self.I_agree_checkBox.setText(_translate("MainWindow", "I agree with"))
+        self.terms_conditions_commandLinkButton.setText(_translate("MainWindow", "Terms and Conditions"))
+        self.confirm_password_txtfield.setPlaceholderText(_translate("MainWindow", "Confirm Password"))
 
 
 if __name__ == "__main__":
