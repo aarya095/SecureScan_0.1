@@ -92,7 +92,7 @@ class Ui_MainWindow(object):
 "}")
         self.get_started_label.setObjectName("get_started_label")
         self.catch_line_label = QtWidgets.QLabel(parent=self.main_frame)
-        self.catch_line_label.setGeometry(QtCore.QRect(280, 120, 451, 28))
+        self.catch_line_label.setGeometry(QtCore.QRect(330, 120, 451, 28))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
