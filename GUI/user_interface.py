@@ -44,7 +44,8 @@ class Ui_MainWindow(object):
 
         MainWindow.setCentralWidget(self.centralwidget)
 
-        self.tabWidget.setCurrentIndex(4)
+        self.tabWidget.setCurrentIndex(0)
+        print("Total Tabs:", self.tabWidget.count())
         
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -57,6 +58,43 @@ class Ui_MainWindow(object):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
+
+    # 🔹 Apply Light Theme (Method 1: QPalette)
+    palette = QtGui.QPalette()
+    palette.setColor(QtGui.QPalette.ColorRole.Window, QtGui.QColor(255, 255, 255))  # White background
+    palette.setColor(QtGui.QPalette.ColorRole.WindowText, QtGui.QColor(0, 0, 0))  # Black text
+    palette.setColor(QtGui.QPalette.ColorRole.Base, QtGui.QColor(240, 240, 240))  # Input fields
+    palette.setColor(QtGui.QPalette.ColorRole.Text, QtGui.QColor(0, 0, 0))  # Text color
+    palette.setColor(QtGui.QPalette.ColorRole.Button, QtGui.QColor(230, 230, 230))  # Button background
+    palette.setColor(QtGui.QPalette.ColorRole.ButtonText, QtGui.QColor(0, 0, 0))  # Button text
+
+    app.setPalette(palette)
+
+    # 🔹 Apply Light Theme Stylesheet (Method 2: Stylesheet)
+    app.setStyleSheet("""
+        QWidget {
+            background-color: white;
+            color: black;
+        }
+        QPushButton {
+            background-color: #f0f0f0;
+            color: black;
+            border: 1px solid #bfbfbf;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        QPushButton:hover {
+            background-color: #e0e0e0;
+        }
+        QLineEdit {
+            background-color: white;
+            border: 1px solid #bfbfbf;
+            border-radius: 5px;
+            padding: 5px;
+        }
+    """)
+
+    # 🔹 Initialize Main Window
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)

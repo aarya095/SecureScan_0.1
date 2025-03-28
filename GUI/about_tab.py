@@ -7,60 +7,52 @@ class AboutTab(QtWidgets.QWidget):
         self.setupUi()
 
     def setupUi(self):
-        #About Tab
+        # About Tab
         self.about_tab = QtWidgets.QWidget()
         self.about_tab.setObjectName("about_tab")
-        self.about_tab_scrollArea = QtWidgets.QScrollArea(parent=self.about_tab)
+
+        # Scroll Area
+        self.about_tab_scrollArea = QtWidgets.QScrollArea(self.about_tab)
         self.about_tab_scrollArea.setGeometry(QtCore.QRect(0, 10, 1191, 751))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.about_tab_scrollArea.sizePolicy().hasHeightForWidth())
-        self.about_tab_scrollArea.setSizePolicy(sizePolicy)
+        self.about_tab_scrollArea.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred))
         self.about_tab_scrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         self.about_tab_scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         self.about_tab_scrollArea.setWidgetResizable(True)
         self.about_tab_scrollArea.setObjectName("about_tab_scrollArea")
+
+        # Scroll Area Contents
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
         self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 1189, 749))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+
         self.verticalLayout_9 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
-        self.verticalLayout_9.setObjectName("verticalLayout_9")
-        self.about_tab_scrollArea_2 = QtWidgets.QFrame(parent=self.scrollAreaWidgetContents)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.about_tab_scrollArea_2.sizePolicy().hasHeightForWidth())
-        self.about_tab_scrollArea_2.setSizePolicy(sizePolicy)
+
+        # Frame inside scroll area
+        self.about_tab_scrollArea_2 = QtWidgets.QFrame()
+        self.about_tab_scrollArea_2.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding))
         self.about_tab_scrollArea_2.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.about_tab_scrollArea_2.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.about_tab_scrollArea_2.setObjectName("about_tab_scrollArea_2")
+
         self.verticalLayout_10 = QtWidgets.QVBoxLayout(self.about_tab_scrollArea_2)
-        self.verticalLayout_10.setObjectName("verticalLayout_10")
-        self.about_app_label = QtWidgets.QLabel(parent=self.about_tab_scrollArea_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.about_app_label.sizePolicy().hasHeightForWidth())
-        self.about_app_label.setSizePolicy(sizePolicy)
-        self.about_app_label.setStyleSheet("QLabel{\n"
-"    color:black;\n"
-"    font-size: 30px;\n"
-"    font-weight:bold;\n"
-"}")
-        self.about_app_label.setText("")
+
+        # About App Label
+        self.about_app_label = QtWidgets.QLabel("About this Application")
+        self.about_app_label.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding))
+        self.about_app_label.setStyleSheet("""
+            QLabel {
+                color: black;
+                font-size: 30px;
+                font-weight: bold;
+            }
+        """)
         self.about_app_label.setObjectName("about_app_label")
         self.verticalLayout_10.addWidget(self.about_app_label)
+
         self.verticalLayout_9.addWidget(self.about_tab_scrollArea_2)
         self.about_tab_scrollArea.setWidget(self.scrollAreaWidgetContents)
-        
-        self.profile_tab = QtWidgets.QWidget()
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.profile_tab.sizePolicy().hasHeightForWidth())
-        self.profile_tab.setSizePolicy(sizePolicy)
 
+        # Add tab to tab widget if available
         if self.tabWidget:
             self.tabWidget.addTab(self.about_tab, "About")
 

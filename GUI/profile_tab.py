@@ -1,6 +1,5 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
-
 class ProfileTab(QtWidgets.QWidget):
     def __init__(self, parent=None, tab_widget=None):
         super().__init__(parent)
@@ -141,6 +140,7 @@ class ProfileTab(QtWidgets.QWidget):
         self.verticalLayout_8.addWidget(self.terms_and_conditions_commandLinkButton)
 
         self.horizontalLayout_4.addWidget(self.profile_tab_right_frame)
+        self.retranslateUi(None)
         
 
         # ✅ FIXED: Ensure the tab is added to `tabWidget` properly
