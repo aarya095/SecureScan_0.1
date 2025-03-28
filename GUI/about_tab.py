@@ -1,8 +1,9 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
-class AboutTab(QtWidgets.QTabWidget):
-    def __init__(self, parent=None):
+class AboutTab(QtWidgets.QWidget):
+    def __init__(self, parent=None, tab_widget=None):
         super().__init__(parent)
+        self.tabWidget = tab_widget
         self.setupUi()
 
     def setupUi(self):
@@ -52,10 +53,16 @@ class AboutTab(QtWidgets.QTabWidget):
         self.verticalLayout_10.addWidget(self.about_app_label)
         self.verticalLayout_9.addWidget(self.about_tab_scrollArea_2)
         self.about_tab_scrollArea.setWidget(self.scrollAreaWidgetContents)
-        self.tabWidget.addTab(self.about_tab, "")
+        
         self.profile_tab = QtWidgets.QWidget()
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.profile_tab.sizePolicy().hasHeightForWidth())
         self.profile_tab.setSizePolicy(sizePolicy)
+
+        if self.tabWidget:
+            self.tabWidget.addTab(self.about_tab, "About")
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate

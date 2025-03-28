@@ -1,0 +1,254 @@
+from PyQt6 import QtCore, QtGui, QtWidgets
+
+
+class QuickScanTab(QtWidgets.QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setupUi()
+
+    def setupUi(self):
+        
+        self.tabWidget = QtWidgets.QTabWidget()
+        self.tabWidget.setGeometry(QtCore.QRect(0, 0, 1221, 771))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
+        self.tabWidget.setSizePolicy(sizePolicy)
+        self.tabWidget.setStyleSheet("QTabBar::tab {\n"
+"    writing-mode: horizontal-tb;  /* Forces horizontal text */\n"
+"    height: 50px;  /* Adjust height */\n"
+"    padding: 5px;\n"
+"    \n"
+"}\n"
+"")
+        self.tabWidget.setTabPosition(QtWidgets.QTabWidget.TabPosition.West)
+        self.tabWidget.setElideMode(QtCore.Qt.TextElideMode.ElideLeft)
+        self.tabWidget.setObjectName("tabWidget")
+        self.home_tab = QtWidgets.QWidget()
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.home_tab.sizePolicy().hasHeightForWidth())
+        self.home_tab.setSizePolicy(sizePolicy)
+        self.home_tab.setObjectName("home_tab")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.home_tab)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.home_left_frame = QtWidgets.QFrame(parent=self.home_tab)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.home_left_frame.sizePolicy().hasHeightForWidth())
+        self.home_left_frame.setSizePolicy(sizePolicy)
+        self.home_left_frame.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.home_left_frame.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.home_left_frame.setObjectName("home_left_frame")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.home_left_frame)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.greet_label = QtWidgets.QLabel(parent=self.home_left_frame)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.greet_label.sizePolicy().hasHeightForWidth())
+        self.greet_label.setSizePolicy(sizePolicy)
+        self.greet_label.setStyleSheet("QLabel{\n"
+"    color:black;\n"
+"    font-size: 30px;\n"
+"    font-weight:bold;\n"
+"}")
+        self.greet_label.setObjectName("greet_label")
+        self.verticalLayout.addWidget(self.greet_label)
+        self.quick_scan_label = QtWidgets.QLabel(parent=self.home_left_frame)
+        self.quick_scan_label.setStyleSheet("QLabel{\n"
+"    color:black;\n"
+"    font-size: 50px;\n"
+"    font-weight:bold;\n"
+"}")
+        self.quick_scan_label.setObjectName("quick_scan_label")
+        self.verticalLayout.addWidget(self.quick_scan_label)
+        self.url_horizontalLayout = QtWidgets.QHBoxLayout()
+        self.url_horizontalLayout.setContentsMargins(-1, 11, 0, 1)
+        self.url_horizontalLayout.setObjectName("url_horizontalLayout")
+        self.url_lineEdit = QtWidgets.QLineEdit(parent=self.home_left_frame)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.url_lineEdit.sizePolicy().hasHeightForWidth())
+        self.url_lineEdit.setSizePolicy(sizePolicy)
+        self.url_lineEdit.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
+        self.url_lineEdit.setStyleSheet("QLineEdit {\n"
+"    border: solid;\n"
+"    border-radius: 18px;\n"
+"    border-width: 0.5px;\n"
+"    border-color: grey;\n"
+"    padding-left: 20px;        \n"
+"    padding-right: 20px;\n"
+"    font-size:25px;\n"
+"    padding-top: 10px;\n"
+"    padding-bottom: 10px\n"
+"}")
+        self.url_lineEdit.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeading|QtCore.Qt.AlignmentFlag.AlignLeft|QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.url_lineEdit.setObjectName("url_lineEdit")
+        self.url_horizontalLayout.addWidget(self.url_lineEdit)
+        self.verticalLayout.addLayout(self.url_horizontalLayout)
+        self.button_horizontalLayout = QtWidgets.QHBoxLayout()
+        self.button_horizontalLayout.setContentsMargins(-1, 11, 11, 1)
+        self.button_horizontalLayout.setObjectName("button_horizontalLayout")
+        self.quick_scan_pushButton = QtWidgets.QPushButton(parent=self.home_left_frame)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.quick_scan_pushButton.sizePolicy().hasHeightForWidth())
+        self.quick_scan_pushButton.setSizePolicy(sizePolicy)
+        self.quick_scan_pushButton.setStyleSheet("QPushButton {\n"
+"    background-color:rgb(35, 222, 104);\n"
+"    color: white;\n"
+"    border: solid;\n"
+"    border-radius: 20px;\n"
+"    border-width: 0.1px;\n"
+"    transition: all 0.2s ease;\n"
+"    font-size:25px;\n"
+"    font-weight:bold;\n"
+"    padding-top: 10px;\n"
+"    padding-bottom: 10px;\n"
+"    padding-right: 30px;\n"
+"    padding-left: 30px;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: #27ae60;  /* Darker green */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: #1e8449;\n"
+"    transform: scale(0.95);  /* Slight shrink effect */\n"
+"}")
+        self.quick_scan_pushButton.setObjectName("quick_scan_pushButton")
+        self.button_horizontalLayout.addWidget(self.quick_scan_pushButton)
+        self.verticalLayout.addLayout(self.button_horizontalLayout)
+        self.quick_scan_output_textBrowser = QtWidgets.QTextBrowser(parent=self.home_left_frame)
+        self.quick_scan_output_textBrowser.setObjectName("quick_scan_output_textBrowser")
+        self.verticalLayout.addWidget(self.quick_scan_output_textBrowser)
+        self.generate_report_horizontalLayout = QtWidgets.QHBoxLayout()
+        self.generate_report_horizontalLayout.setContentsMargins(-1, 11, -1, -1)
+        self.generate_report_horizontalLayout.setObjectName("generate_report_horizontalLayout")
+        self.generate_full_scan_report_pushButton = QtWidgets.QPushButton(parent=self.home_left_frame)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.generate_full_scan_report_pushButton.sizePolicy().hasHeightForWidth())
+        self.generate_full_scan_report_pushButton.setSizePolicy(sizePolicy)
+        self.generate_full_scan_report_pushButton.setStyleSheet("QPushButton {\n"
+"    background-color:rgb(35, 222, 104);\n"
+"    color: white;\n"
+"    border: solid;\n"
+"    border-radius: 20px;\n"
+"    border-width: 0.1px;\n"
+"    transition: all 0.2s ease;\n"
+"    font-size:25px;\n"
+"    font-weight:bold;\n"
+"    padding-top: 10px;\n"
+"    padding-bottom: 10px;\n"
+"    padding-right: 30px;\n"
+"    padding-left: 30px;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: #27ae60;  /* Darker green */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: #1e8449;\n"
+"    transform: scale(0.95);  /* Slight shrink effect */\n"
+"}")
+        self.generate_full_scan_report_pushButton.setObjectName("generate_full_scan_report_pushButton")
+        self.generate_report_horizontalLayout.addWidget(self.generate_full_scan_report_pushButton)
+        self.verticalLayout.addLayout(self.generate_report_horizontalLayout)
+        self.horizontalLayout.addWidget(self.home_left_frame)
+        self.home_right_frame = QtWidgets.QFrame(parent=self.home_tab)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.home_right_frame.sizePolicy().hasHeightForWidth())
+        self.home_right_frame.setSizePolicy(sizePolicy)
+        self.home_right_frame.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
+        self.home_right_frame.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        self.home_right_frame.setObjectName("home_right_frame")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.home_right_frame)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.security_tip_label = QtWidgets.QLabel(parent=self.home_right_frame)
+        self.security_tip_label.setStyleSheet("QLabel{\n"
+"    color:black;\n"
+"    font-size: 20px;\n"
+"    font-weight:bold;\n"
+"}")
+        self.security_tip_label.setObjectName("security_tip_label")
+        self.verticalLayout_2.addWidget(self.security_tip_label)
+        self.num_of_quick_scan_label = QtWidgets.QLabel(parent=self.home_right_frame)
+        self.num_of_quick_scan_label.setStyleSheet("QLabel{\n"
+"    color:black;\n"
+"    font-size: 20px;\n"
+"    font-weight:bold;\n"
+"}")
+        self.num_of_quick_scan_label.setObjectName("num_of_quick_scan_label")
+        self.verticalLayout_2.addWidget(self.num_of_quick_scan_label)
+        self.history_quick_scan_label = QtWidgets.QLabel(parent=self.home_right_frame)
+        self.history_quick_scan_label.setStyleSheet("QLabel{\n"
+"    color:black;\n"
+"    font-size: 20px;\n"
+"    font-weight:bold;\n"
+"}")
+        self.history_quick_scan_label.setObjectName("history_quick_scan_label")
+        self.verticalLayout_2.addWidget(self.history_quick_scan_label)
+        self.history_quick_scan_textBrowser = QtWidgets.QTextBrowser(parent=self.home_right_frame)
+        self.history_quick_scan_textBrowser.setObjectName("history_quick_scan_textBrowser")
+        self.verticalLayout_2.addWidget(self.history_quick_scan_textBrowser)
+        self.view_full_scan_history_horizontalLayout = QtWidgets.QHBoxLayout()
+        self.view_full_scan_history_horizontalLayout.setContentsMargins(-1, 11, -1, -1)
+        self.view_full_scan_history_horizontalLayout.setObjectName("view_full_scan_history_horizontalLayout")
+        self.view_full_scan_history_pushButton_2 = QtWidgets.QPushButton(parent=self.home_right_frame)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.view_full_scan_history_pushButton_2.sizePolicy().hasHeightForWidth())
+        self.view_full_scan_history_pushButton_2.setSizePolicy(sizePolicy)
+        self.view_full_scan_history_pushButton_2.setStyleSheet("QPushButton {\n"
+"    background-color:rgb(35, 222, 104);\n"
+"    color: white;\n"
+"    border: solid;\n"
+"    border-radius: 20px;\n"
+"    border-width: 0.1px;\n"
+"    transition: all 0.2s ease;\n"
+"    font-size:25px;\n"
+"    font-weight:bold;\n"
+"    padding-top: 10px;\n"
+"    padding-bottom: 10px;\n"
+"    padding-right: 30px;\n"
+"    padding-left: 30px;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: #27ae60;  /* Darker green */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: #1e8449;\n"
+"    transform: scale(0.95);  /* Slight shrink effect */\n"
+"}")
+        self.view_full_scan_history_pushButton_2.setObjectName("view_full_scan_history_pushButton_2")
+        self.view_full_scan_history_horizontalLayout.addWidget(self.view_full_scan_history_pushButton_2)
+        self.verticalLayout_2.addLayout(self.view_full_scan_history_horizontalLayout)
+        self.horizontalLayout.addWidget(self.home_right_frame)
+        self.tabWidget.addTab(self.home_tab, "")
+
+    def retranslateUi(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.greet_label.setText(_translate("MainWindow", "Good"))
+        self.quick_scan_label.setText(_translate("MainWindow", "Quick Scan"))
+        self.url_lineEdit.setPlaceholderText(_translate("MainWindow", "enter url"))
+        self.quick_scan_pushButton.setText(_translate("MainWindow", "Full Scan"))
+        self.generate_full_scan_report_pushButton.setText(_translate("MainWindow", "Generate Detailed Report"))
+        self.security_tip_label.setText(_translate("MainWindow", "Tip of the Day:"))
+        self.num_of_quick_scan_label.setText(_translate("MainWindow", "Total No. of full scans:"))
+        self.history_quick_scan_label.setText(_translate("MainWindow", "History of full scans:"))
+        self.view_full_scan_history_pushButton_2.setText(_translate("MainWindow", "View Full Scan History"))

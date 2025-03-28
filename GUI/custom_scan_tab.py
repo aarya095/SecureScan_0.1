@@ -1,8 +1,9 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
-class CustomScanTab(QtWidgets.QTabWidget):
-    def __init__(self, parent=None):
+class CustomScanTab(QtWidgets.QWidget):
+    def __init__(self, parent=None, tab_widget=None):
         super().__init__(parent)
+        self.tabWidget = tab_widget
         self.setupUi()
 
     def setupUi(self):
@@ -272,4 +273,23 @@ class CustomScanTab(QtWidgets.QTabWidget):
         self.view_custom_scan_history_button_horizontalLayout.addWidget(self.view_custom_scan_history_pushButton_2)
         self.verticalLayout_4.addLayout(self.view_custom_scan_history_button_horizontalLayout)
         self.horizontalLayout_2.addWidget(self.custom_scan_rightframe)
-        self.tabWidget.addTab(self.custom_scan_tab, "")
+        self.custom_scan_selector_comboBox.setCurrentIndex(0)
+        if self.tabWidget:
+            self.tabWidget.addTab(self.custom_scan_tab, "Custom Scan")
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        self.custom_scan_label.setText(_translate("MainWindow", "Custom Scan"))
+        self.custom_scan_lineEdit.setPlaceholderText(_translate("MainWindow", "enter url"))
+        self.custom_scan_selector_comboBox.setCurrentText(_translate("MainWindow", "http scan"))
+        self.custom_scan_selector_comboBox.setItemText(0, _translate("MainWindow", "http scan"))
+        self.custom_scan_selector_comboBox.setItemText(1, _translate("MainWindow", "sql-injection"))
+        self.custom_scan_selector_comboBox.setItemText(2, _translate("MainWindow", "xss-injection"))
+        self.custom_scan_selector_comboBox.setItemText(3, _translate("MainWindow", "broken authentication"))
+        self.custom_scan_selector_comboBox.setItemText(4, _translate("MainWindow", "csrf scan"))
+        self.custom_scan_pushButton.setText(_translate("MainWindow", "Custom Scan"))
+        self.generate_custom_scan_report_pushButton.setText(_translate("MainWindow", "Generate Detailed Report"))
+        self.reset_scanner_pushButton.setText(_translate("MainWindow", "Reset Scanners"))
+        self.num_of_custom_scan_label.setText(_translate("MainWindow", "Total No. of Custom Scans:"))
+        self.custom_scan_history_label.setText(_translate("MainWindow", "History of custom scans:"))
+        self.view_custom_scan_history_pushButton_2.setText(_translate("MainWindow", "View Custom Scan History"))

@@ -1,8 +1,9 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
-class HistoryTab(QtWidgets.QTabWidget):
-    def __init__(self, parent=None):
+class HistoryTab(QtWidgets.QWidget):
+    def __init__(self, parent=None, tab_widget=None):
         super().__init__(parent)
+        self.tabWidget = tab_widget
         self.setupUi()
 
     def setupUi(self):
@@ -166,4 +167,17 @@ class HistoryTab(QtWidgets.QTabWidget):
         self.clear_history_comboBox.addItem("")
         self.horizontalLayout_3.addWidget(self.clear_history_comboBox)
         self.verticalLayout_5.addWidget(self.frame_6)
-        self.tabWidget.addTab(self.history_tab, "")
+        self.clear_history_comboBox.setCurrentIndex(0)
+        if self.tabWidget:
+            self.tabWidget.addTab(self.history_tab, "History")
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        self.search_history_label.setText(_translate("MainWindow", "Search History"))
+        self.search_history_lineEdit.setPlaceholderText(_translate("MainWindow", "enter url"))
+        self.view_full_scan_history_pushButton.setText(_translate("MainWindow", "View Full Scan History"))
+        self.view_custom_scan_history_pushButton.setText(_translate("MainWindow", "View Custom Scan History"))
+        self.clear_history_comboBox.setCurrentText(_translate("MainWindow", "Delete Full Scan History"))
+        self.clear_history_comboBox.setItemText(0, _translate("MainWindow", "Delete Full Scan History"))
+        self.clear_history_comboBox.setItemText(1, _translate("MainWindow", "Delete Custom Scan History"))
+        self.clear_history_comboBox.setItemText(2, _translate("MainWindow", "Delete everything"))
