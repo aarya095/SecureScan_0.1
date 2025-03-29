@@ -14,7 +14,7 @@ class WebCrawler:
         - `selected_scanners`: List of scanners (used only in custom scans).
         """
         self.target_url = target_url
-        self.mode = mode  # Can be "full_scan" or "custom_scan"
+        self.mode = mode 
         self.selected_scanners = selected_scanners or []
         self.max_depth = max_depth
         self.max_pages = max_pages
@@ -122,7 +122,7 @@ class WebCrawler:
 
     def run_scanners(self):
         """Runs the appropriate scanner script after crawling."""
-        script_to_run = "scanner/run_all_scanners.py" if self.mode == "full_scan" else "scanner/run_selected_scanners.py"
+        script_to_run = "scanner/run_all_scanners.py" if self.mode == "custom_scan" else "scanner/run_selected_scanners.py"
         
         print(f"\n🚀 Running Scanners... (Mode: {self.mode})")
         

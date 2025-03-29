@@ -36,7 +36,7 @@ class DatabaseConnection:
             self.connection.close()
             print("🔒 Connection closed.")
 
-    def execute_query(self, query, params=None):
+    def execute_query(self, query, params=None, return_last_insert_id=False):
         """Execute an SQL query (INSERT, UPDATE, DELETE)."""
         if not self.connection:
             raise ValueError("❌ Database connection is not established.")
@@ -44,6 +44,8 @@ class DatabaseConnection:
             with self.connection.cursor() as cursor:
                 cursor.execute(query, params)
                 self.connection.commit()
+                if return_last_insert_id:
+                    return cursor.lastrowid 
         except Error as e:
             print(f"❌ Error executing query: {e}")
 

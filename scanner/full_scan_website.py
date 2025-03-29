@@ -3,7 +3,7 @@ import os
 import time
 from scanner.crawler import WebCrawler
 from scanner.run_all_scanners import SecurityScanner
-from scan_report.store_full_scan import ScanResultHandler
+from scan_report.store_full_scan import FullScanResultHandler
 
 class SecurityScanManager:
     """Class to manage security scans, read results, and store findings."""
@@ -75,7 +75,7 @@ class SecurityScanManager:
         print("\n🚀 Storing Results...")
         start_time = time.time()
 
-        scan_handler = ScanResultHandler(self.SECURITY_SCAN_RESULTS_FILE)
+        scan_handler = FullScanResultHandler(self.SECURITY_SCAN_RESULTS_FILE)
         scan_handler.store_scan_results()  
 
         store_time = time.time() - start_time

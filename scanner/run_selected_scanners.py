@@ -49,3 +49,5 @@ class CustomSecurityScanner:
 
         self.store_scan_results(scans_results)
         return scans_results
+    
+    

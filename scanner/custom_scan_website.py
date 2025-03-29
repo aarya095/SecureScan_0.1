@@ -48,7 +48,7 @@ class SecurityCustomScanManager:
         start_time = time.time()
 
         crawler = WebCrawler(target_url)  # ✅ Create instance
-        crawler.run()  # ✅ Run the crawler
+        crawler.crawl()  # ✅ Run the crawler
 
         crawl_time = time.time() - start_time
         print(f"\n⏱️ Crawler completed in {crawl_time:.2f} seconds")
