@@ -25,8 +25,8 @@ class CustomScanTab(QtWidgets.QWidget):
         self.verticalLayout_3.addWidget(self.custom_scan_lineEdit)
 
         self.custom_scan_selector_button = QtWidgets.QToolButton(self.custom_scan_left_frame)
-        self.custom_scan_selector_button.setText("Select Scanners ▼")
-        self.custom_scan_selector_button.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)
+        self.custom_scan_selector_button.setText("Select Scanners ")
+        self.custom_scan_selector_button.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.MenuButtonPopup)
         self.scanner_menu = QtWidgets.QMenu(self)
         self.custom_scan_selector_button.setMenu(self.scanner_menu)
         self.verticalLayout_3.addWidget(self.custom_scan_selector_button)
@@ -77,34 +77,34 @@ class CustomScanTab(QtWidgets.QWidget):
 
     def init_scanner_selection(self):
         """Initialize dropdown menu with checkable scanner options."""
+        self.scanner_menu.aboutToHide.connect(self.block_menu_hiding)
+
         for scanner in self.scanners:
             action = QAction(scanner, self)
             action.setCheckable(True)
+
             action.triggered.connect(lambda checked, s=scanner: self.toggle_scanner_selection(s, checked))
             self.scanner_menu.addAction(action)
+
+    def block_menu_hiding(self):
+        """Prevent the menu from closing only while interacting with it."""
+        if self.scanner_menu.activeAction():  # If an action is hovered or clicked
+            QtCore.QTimer.singleShot(100, self.scanner_menu.show)  # Reopen briefly
 
     def toggle_scanner_selection(self, scanner, checked):
         """Handle scanner selection toggle."""
         if checked:
-            self.selected_scanners.append(scanner)
+            if scanner not in self.selected_scanners:
+                self.selected_scanners.append(scanner)
         else:
-            self.selected_scanners.remove(scanner)
-        
-        self.update_scanner_button_text()
-
-    def update_scanner_button_text(self):
-        """Update dropdown button text based on selected scanners."""
-        if self.selected_scanners:
-            self.custom_scan_selector_button.setText(", ".join(self.selected_scanners))
-        else:
-            self.custom_scan_selector_button.setText("Select Scanners ▼")
+            if scanner in self.selected_scanners:
+                self.selected_scanners.remove(scanner)
 
     def reset_scanner_selection(self):
         """Reset all selected scanners."""
         self.selected_scanners.clear()
         for action in self.scanner_menu.actions():
             action.setChecked(False)
-        self.update_scanner_button_text()
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
