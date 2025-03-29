@@ -18,10 +18,12 @@ class CustomScanTab(QtWidgets.QWidget):
 
         # Custom Scan Label
         self.custom_scan_label = QtWidgets.QLabel(self.custom_scan_left_frame)
+        self.custom_scan_label.setText("Custom Scan")
         self.verticalLayout_3.addWidget(self.custom_scan_label)
 
         # URL Input Field
         self.custom_scan_lineEdit = QtWidgets.QLineEdit(self.custom_scan_left_frame)
+        self.custom_scan_lineEdit.setPlaceholderText("Enter URL")
         self.verticalLayout_3.addWidget(self.custom_scan_lineEdit)
 
         # Scan Type ComboBox
@@ -76,5 +78,4 @@ class CustomScanTab(QtWidgets.QWidget):
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
-        self.custom_scan_label.setText(_translate("MainWindow", "Custom Scan"))
-        self.custom_scan_lineEdit.setPlaceholderText(_translate("MainWindow", "Enter URL"))
+        
