@@ -1,11 +1,13 @@
 from PyQt6 import QtCore, QtWidgets
 from PyQt6.QtGui import QAction 
+from scanner.run_selected_scanners import CustomSecurityScanner
 
 class CustomScanTab(QtWidgets.QWidget):
     def __init__(self, parent=None, tab_widget=None):
         super().__init__(parent)
         self.tabWidget = tab_widget
         self.selected_scanners = []
+        self.security_scanner = CustomSecurityScanner()
         self.setupUi()
 
     def setupUi(self):
@@ -38,6 +40,7 @@ class CustomScanTab(QtWidgets.QWidget):
         self.init_scanner_selection()
 
         self.custom_scan_pushButton = QtWidgets.QPushButton("Start Custom Scan", self.custom_scan_left_frame)
+        self.custom_scan_pushButton.clicked.connect(self.start_custom_scan)
         self.verticalLayout_3.addWidget(self.custom_scan_pushButton)
 
         self.custom_scan_output_textBrowser = QtWidgets.QTextBrowser(self.custom_scan_left_frame)
@@ -58,9 +61,11 @@ class CustomScanTab(QtWidgets.QWidget):
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.custom_scan_rightframe)
 
         self.num_of_custom_scan_label = QtWidgets.QLabel("Total No. of Custom Scans:", self.custom_scan_rightframe)
+        self.num_of_custom_scan_label.setObjectName("subTitle")
         self.verticalLayout_4.addWidget(self.num_of_custom_scan_label)
 
         self.custom_scan_history_label = QtWidgets.QLabel("History of Custom Scans:", self.custom_scan_rightframe)
+        self.custom_scan_history_label.setObjectName("subTitle")
         self.verticalLayout_4.addWidget(self.custom_scan_history_label)
 
         self.custom_scan_history_textBrowser = QtWidgets.QTextBrowser(self.custom_scan_rightframe)
@@ -105,6 +110,26 @@ class CustomScanTab(QtWidgets.QWidget):
         self.selected_scanners.clear()
         for action in self.scanner_menu.actions():
             action.setChecked(False)
+
+    def start_custom_scan(self):
+        """Trigger the scan with selected scanners."""
+        url = self.custom_scan_lineEdit.text().strip()
+        if not url:
+            self.custom_scan_output_textBrowser.append("❌ Please enter a URL.")
+            return
+
+        if not self.selected_scanners:
+            self.custom_scan_output_textBrowser.append("❌ Please select at least one scanner.")
+            return
+
+        self.custom_scan_output_textBrowser.append(f"🔍 Scanning {url} with {', '.join(self.selected_scanners)}...")
+
+        # Call the SecurityScanner class to run the selected scanners
+        scan_results = self.security_scanner.run_custom_scan(self.selected_scanners, url)
+
+        # Display results in UI
+        for scanner, result in scan_results["scans"].items():
+            self.custom_scan_output_textBrowser.append(f"\n🛠️ **{scanner} Results:**\n{result}")
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate

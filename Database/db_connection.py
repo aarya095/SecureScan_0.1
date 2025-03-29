@@ -77,6 +77,22 @@ class DatabaseConnection:
         query = "SELECT email FROM login WHERE username = %s"
         result = self.fetch_all(query, (username,))
         return result[0][0] if result else None
+    
+    def insert_scan(self, website_url, execution_time, vulnerabilities_found):
+        """Insert a new custom scan and return its ID."""
+        query = """
+        INSERT INTO custom_scans (website_url, execution_time, vulnerabilities_found) 
+        VALUES (%s, %s, %s)
+        """
+        return self.execute_query(query, (website_url, execution_time, vulnerabilities_found), return_last_insert_id=True)
+
+    def insert_scan_result(self, scan_id, scanner_name, scanner_result, risk_level):
+        """Insert a scan result linked to a scan ID."""
+        query = """
+        INSERT INTO custom_scan_results (scan_id, scanner_name, scanner_result, risk_level) 
+        VALUES (%s, %s, %s, %s)
+        """
+        self.execute_query(query, (scan_id, scanner_name, scanner_result, risk_level))
 
 
 # Example usage

@@ -2,7 +2,7 @@ import datetime
 import json
 import os
 from PyQt6 import QtCore, QtGui, QtWidgets
-from theme_switch.theme_manager import ThemeSwitcher
+
 
 class QuickScanTab(QtWidgets.QWidget):
     def __init__(self, parent=None):
@@ -55,7 +55,7 @@ class QuickScanTab(QtWidgets.QWidget):
         
         self.top_right_spacer = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
 
-        
+        from GUI.theme_switch.theme_manager import ThemeSwitcher
         self.theme_toggle_button = ThemeSwitcher(self.home_right_frame)
         self.theme_toggle_button.setFixedSize(40, 40)
         self.top_right_layout.addItem(self.top_right_spacer) 

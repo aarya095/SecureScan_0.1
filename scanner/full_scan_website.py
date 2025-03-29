@@ -2,8 +2,8 @@ import json
 import os
 import time
 from scanner.crawler import WebCrawler
-from scanner.run_scanners import SecurityScanner
-from scan_report.store_scan import ScanResultHandler
+from scanner.run_all_scanners import SecurityScanner
+from scan_report.store_full_scan import ScanResultHandler
 
 class SecurityScanManager:
     """Class to manage security scans, read results, and store findings."""

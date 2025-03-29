@@ -1,11 +1,11 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
-from home_quick_scan import QuickScanTab
-from custom_scan_tab import CustomScanTab
-from history_tab import HistoryTab
-from profile_tab import ProfileTab
-from about_tab import AboutTab
+from GUI.home_quick_scan import QuickScanTab
+from GUI.custom_scan_tab import CustomScanTab
+from GUI.history_tab import HistoryTab
+from GUI.profile_tab import ProfileTab
+from GUI.about_tab import AboutTab
 
-from theme_switch import theme_manager
+from GUI.theme_switch.theme_manager import ThemeSwitcher
 
 class Ui_MainWindow(object):
 

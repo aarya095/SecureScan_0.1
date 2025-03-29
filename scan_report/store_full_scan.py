@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from Database.db_connection import DatabaseConnection
 
-class ScanResultHandler:
+class FullScanResultHandler:
     """Handles saving scan results to the database."""
 
     def __init__(self, json_file):
@@ -32,7 +32,7 @@ class ScanResultHandler:
 
         # Importing the `run_scanners` module directly inside the method to ensure it works in the context
         try:
-            from scanner.run_scanners import SecurityScanner
+            from scanner.run_all_scanners import SecurityScanner
             vulnerability_count = SecurityScanner.count_vulnerabilities(scan_results)
         except ImportError as e:
             print(f"❌ Error: Unable to import run_scanners module. {e}")
@@ -87,5 +87,5 @@ class ScanResultHandler:
             self.db.close()
 
 if __name__ == "__main__":
-    scan_handler = ScanResultHandler("security_scan_results.json")
+    scan_handler = FullScanResultHandler("security_scan_results.json")
     scan_handler.store_scan_results()
