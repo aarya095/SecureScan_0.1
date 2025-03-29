@@ -11,7 +11,7 @@ class Ui_MainWindow(object):
 
     @staticmethod
     def load_stylesheet(file_path):
-        """Load QSS file and return as a string."""
+        
         try:
             with open(file_path, "r") as f:
                 return f.read()

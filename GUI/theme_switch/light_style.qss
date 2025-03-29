@@ -91,7 +91,6 @@ QCommandLinkButton {
                 text-decoration: underline;
             }
 
-/* QToolButton (Dropdown Button) */
 QToolButton {
     background-color: rgb(35, 222, 104);
     color: white;
@@ -113,7 +112,6 @@ QToolButton:pressed {
     transform: scale(0.95);
 }
 
-/* QMenu (Dropdown Items) */
 QMenu {
     background-color: #f2f2f2;
     border: 2px solid #23DE68;
@@ -131,3 +129,20 @@ QMenu::item:selected {
     background-color: #23DE68;
     color: white;
 }
+
+QMenu::indicator:checked {
+    background-color: #23DE68; 
+    border: 2px solid #23DE68;
+}
+
+/* Unchecked checkbox */
+QMenu::indicator:unchecked {
+    background-color: white;
+    border: 2px solid #23DE68;
+}
+
+QMenu::indicator {
+    width: 18px; 
+    height: 18px;
+}
+
