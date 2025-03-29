@@ -1,3 +1,6 @@
+import datetime
+import json
+import os
 from PyQt6 import QtCore, QtGui, QtWidgets
 from theme_switch.theme_manager import ThemeSwitcher
 
@@ -19,8 +22,8 @@ class QuickScanTab(QtWidgets.QWidget):
 
         # UI Elements (Assigned Correct Parent)
         self.greet_label = QtWidgets.QLabel(self.home_left_frame)
-        self.greet_label.setText("Good")
         self.greet_label.setObjectName("headerLabel")
+        self.update_greeting()
 
         self.quick_scan_label = QtWidgets.QLabel(self.home_left_frame)
         self.quick_scan_label.setObjectName("headerLabel")
@@ -63,7 +66,7 @@ class QuickScanTab(QtWidgets.QWidget):
 
         self.security_tip_label = QtWidgets.QLabel(self.home_right_frame)
         self.security_tip_label.setObjectName("subTitle")
-        self.security_tip_label.setText("Tip of the Day:")
+        self.update_security_tip()
         
         self.num_of_quick_scan_label = QtWidgets.QLabel(self.home_right_frame)
         self.num_of_quick_scan_label.setObjectName("subTitle")
@@ -89,8 +92,43 @@ class QuickScanTab(QtWidgets.QWidget):
         main_layout.addWidget(self)
         self.setLayout(main_layout)
 
-        # Set Texts
         self.retranslateUi()
+
+    def update_greeting(self):
+
+            current_hour = datetime.datetime.now().hour
+
+            if 5 <= current_hour <12:
+                greeting = "Good Morning!"
+            elif 12 <= current_hour <17:
+                greeting = "Good Afternoon!"
+            elif 17 <= current_hour < 22:
+                greeting = "Good Evening!"
+            else:
+                greeting = "Good Night!"
+            
+            self.greet_label.setText(greeting)
+
+    def update_security_tip(self):
+        json_path = "GUI/tips.json"
+        if not os.path.exists(json_path):
+            self.security_tip_label.setText("Tip of the Day: Stay safe online!")
+            return
+        try:
+            with open(json_path, "r") as file:
+                data = json.load(file)
+                tips = data.get("tips", [])
+
+                if tips:
+                    today = datetime.datetime.today().day
+                    tip_index = today % len(tips) 
+                    self.security_tip_label.setText(f"Tip of the Day: {tips[tip_index]}")
+                else:
+                    self.security_tip_label.setText("Tip of the Day: Stay safe online!")
+        
+        except Exception as e:
+            print(f"Error loading security tips: {e}")
+            self.security_tip_label.setText("Tip of the Day: Stay safe online!")
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
