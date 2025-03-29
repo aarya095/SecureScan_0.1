@@ -26,7 +26,9 @@ class Ui_MainWindow(object):
         self.centralwidget.setSizePolicy(sizePolicy)
 
         self.tabWidget = QtWidgets.QTabWidget(parent=self.centralwidget)
-        self.tabWidget.setGeometry(QtCore.QRect(10, 10, 1200, 700))  # Set size and position
+        layout = QtWidgets.QVBoxLayout(self.centralwidget)  # Use vertical layout
+        layout.addWidget(self.tabWidget)
+        MainWindow.setCentralWidget(self.centralwidget)  
         self.tabWidget.setObjectName("tabWidget")
 
         self.home_tab = QuickScanTab(parent=self.tabWidget)
