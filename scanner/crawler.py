@@ -1,17 +1,26 @@
 import json
 import sys
 import os
+import time
+import subprocess
 from urllib.parse import urljoin, urlparse
 from playwright.sync_api import sync_playwright
 
-
 class WebCrawler:
-    def __init__(self, target_url, max_depth=2, max_pages=50):
+    def __init__(self, target_url, mode="full_scan", selected_scanners=None, max_depth=2, max_pages=50):
+        """
+        Initialize the WebCrawler.
+        - `mode`: "full_scan" (runs all scanners) or "custom_scan" (runs selected scanners).
+        - `selected_scanners`: List of scanners (used only in custom scans).
+        """
         self.target_url = target_url
+        self.mode = mode  # Can be "full_scan" or "custom_scan"
+        self.selected_scanners = selected_scanners or []
         self.max_depth = max_depth
         self.max_pages = max_pages
         self.visited_links = set()
         self.mapped_data = {"target_url": target_url, "pages": []}
+        self.results_file = "mapped_data.json"
 
     def extract_links(self, page, base_url):
         """Extracts all valid internal links from the page."""
@@ -23,7 +32,6 @@ class WebCrawler:
                 parsed_absolute = urlparse(absolute_url)
                 parsed_base = urlparse(base_url)
 
-                # Ensure only internal links are added
                 if parsed_absolute.netloc == parsed_base.netloc and absolute_url not in self.visited_links:
                     links.add(absolute_url)
 
@@ -72,9 +80,8 @@ class WebCrawler:
 
             self.mapped_data["pages"].append(page_data)
 
-            # Recursively visit new links
             for link in page_data["links"]:
-                if len(self.mapped_data["pages"]) < self.max_pages:  # Ensure we don't exceed the max page limit
+                if len(self.mapped_data["pages"]) < self.max_pages:
                     self.visit_page(page, link, base_url, depth + 1)
 
         except Exception as e:
@@ -82,6 +89,9 @@ class WebCrawler:
 
     def crawl(self):
         """Main function to start crawling a website."""
+        print("\n🚀 Starting Web Crawler...")
+        start_time = time.time()
+
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             page = browser.new_page()
@@ -90,22 +100,44 @@ class WebCrawler:
             try:
                 self.visit_page(page, self.target_url, self.target_url, 0)
             finally:
-                # Save the mapped data to a JSON file
-                with open("mapped_data.json", "w") as f:
-                    json.dump(self.mapped_data, f, indent=4)
-
                 browser.close()
-                print("\n✅ Website Mapping Complete! Data saved to mapped_data.json")
 
-                # Run additional scanners if needed
-                self.run_scanners()
+        crawl_time = time.time() - start_time
+        print(f"\n✅ Crawling Complete! Time: {crawl_time:.2f} seconds")
+
+        # ✅ Store crawled data in mapped_data.json
+        self.store_crawl_results(crawl_time)
+
+        # ✅ Trigger scanners after crawling
+        self.run_scanners()
+
+    def store_crawl_results(self, crawl_time):
+        """Saves crawling results into a JSON file."""
+        self.mapped_data["execution_time"] = round(crawl_time, 2)
+
+        with open(self.results_file, "w") as file:
+            json.dump(self.mapped_data, file, indent=4)
+
+        print(f"\n✅ Crawling results saved to {self.results_file}")
 
     def run_scanners(self):
-        """Runs the security scanners after crawling."""
-        base_dir = os.path.dirname(os.path.abspath(__file__))  # Get the path of scanner/
-        scanner_path = os.path.join(base_dir, "run_scanners.py")
-        print(f"Scanner path: {scanner_path}")
+        """Runs the appropriate scanner script after crawling."""
+        script_to_run = "scanner/run_all_scanners.py" if self.mode == "full_scan" else "scanner/run_selected_scanners.py"
+        
+        print(f"\n🚀 Running Scanners... (Mode: {self.mode})")
+        
+        try:
+            if self.mode == "custom_scan":
+                # Pass selected scanners to the script
+                scanner_args = " ".join(self.selected_scanners)
+                subprocess.run(["python", script_to_run, self.results_file, scanner_args], check=True)
+            else:
+                subprocess.run(["python", script_to_run, self.results_file], check=True)
+            
+            print(f"\n✅ Scanners executed successfully!")
 
+        except subprocess.CalledProcessError as e:
+            print(f"❌ Error running scanner script: {e}")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
@@ -116,5 +148,9 @@ if __name__ == "__main__":
     if not target_url.startswith("http"):
         print("❌ Invalid URL! Make sure to include 'http://' or 'https://'.")
     else:
-        crawler = WebCrawler(target_url)
+        # Detect whether running a full scan or custom scan
+        mode = "full_scan"
+        selected_scanners = []
+
+        crawler = WebCrawler(target_url, mode, selected_scanners)
         crawler.crawl()

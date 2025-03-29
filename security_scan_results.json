@@ -12,8 +12,8 @@
         }
     },
     "execution_times": {
-        "scanner_time": 0.15,
-        "store_time": 0.15,
-        "total_scan_time": 2.6
+        "scanner_time": 0.02,
+        "store_time": 0.1,
+        "total_scan_time": 4.28
     }
 }

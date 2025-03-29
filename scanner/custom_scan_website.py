@@ -6,15 +6,15 @@ from scanner.run_selected_scanners import CustomSecurityScanner
 from scan_report.store_custom_scan import CustomScanResultHandler
 
 class SecurityCustomScanManager:
-    """Class to manage security scans, read results, and store findings."""
+    """Manages security scans, stores findings, and provides selection menus."""
 
     SECURITY_SCAN_RESULTS_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "security_scan_results.json"))
 
     SCANNERS = {
         1: "SQL-Injection",
         2: "XSS-Injection",
-        3: "Broken-Authentication",
-        4: "CSRF"
+        3: "Broken Authentication",  # ✅ Fixed name
+        4: "CSRF Scanner"  # ✅ Fixed name
     }
 
     def __init__(self):
@@ -23,11 +23,13 @@ class SecurityCustomScanManager:
     def update_scan_results(self, key, value):
         """Update security_scan_results.json without overwriting existing data."""
         try:
+            results = {}
             if os.path.exists(self.SECURITY_SCAN_RESULTS_FILE):
                 with open(self.SECURITY_SCAN_RESULTS_FILE, "r") as file:
-                    results = json.load(file)
-            else:
-                results = {}
+                    try:
+                        results = json.load(file)
+                    except json.JSONDecodeError:
+                        results = {}
 
             if "execution_times" not in results:
                 results["execution_times"] = {}
@@ -37,15 +39,16 @@ class SecurityCustomScanManager:
             with open(self.SECURITY_SCAN_RESULTS_FILE, "w") as file:
                 json.dump(results, file, indent=4)
 
-        except (FileNotFoundError, json.JSONDecodeError):
-            print("❌ Error: Unable to update security_scan_results.json")
+        except Exception as e:
+            print(f"❌ Error updating scan results file: {e}")
 
     def run_crawler(self, target_url):
         """Runs the web crawler and logs execution time."""
         print("🚀 Running Crawler...")
         start_time = time.time()
 
-        WebCrawler(target_url)
+        crawler = WebCrawler(target_url)  # ✅ Create instance
+        crawler.run()  # ✅ Run the crawler
 
         crawl_time = time.time() - start_time
         print(f"\n⏱️ Crawler completed in {crawl_time:.2f} seconds")
@@ -124,6 +127,7 @@ class SecurityCustomScanManager:
         print(f"🔹 Scanners Time: {scan_time:.2f} seconds")
         print(f"🔹 Storing Results Time: {store_time:.2f} seconds")
         print(f"\n🚀 **Total Scan Time:** {total_time:.2f} seconds")
+
 
 if __name__ == "__main__":
     manager = SecurityCustomScanManager()
