@@ -21,7 +21,10 @@ class Ui_MainWindow(object):
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1221, 770)
+        MainWindow.resize(1099, 693)
+
+        MainWindow.setWindowIcon(QtGui.QIcon("icons/S_logo.png"))
+
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -69,6 +72,14 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "SecureScan"))
 
+def center_window(MainWindow):
+    """Centers the MainWindow on the screen."""
+    screen = QtWidgets.QApplication.primaryScreen().geometry()  # Get screen size
+    window = MainWindow.frameGeometry()  # Get window size
+
+    center_x = (screen.width() - window.width()) // 2
+    center_y = (screen.height() - window.height()) // 2
+    MainWindow.move(center_x, center_y)
 
 if __name__ == "__main__":
     import sys
@@ -82,4 +93,6 @@ if __name__ == "__main__":
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
+    center_window(MainWindow)
+
     sys.exit(app.exec())
