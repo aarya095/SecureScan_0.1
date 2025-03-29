@@ -92,3 +92,45 @@ QCommandLinkButton {
     font-weight: bold;
     text-decoration: underline;
 }
+
+/* QToolButton (Dropdown Button) */
+QToolButton {
+    background-color: rgb(35, 222, 104);
+    color: white;
+    border: solid;
+    border-radius: 20px;
+    border-width: 0.1px;
+    transition: all 0.2s ease;
+    font-size: 25px;
+    font-weight: bold;
+    padding: 10px 20px;
+}
+
+QToolButton:hover {
+    background-color: #27ae60;
+}
+
+QToolButton:pressed {
+    background-color: #1e8449;
+    transform: scale(0.95);
+}
+
+/* QMenu (Dropdown Items) */
+QMenu {
+    background-color: #2c2c2c;
+    border: 2px solid #23DE68;
+    border-radius: 10px;
+}
+
+QMenu::item {
+    color: white;
+    font-size: 20px;
+    padding: 8px 15px;
+    border-radius: 5px;
+}
+
+QMenu::item:selected {
+    background-color: #23DE68;
+    color: black;
+}
+
