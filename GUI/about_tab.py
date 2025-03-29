@@ -7,12 +7,8 @@ class AboutTab(QtWidgets.QWidget):
         self.setupUi()
 
     def setupUi(self):
-        # About Tab
-        self.about_tab = QtWidgets.QWidget()
-        self.about_tab.setObjectName("about_tab")
-
         # Scroll Area
-        self.about_tab_scrollArea = QtWidgets.QScrollArea(self.about_tab)
+        self.about_tab_scrollArea = QtWidgets.QScrollArea(self)
         self.about_tab_scrollArea.setGeometry(QtCore.QRect(0, 10, 1191, 751))
         self.about_tab_scrollArea.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred))
         self.about_tab_scrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAsNeeded)
@@ -39,22 +35,11 @@ class AboutTab(QtWidgets.QWidget):
         # About App Label
         self.about_app_label = QtWidgets.QLabel("About this Application")
         self.about_app_label.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding))
-        self.about_app_label.setStyleSheet("""
-            QLabel {
-                color: black;
-                font-size: 30px;
-                font-weight: bold;
-            }
-        """)
         self.about_app_label.setObjectName("about_app_label")
         self.verticalLayout_10.addWidget(self.about_app_label)
 
         self.verticalLayout_9.addWidget(self.about_tab_scrollArea_2)
         self.about_tab_scrollArea.setWidget(self.scrollAreaWidgetContents)
-
-        # Add tab to tab widget if available
-        if self.tabWidget:
-            self.tabWidget.addTab(self.about_tab, "About")
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate

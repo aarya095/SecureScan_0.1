@@ -1,0 +1,92 @@
+QWidget {
+            background-color: white;
+            color: black;
+        }
+
+QFrame {
+    background-color: #f2f2f2; /* Light grey */
+    border-radius: 10px;
+    border: 2px solid #23DE68; /* Green border */
+    padding: 10px;
+}
+
+QPushButton {
+                background-color: rgb(35, 222, 104);
+                color: white;
+                border: solid;
+                border-radius: 20px;
+                border-width: 0.1px;
+                transition: all 0.2s ease;
+                font-size: 25px;
+                font-weight: bold;
+                padding: 10px 5px;
+                padding-right: 30px;
+                padding-left: 30px;
+            }
+            QPushButton:hover {
+                background-color: #27ae60;
+            }
+            QPushButton:pressed {
+                background-color: #1e8449;
+                transform: scale(0.95);
+            }
+
+QComboBox {
+                background-color: rgb(35, 222, 104);
+                color: white;
+                border: solid;
+                border-radius: 20px;
+                border-width: 0.1px;
+                transition: all 0.2s ease;
+                font-size: 25px;
+                font-weight: bold;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+            QComboBox:hover {
+                background-color: #27ae60;
+            }
+            QPushButton:pressed {
+                background-color: #1e8449;
+                transform: scale(0.95);
+            }
+
+QLabel {
+                color: black;
+                font-size: 30px;
+                font-weight: bold;
+            }
+
+QLabel#headerLabel {
+                color: black;
+                font-size: 30px;
+                font-weight: bold;
+            }
+
+QLabel#subTitle {
+                color: black;
+                font-size: 20px;
+                font-weight: bold;
+            }
+
+QLineEdit {
+                border: solid;
+                border-radius: 18px;
+                border-width: 0.5px;
+                border-color: grey;
+                padding-left: 20px;
+                padding-right: 20px;
+                font-size: 25px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+
+QCommandLinkButton {
+                color: black;
+                qproperty-icon: none;
+                font-size: 16px;
+                font-weight:bold;
+                text-decoration: underline;
+            }

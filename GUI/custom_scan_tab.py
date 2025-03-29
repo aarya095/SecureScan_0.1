@@ -18,32 +18,18 @@ class CustomScanTab(QtWidgets.QWidget):
 
         # Custom Scan Label
         self.custom_scan_label = QtWidgets.QLabel(self.custom_scan_left_frame)
-        self.custom_scan_label.setStyleSheet("QLabel { color: black; font-size: 50px; font-weight: bold; }")
         self.verticalLayout_3.addWidget(self.custom_scan_label)
 
         # URL Input Field
         self.custom_scan_lineEdit = QtWidgets.QLineEdit(self.custom_scan_left_frame)
-        self.custom_scan_lineEdit.setStyleSheet(
-            "QLineEdit { border: solid; border-radius: 18px; border-width: 0.5px; "
-            "border-color: grey; padding-left: 20px; padding-right: 20px; font-size: 25px; "
-            "padding-top: 10px; padding-bottom: 10px; }"
-        )
         self.verticalLayout_3.addWidget(self.custom_scan_lineEdit)
 
         # Scan Type ComboBox
         self.custom_scan_selector_comboBox = QtWidgets.QComboBox(self.custom_scan_left_frame)
-        self.custom_scan_selector_comboBox.setStyleSheet(
-            "QComboBox { background-color: rgb(35, 222, 104); color: white; border: solid; border-radius: 20px; "
-            "border-width: 0.1px; font-size: 25px; padding: 10px 20px; }"
-        )
         self.verticalLayout_3.addWidget(self.custom_scan_selector_comboBox)
 
         # Custom Scan Button
         self.custom_scan_pushButton = QtWidgets.QPushButton("Start Custom Scan", self.custom_scan_left_frame)
-        self.custom_scan_pushButton.setStyleSheet(
-            "QPushButton { background-color: rgb(35, 222, 104); color: white; border-radius: 20px; font-size: 25px; "
-            "padding: 10px 30px; } QPushButton:hover { background-color: #27ae60; }"
-        )
         self.verticalLayout_3.addWidget(self.custom_scan_pushButton)
 
         # Output Text Browser
@@ -52,18 +38,10 @@ class CustomScanTab(QtWidgets.QWidget):
 
         # Generate Report Button
         self.generate_custom_scan_report_pushButton = QtWidgets.QPushButton("Generate Detailed Report", self.custom_scan_left_frame)
-        self.generate_custom_scan_report_pushButton.setStyleSheet(
-            "QPushButton { background-color: rgb(35, 222, 104); color: white; border-radius: 20px; font-size: 25px; "
-            "padding: 10px 30px; } QPushButton:hover { background-color: #27ae60; }"
-        )
         self.verticalLayout_3.addWidget(self.generate_custom_scan_report_pushButton)
 
         # Reset Scanner Button
         self.reset_scanner_pushButton = QtWidgets.QPushButton("Reset Scanners", self.custom_scan_left_frame)
-        self.reset_scanner_pushButton.setStyleSheet(
-            "QPushButton { background-color: rgb(35, 222, 104); color: white; border-radius: 20px; font-size: 25px; "
-            "padding: 10px 30px; } QPushButton:hover { background-color: #27ae60; }"
-        )
         self.verticalLayout_3.addWidget(self.reset_scanner_pushButton)
 
         self.horizontalLayout_2.addWidget(self.custom_scan_left_frame)
@@ -76,11 +54,9 @@ class CustomScanTab(QtWidgets.QWidget):
 
         # Custom Scan History Labels
         self.num_of_custom_scan_label = QtWidgets.QLabel("Total No. of Custom Scans:", self.custom_scan_rightframe)
-        self.num_of_custom_scan_label.setStyleSheet("QLabel { color: black; font-size: 20px; font-weight: bold; }")
         self.verticalLayout_4.addWidget(self.num_of_custom_scan_label)
 
         self.custom_scan_history_label = QtWidgets.QLabel("History of Custom Scans:", self.custom_scan_rightframe)
-        self.custom_scan_history_label.setStyleSheet("QLabel { color: black; font-size: 20px; font-weight: bold; }")
         self.verticalLayout_4.addWidget(self.custom_scan_history_label)
 
         # History Text Browser
@@ -89,10 +65,6 @@ class CustomScanTab(QtWidgets.QWidget):
 
         # View History Button
         self.view_custom_scan_history_pushButton_2 = QtWidgets.QPushButton("View Custom Scan History", self.custom_scan_rightframe)
-        self.view_custom_scan_history_pushButton_2.setStyleSheet(
-            "QPushButton { background-color: rgb(35, 222, 104); color: white; border-radius: 20px; font-size: 25px; "
-            "padding: 10px 30px; } QPushButton:hover { background-color: #27ae60; }"
-        )
         self.verticalLayout_4.addWidget(self.view_custom_scan_history_pushButton_2)
 
         self.horizontalLayout_2.addWidget(self.custom_scan_rightframe)

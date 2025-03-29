@@ -5,7 +5,20 @@ from history_tab import HistoryTab
 from profile_tab import ProfileTab
 from about_tab import AboutTab
 
+from theme_switch import theme_manager
+
 class Ui_MainWindow(object):
+
+    @staticmethod
+    def load_stylesheet(file_path):
+        """Load QSS file and return as a string."""
+        try:
+            with open(file_path, "r") as f:
+                return f.read()
+        except FileNotFoundError:
+            print(f"Warning: Stylesheet '{file_path}' not found.")
+            return ""
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1221, 770)
@@ -61,40 +74,8 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
 
-    # 🔹 Apply Light Theme (Method 1: QPalette)
-    palette = QtGui.QPalette()
-    palette.setColor(QtGui.QPalette.ColorRole.Window, QtGui.QColor(255, 255, 255))  # White background
-    palette.setColor(QtGui.QPalette.ColorRole.WindowText, QtGui.QColor(0, 0, 0))  # Black text
-    palette.setColor(QtGui.QPalette.ColorRole.Base, QtGui.QColor(240, 240, 240))  # Input fields
-    palette.setColor(QtGui.QPalette.ColorRole.Text, QtGui.QColor(0, 0, 0))  # Text color
-    palette.setColor(QtGui.QPalette.ColorRole.Button, QtGui.QColor(230, 230, 230))  # Button background
-    palette.setColor(QtGui.QPalette.ColorRole.ButtonText, QtGui.QColor(0, 0, 0))  # Button text
-
-    app.setPalette(palette)
-
-    # 🔹 Apply Light Theme Stylesheet (Method 2: Stylesheet)
-    app.setStyleSheet("""
-        QWidget {
-            background-color: white;
-            color: black;
-        }
-        QPushButton {
-            background-color: #f0f0f0;
-            color: black;
-            border: 1px solid #bfbfbf;
-            border-radius: 5px;
-            padding: 5px;
-        }
-        QPushButton:hover {
-            background-color: #e0e0e0;
-        }
-        QLineEdit {
-            background-color: white;
-            border: 1px solid #bfbfbf;
-            border-radius: 5px;
-            padding: 5px;
-        }
-    """)
+    stylesheet = Ui_MainWindow.load_stylesheet("GUI/theme_switch/light_style.qss")
+    app.setStyleSheet(stylesheet)
 
     # 🔹 Initialize Main Window
     MainWindow = QtWidgets.QMainWindow()
