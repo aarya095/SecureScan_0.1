@@ -3,6 +3,21 @@
     "pages": [
         {
             "url": "http://localhost:3000",
+            "links": [
+                "http://localhost:3000/login"
+            ],
+            "forms": [
+                {
+                    "action": "http://localhost:3000/comment",
+                    "method": "POST",
+                    "inputs": [
+                        "comment"
+                    ]
+                }
+            ]
+        },
+        {
+            "url": "http://localhost:3000/login",
             "links": [],
             "forms": [
                 {
@@ -16,5 +31,5 @@
             ]
         }
     ],
-    "execution_time": 2.28
+    "execution_time": 3.79
 }
