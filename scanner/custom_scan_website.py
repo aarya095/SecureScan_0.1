@@ -2,6 +2,7 @@ import json
 import time
 import os
 import sys
+import hashlib
 from scanner.http_scanner import URLSecurityScanner
 from scanner.sql_injection import SQLInjectionScanner
 from scanner.xss_injection import XSSScanner
@@ -9,7 +10,7 @@ from scanner.broken_authentication import BrokenAuthScanner
 from scanner.csrf_scanner import CSRFScanner
 from scanner.crawler import WebCrawler
 from scan_report.store_custom_scan import CustomScanResultHandler
-
+from Database.db_connection import DatabaseConnection as db
 
 class CustomSecurityScanner:
     """Class to manage and run custom-selected security scanners."""
@@ -19,42 +20,142 @@ class CustomSecurityScanner:
     def __init__(self):
         self.project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
         self._update_sys_path()
+        self.db = db()
 
     def _update_sys_path(self):
         """Ensure the project root is in sys.path."""
         if self.project_root not in sys.path:
             sys.path.append(self.project_root)
 
-    def store_scan_results(self, new_scan_results):
-        """Replace old scan results with new ones to prevent duplication."""
+    def normalize_scanner_name(self, scanner_name):
+        """Ensure consistent scanner names to avoid duplicates."""
+        SCANNER_NAME_MAPPING = {
+            "Http Scanner": "HTTP Scanner",
+            "SQL-Injection": "SQL Injection",
+            "SQLInjection": "SQL Injection",
+            "XSS-Injection": "XSS Injection",
+            "Broken Authentication": "Broken Authentication",
+            "CSRFScanner": "CSRF Scanner",
+            "CSRF Scanner": "CSRF Scanner"
+        }
+        return SCANNER_NAME_MAPPING.get(scanner_name, scanner_name)  # Default to given name if not mapped
+
+
+    def store_custom_scan_entry(self, website_url, scan_results):
+
+        """Insert into `custom_scans` and return the generated scan_id."""
+        execution_time = scan_results.get("execution_times", {}).get("total_scan_time", 0.0)
+        vulnerabilities_found = sum(len(v) for scan in scan_results["scans"].values() for v in scan.values())
+
+        query = """
+            INSERT INTO custom_scans (website_url, execution_time, vulnerabilities_found) 
+            VALUES (%s, %s, %s)
+        """
+        values = (website_url, execution_time, vulnerabilities_found)
+
         try:
-            results = {"scans": new_scan_results.get("scans", {})}
-
-            with open(self.SECURITY_SCAN_RESULTS_FILE, "w") as file:
-                json.dump(results, file, indent=4)
-
+            self.db.connect()
+            scan_id = self.db.execute_query(query, values, return_last_insert_id=True)  
+            self.db.close()
+            return scan_id
         except Exception as e:
-            print(f"❌ Error saving scan results: {e}")
+            print(f"❌ Error inserting custom scan entry: {e}")
+            self.db.close()
+            return None
+
+
+    def store_scan_results(self, scan_id, scan_results):
+        """Save individual scanner results to `custom_scan_results` table, avoiding duplicates."""
+
+        if scan_id is None:
+            print("❌ Error: scan_id is missing. Scan results will not be stored.")
+            return
+
+        inserted_hashes = set()  # ✅ Store hashes to prevent duplicate insertions
+
+        for scanner_name, scan_data in scan_results.get("scans", {}).items():
+            normalized_name = self.normalize_scanner_name(scanner_name) 
+
+            for url, vulnerabilities in scan_data.items():
+                for vuln in vulnerabilities:
+                    if not isinstance(vuln, dict):
+                        print(f"⚠️ Warning: Skipping invalid data: {vuln}")
+                        continue  
+
+                    risk_level = vuln.get("severity", "Info").strip()
+                    scanner_result_json = json.dumps(vuln, indent=4)
+
+                    # ✅ Compute a unique hash for deduplication
+                    result_hash = hashlib.sha256(f"{scan_id}{normalized_name}{url}{scanner_result_json}".encode()).hexdigest()
+
+                    if result_hash in inserted_hashes:
+                        print(f"⚠️ Skipping duplicate result for {normalized_name} at {url}")
+                        continue  # Skip duplicate
+
+                    try:
+                        query_check = """
+                            SELECT COUNT(*) FROM custom_scan_results
+                            WHERE scan_id = %s AND scanner_name = %s AND scanner_result = %s
+                        """
+                        values_check = (scan_id, normalized_name, scanner_result_json)
+                        self.db.connect()
+                        self.db.execute_query(query_check, values_check)
+                        existing_count = self.db.cursor.fetchone()[0]
+                        self.db.close()
+
+                        if existing_count > 0:
+                            print(f"⚠️ Skipping duplicate database entry for {normalized_name} at {url}")
+                            continue  # Skip insert
+
+                        query = """
+                            INSERT INTO custom_scan_results (
+                                scan_id, scanner_name, scanner_result, risk_level
+                            ) VALUES (%s, %s, %s, %s)
+                        """
+                        values = (scan_id, normalized_name, scanner_result_json, risk_level)
+
+                        self.db.execute_query(query, values)
+                        print(f"✅ Inserted result for {normalized_name} at {url}")
+                        inserted_hashes.add(result_hash)  # ✅ Mark as inserted
+
+                    except Exception as e:
+                        print(f"❌ Error inserting scan result: {e}")
+
 
     def run_custom_scan(self, selected_scanners, url):
-        """Runs only the selected security scanners."""
+        """Runs only the selected security scanners, ensuring no duplicate results."""
         scans_results = {"scans": {}}
         scanner_mapping = {
-            "Http Scanner": URLSecurityScanner,
-            "SQL-Injection": SQLInjectionScanner,
-            "XSS-Injection": XSSScanner,
+            "HTTP Scanner": URLSecurityScanner,
+            "SQL Injection": SQLInjectionScanner,
+            "XSS Injection": XSSScanner,
             "Broken Authentication": BrokenAuthScanner,
             "CSRF Scanner": CSRFScanner
         }
 
+        executed_scanners = set()
+
         for scanner_name in selected_scanners:
             if scanner_name in scanner_mapping:
-                scanner_instance = scanner_mapping[scanner_name]()
-                scanner_instance.run()
+                if scanner_name in scans_results["scans"]:  # 🔹 Prevent duplicate execution
+                    continue  # Skip if already scanned
+
+                scanner_instance = scanner_mapping[scanner_name]()  # Create a new scanner object
+                scanner_instance.run()  # Run the scanner once
                 scans_results["scans"][scanner_name] = scanner_instance.scan_results
 
-        self.store_scan_results(scans_results)
+                executed_scanners.add(scanner_name)
+
+        # ✅ First, insert into `custom_scans` table and get scan_id
+        scan_id = self.store_custom_scan_entry(url, scans_results)
+
+        # ✅ Now store results in `custom_scan_results`
+        self.store_scan_results(scan_id, scans_results)
+
         return scans_results
+
+
+
 
 
 class SecurityCustomScanManager:
@@ -139,7 +240,16 @@ class SecurityCustomScanManager:
     def select_scanners_menu(self):
         """Displays a menu for scanner selection and returns the selected scanners."""
         print("\n🔹 **Select Security Scanners to Run** 🔹")
-        for num, scanner in self.SCANNERS.items():
+        
+        # ✅ Use consistent scanner names
+        SCANNERS = {
+            1: "SQL Injection",
+            2: "XSS Injection",
+            3: "Broken Authentication",
+            4: "CSRF Scanner"
+        }
+
+        for num, scanner in SCANNERS.items():
             print(f"[{num}] {scanner}")
 
         while True:
@@ -147,7 +257,7 @@ class SecurityCustomScanManager:
                 user_input = input("\nEnter the numbers of the scanners you want to run (comma-separated): ")
                 selected_numbers = [int(num.strip()) for num in user_input.split(",")]
 
-                selected_scanners = [self.SCANNERS[num] for num in selected_numbers if num in self.SCANNERS]
+                selected_scanners = [SCANNERS[num] for num in selected_numbers if num in SCANNERS]
 
                 if not selected_scanners:
                     print("❌ Invalid selection. Please select at least one valid scanner.")
@@ -156,6 +266,7 @@ class SecurityCustomScanManager:
 
             except ValueError:
                 print("❌ Invalid input. Please enter numbers only (e.g., 1,2,3).")
+
 
     def run_custom_scan(self):
         """Runs the full scan process and tracks execution time."""

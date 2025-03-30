@@ -5,11 +5,16 @@ from mysql.connector import Error
 class DatabaseConnection:
     def __init__(self):
         """Initialize database connection using environment variables."""
-        self.host = os.getenv('DB_HOST')
+        self.host = os.getenv('DB_HOST', 'localhost')
         self.user = os.getenv('DB_USER')
         self.password = os.getenv('DB_PASSWORD')
         self.database = os.getenv('DB_NAME')
+
+        if not all([self.host, self.user, self.password, self.database]):
+            raise ValueError("❌ Missing database environment variables!")
+
         self.connection = None
+        self.cursor = None  # ✅ Prevent AttributeError
 
     def connect(self):
         """Establish a connection to the database."""
@@ -22,6 +27,7 @@ class DatabaseConnection:
                 database=self.database
             )
             if self.connection.is_connected():
+                self.cursor = self.connection.cursor()
                 print("✅ Successfully connected to the database.")
             else:
                 print("❌ Failed to connect to the database.")
@@ -33,6 +39,8 @@ class DatabaseConnection:
     def close(self):
         """Close the database connection."""
         if self.connection and self.connection.is_connected():
+            if self.cursor:
+                self.cursor.close()
             self.connection.close()
             print("🔒 Connection closed.")
 
@@ -41,45 +49,51 @@ class DatabaseConnection:
         if not self.connection:
             raise ValueError("❌ Database connection is not established.")
         try:
-            with self.connection.cursor() as cursor:
-                cursor.execute(query, params)
-                self.connection.commit()
-                if return_last_insert_id:
-                    return cursor.lastrowid 
+            cursor = self.connection.cursor()
+            cursor.execute(query, params)
+            self.connection.commit()
+            if return_last_insert_id:
+                return cursor.lastrowid
         except Error as e:
             print(f"❌ Error executing query: {e}")
+        finally:
+            cursor.close()  # ✅ Close cursor manually
 
     def fetch_all(self, query, params=None):
         """Fetch all results from a SELECT query."""
         if not self.connection:
             raise ValueError("❌ Database connection is not established.")
         try:
-            with self.connection.cursor() as cursor:
-                cursor.execute(query, params)
-                return cursor.fetchall()
+            cursor = self.connection.cursor()
+            cursor.execute(query, params)
+            result = cursor.fetchall()
+            return result
         except Error as e:
             print(f"❌ Database error: {e}")
             return None
-        
+        finally:
+            cursor.close()
+
     def fetch_one(self, query, params=None):
         """Fetch a single row from a SELECT query."""
         if not self.connection:
             raise ValueError("❌ Database connection is not established.")
         try:
-            with self.connection.cursor() as cursor:
-                cursor.execute(query, params)
-                return cursor.fetchone()  # ✅ Fetch only one row
+            cursor = self.connection.cursor()
+            cursor.execute(query, params)
+            return cursor.fetchone()
         except Error as e:
             print(f"❌ Database error: {e}")
             return None
-
+        finally:
+            cursor.close()
 
     def fetch_user_email(self, username):
         """Fetch user email based on username."""
         query = "SELECT email FROM login WHERE username = %s"
         result = self.fetch_all(query, (username,))
         return result[0][0] if result else None
-    
+
     def insert_scan(self, website_url, execution_time, vulnerabilities_found):
         """Insert a new custom scan and return its ID."""
         query = """
@@ -95,18 +109,3 @@ class DatabaseConnection:
         VALUES (%s, %s, %s, %s)
         """
         self.execute_query(query, (scan_id, scanner_name, scanner_result, risk_level))
-
-
-# Example usage
-if __name__ == "__main__":
-    db = DatabaseConnection()  # ✅ Fixed class name
-    db.connect()
-
-    # Example: Fetch user email
-    email = db.fetch_user_email("testuser")
-    if email:
-        print(f"📧 User email: {email}")
-    else:
-        print("❌ User not found.")
-
-    db.close()

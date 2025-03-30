@@ -9,16 +9,16 @@ class URLSecurityScanner:
         "Low": "Secure connection using HTTPS."
     }
 
-    def __init__(self, mapped_data_file="mapped_data.json", results_file="security_scan_results.json"):
+    def __init__(self, mapped_data_file="mapped_data.json", results_file="scan_results_json/http.json"):
         self.mapped_data_file = mapped_data_file
         self.results_file = results_file
-        self.urls = set()  # Store unique URLs
+        self.urls = set()  
         self.scan_results = {}
 
     def validate_url(self, url):
         """Ensure the URL is valid and formatted correctly."""
         if not url.startswith(('http://', 'https://')):
-            url = 'http://' + url  # Default to HTTP if no scheme is provided
+            url = 'http://' + url  
         parsed_url = urlparse(url)
         if not parsed_url.netloc:
             raise ValueError("Invalid URL format.")

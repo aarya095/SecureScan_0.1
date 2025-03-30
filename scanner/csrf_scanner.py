@@ -15,7 +15,7 @@ class CSRFScanner:
         "Low": "CSRF vulnerability is mitigated with a CSRF token or the form uses a GET method."
     }
 
-    def __init__(self, mapped_data_file="mapped_data.json", results_file="security_scan_results.json"):
+    def __init__(self, mapped_data_file="mapped_data.json", results_file="scan_results_json/csrf.json"):
         self.mapped_data_file = mapped_data_file
         self.results_file = results_file
         self.scan_results = {}
@@ -113,7 +113,7 @@ class CSRFScanner:
         with open(self.results_file, "w") as f:
             json.dump(previous_results, f, indent=4)
 
-        print("\n✅ CSRF scan complete! Results saved in security_scan_results.json")
+        print("\n✅ CSRF scan complete! Results saved in csrf.json")
 
     def run(self):
         """Run the CSRF scanner."""

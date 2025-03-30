@@ -32,7 +32,8 @@ class CustomScanResultHandler:
         return "Unknown"
 
     def count_vulnerabilities(self, scan_results):
-        """Count vulnerabilities based on the scan results."""
+        """Count vulnerabilities while ensuring only valid data is processed."""
+        
         count = {
             "vulnerabilities_found": 0,
             "high_risk_vulnerabilities": 0,
@@ -43,12 +44,12 @@ class CustomScanResultHandler:
         for scanner_name, scan_data in scan_results.get("scans", {}).items():
             for url, vulnerabilities in scan_data.items():
                 for vuln in vulnerabilities:
-                    if not isinstance(vuln, dict):  # Ensure vuln is a dictionary
-                        print(f"⚠️ Warning: Skipping invalid data: {vuln}")
+                    if not isinstance(vuln, dict) or "severity" not in vuln:
+                        print(f"⚠️ Warning: Skipping invalid vulnerability data: {vuln}")
                         continue  
 
                     count["vulnerabilities_found"] += 1
-                    severity = vuln.get("severity", "").strip().lower()
+                    severity = vuln["severity"].strip().lower()
 
                     if severity == "high":
                         count["high_risk_vulnerabilities"] += 1
@@ -58,6 +59,7 @@ class CustomScanResultHandler:
                         count["low_risk_vulnerabilities"] += 1
 
         return count
+
 
     def store_custom_scan_results(self):
         """Save custom scan results to the database."""

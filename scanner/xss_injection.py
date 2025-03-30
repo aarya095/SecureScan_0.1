@@ -17,7 +17,7 @@ class XSSScanner:
         "Low": "XSS vulnerability with minimal impact, but still a potential risk."
     }
 
-    def __init__(self, mapped_data_file="mapped_data.json", results_file="security_scan_results.json"):
+    def __init__(self, mapped_data_file="mapped_data.json", results_file="scan_results_json/xss_injection.json"):
         self.mapped_data_file = mapped_data_file
         self.results_file = results_file
         self.scan_results = {}
@@ -38,7 +38,7 @@ class XSSScanner:
                 scan_results = json.load(f)
 
             if not isinstance(scan_results, dict):
-                print("❌ Error: Unexpected data format in security_scan_results.json")
+                print("❌ Error: Unexpected data format in xss_injection.json")
                 return False
 
             for timestamp, results in scan_results.items():
@@ -116,7 +116,7 @@ class XSSScanner:
         with open(self.results_file, "w") as f:
             json.dump(previous_results, f, indent=4)
 
-        print("\n✅ XSS Injection scan complete! Results saved in security_scan_results.json")
+        print("\n✅ XSS Injection scan complete! Results saved in xss_injection.json")
 
 
     def run(self):

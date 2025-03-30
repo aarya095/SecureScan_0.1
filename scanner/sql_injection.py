@@ -19,7 +19,7 @@ class SQLInjectionScanner:
         "Low": "Minor issue with SQL query, unlikely to be exploitable."
     }
 
-    def __init__(self, mapped_data_file="mapped_data.json", results_file="security_scan_results.json"):
+    def __init__(self, mapped_data_file="mapped_data.json", results_file="scan_results_json/sql_injection.json"):
         self.mapped_data_file = mapped_data_file
         self.results_file = results_file
         self.scan_results = {}
@@ -85,7 +85,7 @@ class SQLInjectionScanner:
         with open(self.results_file, "w") as f:
             json.dump(previous_results, f, indent=4)
 
-        print("\n✅ SQL Injection scan complete! Results saved in security_scan_results.json")
+        print("\n✅ SQL Injection scan complete! Results saved in sql_injection.json")
 
     def run(self):
         """Run the SQL Injection scanner."""

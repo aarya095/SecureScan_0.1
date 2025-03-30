@@ -14,7 +14,7 @@ class BrokenAuthScanner:
         "Low": "The vulnerability is either mitigated or less impactful."
     }
 
-    def __init__(self, mapped_data_file="mapped_data.json", results_file="security_scan_results.json"):
+    def __init__(self, mapped_data_file="mapped_data.json", results_file="scan_results_json/broken_authentication.json"):
         self.mapped_data_file = mapped_data_file
         self.results_file = results_file
         self.mapped_data = self.load_mapped_data()
@@ -139,7 +139,7 @@ class BrokenAuthScanner:
         with open(self.results_file, "w") as f:
             json.dump(previous_results, f, indent=4)
 
-        print("\n✅ Authentication Tests Complete! Results saved in security_scan_results.json")
+        print("\n✅ Authentication Tests Complete! Results saved in broken_authentication.json")
 
     def run(self):
         """Run authentication tests on detected login pages."""
