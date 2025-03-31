@@ -9,7 +9,7 @@ from scanner.injections.xss_injection import XSSScanner
 from scanner.authentication.broken_authentication import BrokenAuthScanner
 from scanner.authentication.csrf_scanner import CSRFScanner
 from scanner.crawler import WebCrawler
-from scan_report.store_custom_scan import CustomScanResultHandler
+from scan_engine.reports.scan_report.store_custom_scan import CustomScanResultHandler
 from Database.db_connection import DatabaseConnection as db
 
 class CustomSecurityScanner:
