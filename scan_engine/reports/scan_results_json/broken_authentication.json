@@ -4,7 +4,8 @@
             "http://localhost:3000/login": {
                 "Weak Passwords Severity": "High",
                 "Brute Force Protection Severity": "High",
-                "Session Management Severity": "High"
+                "Session Management Severity": "High",
+                "Overall Severity": "High"
             }
         }
     }

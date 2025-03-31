@@ -18,7 +18,7 @@ class XSSScanner:
         "Safe": "No XSS vulnerabilities detected on this page."
     }
 
-    def __init__(self, mapped_data_file="mapped_data.json", results_file="scan_results_json/xss_injection.json"):
+    def __init__(self, mapped_data_file="scan_engine/scanner/mapped_data.json", results_file="scan_engine/reports/scan_results_json/xss_injection.json"):
         self.mapped_data_file = mapped_data_file
         self.results_file = results_file
         self.scan_results = {}

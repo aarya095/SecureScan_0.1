@@ -15,7 +15,7 @@ class CSRFScanner:
         "Safe": "The form is secured with a CSRF token or uses a GET method."
     }
 
-    def __init__(self, mapped_data_file="mapped_data.json", results_file="scan_results_json/csrf.json"):
+    def __init__(self, mapped_data_file="scan_engine/scanner/mapped_data.json", results_file="scan_engine/reports/scan_results_json/csrf.json"):
         self.mapped_data_file = mapped_data_file
         self.results_file = results_file
         self.scan_results = {}

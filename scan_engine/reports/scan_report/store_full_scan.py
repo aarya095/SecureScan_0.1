@@ -15,17 +15,22 @@ class FullScanResultHandler:
         """Load and combine scan results from multiple JSON files."""
         combined_results = {"scans": {}, "execution_times": {}, "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
         
+        # Ensure self.json_files is a proper list of file paths
+        if not isinstance(self.json_files, list) or not all(isinstance(f, str) for f in self.json_files):
+            print(f"❌ Error: self.json_files must be a list of valid file paths. Received: {self.json_files}")
+            return combined_results
+
         for file in self.json_files:
-            if not os.path.exists(file):
-                print(f"⚠️ Warning: {file} not found. Skipping...")
+            if not os.path.isfile(file):  # Ensure it's a valid file, not a directory or invalid string
+                print(f"⚠️ Warning: {file} not found or is not a valid file. Skipping...")
                 continue
             
             try:
                 with open(file, "r") as f:
                     scan_data = json.load(f)
 
-                # Merge scan data into combined_results
-                combined_results["scans"][file.replace(".json", "")] = scan_data.get("scans", {})
+                # Merge scan data
+                combined_results["scans"][os.path.basename(file).replace(".json", "")] = scan_data.get("scans", {})
 
                 # Merge execution times if available
                 if "execution_times" in scan_data:
@@ -33,7 +38,7 @@ class FullScanResultHandler:
 
             except (json.JSONDecodeError, FileNotFoundError) as e:
                 print(f"❌ Error: Unable to read {file}. {e}")
-        
+
         return combined_results
 
     def store_scan_results(self):

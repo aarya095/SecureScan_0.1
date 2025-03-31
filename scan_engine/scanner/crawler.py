@@ -5,6 +5,7 @@ import time
 import subprocess
 from urllib.parse import urljoin, urlparse
 from playwright.sync_api import sync_playwright
+from scan_engine.execution.full_scan.run_all_scanners import SecurityScanner
 
 class WebCrawler:
     def __init__(self, target_url, mode="full_scan", selected_scanners=None, max_depth=2, max_pages=50):
@@ -20,7 +21,7 @@ class WebCrawler:
         self.max_pages = max_pages
         self.visited_links = set()
         self.mapped_data = {"target_url": target_url, "pages": []}
-        self.results_file = "mapped_data.json"
+        self.results_file = "scan_engine/scanner/mapped_data.json"
 
     def extract_links(self, page, base_url):
         """Extracts all valid internal links from the page."""
@@ -89,7 +90,9 @@ class WebCrawler:
 
     def crawl(self):
         """Main function to start crawling a website."""
-        print("\n🚀 Starting Web Crawler...")
+        print("\n🚀 Starting Web Crawler...")  # Debugging
+        print(f"🔎 Target URL: {self.target_url}")  # Debugging
+
         start_time = time.time()
 
         with sync_playwright() as p:
@@ -109,35 +112,70 @@ class WebCrawler:
         self.run_scanners()
 
     def store_crawl_results(self, crawl_time):
-        """Saves crawling results into a JSON file."""
+        """Saves crawling results into the existing JSON file."""
+        
         self.mapped_data["execution_time"] = round(crawl_time, 2)
 
-        with open(self.results_file, "w") as file:
-            json.dump(self.mapped_data, file, indent=4)
+        # Ensure there's actual data to save (skip if empty)
+        if not self.mapped_data["pages"]:
+            print("❌ No data to save. No pages crawled.")
+            return
 
-        print(f"\n✅ Crawling results saved to {self.results_file}")
+        try:
+            # Check if the file exists
+            if os.path.exists(self.results_file):
+                with open(self.results_file, "r+", encoding="utf-8") as file:
+                    try:
+                        existing_data = json.load(file)  # ✅ Attempt to load existing data
+                        print(f"📂 Loaded existing data: {existing_data}")
+                    except json.JSONDecodeError:
+                        print(f"⚠️ {self.results_file} is empty or invalid. Creating a new one.")
+                        existing_data = {}  # ✅ Set default empty dictionary
+
+                    # Merge existing data with new crawl results
+                    existing_data.update(self.mapped_data)
+
+                    # ✅ Write the updated JSON back to the file
+                    file.seek(0)
+                    json.dump(existing_data, file, indent=4)
+                    file.truncate()  # ✅ Ensures old data is removed
+
+            else:
+                # If file doesn't exist, create and write new data
+                with open(self.results_file, "w", encoding="utf-8") as file:
+                    json.dump(self.mapped_data, file, indent=4)
+
+                print(f"✅ Created new file and saved crawl data to {self.results_file}")
+
+            print(f"\n✅ Crawling results saved to {self.results_file}")
+
+        except Exception as e:
+            print(f"❌ Error saving crawl results: {e}")
 
     def run_scanners(self):
         """Runs the appropriate scanner script after crawling."""
-        script_to_run = "scanner/custom_scan_website.py" if self.mode == "custom_scan" else "scanner/run_all_scanners.py"
-        
         print(f"\n🚀 Running Scanners... (Mode: {self.mode})")
 
         try:
             if self.mode == "custom_scan":
-                scanner_args = " ".join(self.selected_scanners)
-                subprocess.run(["python", script_to_run, self.results_file, scanner_args], check=True)
+                # Directly call the custom_scan function
+                from scan_engine.execution.custom_scan.custom_scan_website import custom_scan
+                custom_scan(self.results_file, self.selected_scanners)
             else:
-                subprocess.run(["python", script_to_run, self.results_file], check=True)
-            
+                # Call the full scan function directly
+                SecurityScanner(self.results_file)
+
             print(f"\n✅ Scanners executed successfully!")
 
-        except subprocess.CalledProcessError as e:
+        except Exception as e:
             print(f"❌ Error running scanner script: {e}")
 
 if __name__ == "__main__":
+    print("✅ Script Started!")  # Debugging - Check if script starts execution
     target_url = input("Enter the target URL (e.g., http://example.com): ").strip()
+    print(f"✅ Received Input URL: {target_url}")  # Debugging - Check if input is received
     if target_url.startswith("http"):
+        print("✅ URL is valid, initializing WebCrawler...")  # Debugging
         WebCrawler(target_url).crawl()
     else:
         print("❌ Invalid URL! Make sure to include 'http://' or 'https://'.")

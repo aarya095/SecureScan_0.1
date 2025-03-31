@@ -3,12 +3,12 @@ import time
 import os
 import sys
 import hashlib
-from scanner.network.http_scanner import URLSecurityScanner
-from scanner.injections.sql_injection import SQLInjectionScanner
-from scanner.injections.xss_injection import XSSScanner
-from scanner.authentication.broken_authentication import BrokenAuthScanner
-from scanner.authentication.csrf_scanner import CSRFScanner
-from scanner.crawler import WebCrawler
+from scan_engine.scanner.network.http_scanner import URLSecurityScanner
+from scan_engine.scanner.injections.sql_injection import SQLInjectionScanner
+from scan_engine.scanner.injections.xss_injection import XSSScanner
+from scan_engine.scanner.authentication.broken_authentication import BrokenAuthScanner
+from scan_engine.scanner.authentication.csrf_scanner import CSRFScanner
+from scan_engine.scanner.crawler import WebCrawler
 from scan_engine.reports.scan_report.store_custom_scan import CustomScanResultHandler
 from Database.db_connection import DatabaseConnection as db
 

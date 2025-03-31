@@ -9,7 +9,7 @@ class URLSecurityScanner:
         "Safe": "Secure connection using HTTPS. No immediate security risk detected."
     }
 
-    def __init__(self, mapped_data_file="mapped_data.json", results_file="scan_results_json/http.json"):
+    def __init__(self, mapped_data_file="scan_engine/scanner/mapped_data.json", results_file="scan_engine/reports/scan_results_json/http.json"):
         self.mapped_data_file = mapped_data_file
         self.results_file = results_file
         self.urls = set()  
@@ -85,7 +85,7 @@ class URLSecurityScanner:
         with open(self.results_file, "w") as f:
             json.dump(previous_results, f, indent=4)
 
-        print("\n✅ HTTP/HTTPS check complete! Results saved in security_scan_results.json")
+        print("\n✅ HTTP/HTTPS check complete! Results saved in http.json")
 
     def run(self):
         """Main method to execute the URL security scan."""

@@ -1,7 +1,7 @@
 import json
 import os
 import time
-from scanner.crawler import WebCrawler
+from scan_engine.scanner.crawler import WebCrawler
 from scan_engine.execution.full_scan.run_all_scanners import SecurityScanner
 from scan_engine.reports.scan_report.store_full_scan import FullScanResultHandler
 
@@ -10,29 +10,50 @@ class SecurityScanManager:
 
     def __init__(self):
         self.project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-        self.scanner_results_dir = os.path.join(self.project_root, "scan_results_json")  # Directory for scanner outputs
+        self.scanner_results_dir = "scan_engine/reports/scan_resutls_json"
 
     def update_scan_results(self, scanner_name, execution_time):
-        """Update the execution time for a specific scanner in its result JSON file."""
-        results_file = os.path.join(self.scanner_results_dir, f"{scanner_name}.json")
+        """Update the execution time for a specific scanner in its existing result JSON file."""
+
+        # Define actual file paths for each scanner's JSON file
+        scanner_file_paths = {
+            "http": "scan_engine/reports/scan_results_json/http.json",
+            "sql_injection": "scan_engine/reports/scan_results_json/sql_injection.json",
+            "xss_injection": "scan_engine/reports/scan_results_json/xss_injection.json",
+            "broken_authentication": "scan_engine/reports/scan_results_json/broken_authentication.json",
+            "csrf": "scan_engine/reports/scan_results_json/csrf.json"
+        }
+
+        # Get the file path for the given scanner_name
+        results_file = scanner_file_paths.get(scanner_name)
+
+        # If scanner name is not found in the mapping
+        if not results_file:
+            print(f"⚠️ Scanner '{scanner_name}' does not have a predefined results file.")
+            return
+
+        # Check if the results file exists
+        if not os.path.exists(results_file):
+            print(f"⚠️ Skipping update: {results_file} not found.")
+            return  # Exit the function without creating a new file
 
         try:
-            if os.path.exists(results_file):
-                with open(results_file, "r") as file:
-                    results = json.load(file)
-            else:
-                results = {}
+            # Read existing file
+            with open(results_file, "r") as file:
+                results = json.load(file)
 
             # Ensure "execution_times" key exists
             if "execution_times" not in results:
                 results["execution_times"] = {}
 
-            # Store execution time
+            # Update execution time
             results["execution_times"][scanner_name] = execution_time
 
-            # Save updated results
+            # Write the updated data back to the file
             with open(results_file, "w") as file:
                 json.dump(results, file, indent=4)
+
+            print(f"✅ Updated execution time for {scanner_name} in {results_file}")
 
         except (FileNotFoundError, json.JSONDecodeError) as e:
             print(f"❌ Error updating {results_file}: {e}")
@@ -56,10 +77,11 @@ class SecurityScanManager:
         print("\n🚀 Running Security Scanners...")
         start_time = time.time()
 
-        scanner = SecurityScanner()
-        scanner.run_all_scanners()  # Run all security scanners
+        results_file = "scan_engine/reports/scan_results.json"  
+        scanner = SecurityScanner(results_file) 
+        scanner.run_all_scanners() 
 
-        from scanner.network.http_scanner import URLSecurityScanner
+        from scan_engine.scanner.network.http_scanner import URLSecurityScanner
         url_scanner = URLSecurityScanner()
         url_scanner.run()
 
@@ -76,7 +98,15 @@ class SecurityScanManager:
         print("\n🚀 Storing Results...")
         start_time = time.time()
 
-        scan_files = [os.path.join(self.scanner_results_dir, file) for file in os.listdir(self.scanner_results_dir) if file.endswith("_results.json")]
+        # Directly provide paths to the result JSON files
+        scan_files = [
+            "scan_engine/reports/scan_results_json/http.json"
+            "scan_engine/reports/scan_results_json/broken_authentication.json",
+            "scan_engine/reports/scan_results_json/csrf.json",
+            "scan_engine/reports/scan_results_json/sql_injection.json"
+            "scan_engine/reports/scan_results_json/xss_injection.json"
+        ]
+
 
         for scan_file in scan_files:
             scan_handler = FullScanResultHandler(scan_file)

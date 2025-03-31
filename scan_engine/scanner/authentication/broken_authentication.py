@@ -15,7 +15,7 @@ class BrokenAuthScanner:
         "Safe": "No vulnerabilities detected. Authentication appears secure."
     }
 
-    def __init__(self, mapped_data_file="mapped_data.json", results_file="scan_results_json/broken_authentication.json"):
+    def __init__(self, mapped_data_file="scan_engine/scanner/mapped_data.json", results_file="scan_engine/reports/scan_results_json/broken_authentication.json"):
         self.mapped_data_file = mapped_data_file
         self.results_file = results_file
         self.mapped_data = self.load_mapped_data()
