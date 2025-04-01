@@ -1,13 +1,11 @@
 from PyQt6 import QtCore, QtWidgets
 from PyQt6.QtGui import QAction 
-from scanner.run_selected_scanners import CustomSecurityScanner
 
 class CustomScanTab(QtWidgets.QWidget):
     def __init__(self, parent=None, tab_widget=None):
         super().__init__(parent)
         self.tabWidget = tab_widget
         self.selected_scanners = []
-        self.security_scanner = CustomSecurityScanner()
         self.setupUi()
 
     def setupUi(self):
