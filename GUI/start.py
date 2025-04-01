@@ -44,7 +44,7 @@ class SecureScanApp:
 
     def open_login_window(self):
         """Destroy current window and open login window."""
-        from log_in.login_logic import LoginWindow  # Import here to avoid circular import
+        from user_authentication.login.login_logic import LoginWindow  # Import here to avoid circular import
         self.root.destroy()
         LoginWindow()
 
