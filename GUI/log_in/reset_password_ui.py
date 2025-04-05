@@ -2,17 +2,21 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QMessageBox
 
 class ResetPasswordWindow(QtWidgets.QMainWindow):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(431, 451)
+    def __init__(self):
+        super().__init__()
+        self.init_ui()
+
+    def init_ui(self):
+        self.setObjectName("MainWindow")
+        self.resize(431, 451)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
-        MainWindow.setSizePolicy(sizePolicy)
-        MainWindow.setMinimumSize(QtCore.QSize(431, 451))
-        MainWindow.setMaximumSize(QtCore.QSize(431, 451))
-        self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
+        sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
+        self.setSizePolicy(sizePolicy)
+        self.setMinimumSize(QtCore.QSize(431, 451))
+        self.setMaximumSize(QtCore.QSize(431, 451))
+        self.centralwidget = QtWidgets.QWidget(parent=self)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -31,6 +35,7 @@ class ResetPasswordWindow(QtWidgets.QMainWindow):
         self.bg_image_label.setObjectName("bg_image_label")
         self.reset_password_label = QtWidgets.QLabel(parent=self.centralwidget)
         self.reset_password_label.setGeometry(QtCore.QRect(100, 20, 341, 71))
+        self.reset_password_label.setText(("Reset Password"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -49,6 +54,7 @@ class ResetPasswordWindow(QtWidgets.QMainWindow):
         self.reset_password_label.setObjectName("reset_password_label")
         self.enter_password_label = QtWidgets.QLabel(parent=self.centralwidget)
         self.enter_password_label.setGeometry(QtCore.QRect(100, 90, 301, 28))
+        self.enter_password_label.setText(("Please enter the new password"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -67,6 +73,7 @@ class ResetPasswordWindow(QtWidgets.QMainWindow):
         self.enter_password_label.setObjectName("enter_password_label")
         self.new_password_txtfield = QtWidgets.QLineEdit(parent=self.centralwidget)
         self.new_password_txtfield.setGeometry(QtCore.QRect(40, 180, 361, 41))
+        self.new_password_txtfield.setPlaceholderText(("new password"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -88,6 +95,7 @@ class ResetPasswordWindow(QtWidgets.QMainWindow):
         self.new_password_txtfield.setObjectName("new_password_txtfield")
         self.confirm_password_txtfield = QtWidgets.QLineEdit(parent=self.centralwidget)
         self.confirm_password_txtfield.setGeometry(QtCore.QRect(40, 240, 361, 41))
+        self.confirm_password_txtfield.setPlaceholderText(("confirm password"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -109,6 +117,7 @@ class ResetPasswordWindow(QtWidgets.QMainWindow):
         self.confirm_password_txtfield.setObjectName("confirm_password_txtfield")
         self.set_password_button = QtWidgets.QPushButton(parent=self.centralwidget)
         self.set_password_button.setGeometry(QtCore.QRect(40, 350, 361, 41))
+        self.set_password_button.setText(("Set Password"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -138,34 +147,15 @@ class ResetPasswordWindow(QtWidgets.QMainWindow):
 "    transform: scale(0.95);  /* Slight shrink effect */\n"
 "}")
         self.set_password_button.setObjectName("set_password_button")
-        MainWindow.setCentralWidget(self.centralwidget)
+        self.setCentralWidget(self.centralwidget)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.reset_password_label.setText(_translate("MainWindow", "Reset Password"))
-        self.enter_password_label.setText(_translate("MainWindow", "Please enter the new password"))
-        self.new_password_txtfield.setPlaceholderText(_translate("MainWindow", "new password"))
-        self.confirm_password_txtfield.setPlaceholderText(_translate("MainWindow", "confirm password"))
-        self.set_password_button.setText(_translate("MainWindow", "Set Password"))
+        QtCore.QMetaObject.connectSlotsByName(self)
 
     def close_reset_password_ui(self):
         self.close()
     def show_message(self, title, message):
-        """Displays a popup message."""
-        msg_box = QMessageBox()
+        msg_box = QMessageBox(self)  
         msg_box.setWindowTitle(title)
         msg_box.setText(message)
+        msg_box.setIcon(QMessageBox.Icon.Critical if title == "Error" else QMessageBox.Icon.Information)
         msg_box.exec()
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = ResetPasswordWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec())
