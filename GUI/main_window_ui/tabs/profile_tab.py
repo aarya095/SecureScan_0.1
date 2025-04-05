@@ -90,7 +90,3 @@ class ProfileTab(QtWidgets.QWidget):
 
         self.horizontalLayout_4.addWidget(self.profile_tab_right_frame)
 
-        self.retranslateUi()
-
-    def retranslateUi(self):
-        _translate = QtCore.QCoreApplication.translate

@@ -128,7 +128,3 @@ class CustomScanTab(QtWidgets.QWidget):
         # Display results in UI
         for scanner, result in scan_results["scans"].items():
             self.custom_scan_output_textBrowser.append(f"\n🛠️ **{scanner} Results:**\n{result}")
-
-    def retranslateUi(self):
-        _translate = QtCore.QCoreApplication.translate
-        

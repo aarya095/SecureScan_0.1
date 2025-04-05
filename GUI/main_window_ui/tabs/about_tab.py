@@ -40,6 +40,3 @@ class AboutTab(QtWidgets.QWidget):
 
         self.verticalLayout_9.addWidget(self.about_tab_scrollArea_2)
         self.about_tab_scrollArea.setWidget(self.scrollAreaWidgetContents)
-
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate

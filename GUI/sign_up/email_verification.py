@@ -1,19 +1,25 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 
-class EmailVerificationWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(431, 451)
+class EmailVerificationWindow(QtWidgets.QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.init_ui()
+
+    def init_ui(self):
+        self.setObjectName("MainWindow")
+        self.resize(431, 451)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(43)
         sizePolicy.setVerticalStretch(45)
-        sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
-        MainWindow.setSizePolicy(sizePolicy)
-        MainWindow.setMinimumSize(QtCore.QSize(431, 451))
-        MainWindow.setMaximumSize(QtCore.QSize(431, 451))
-        self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
+        sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
+        self.setSizePolicy(sizePolicy)
+        self.setMinimumSize(QtCore.QSize(431, 451))
+        self.setMaximumSize(QtCore.QSize(431, 451))
+        
+        self.centralwidget = QtWidgets.QWidget(parent=self)
         self.centralwidget.setObjectName("centralwidget")
+        
         self.bg_image_label = QtWidgets.QLabel(parent=self.centralwidget)
         self.bg_image_label.setGeometry(QtCore.QRect(0, 0, 431, 451))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
@@ -26,8 +32,10 @@ class EmailVerificationWindow(object):
         self.bg_image_label.setText("")
         self.bg_image_label.setPixmap(QtGui.QPixmap("../SecureScan_01/icons/login3.jpg"))
         self.bg_image_label.setObjectName("bg_image_label")
+        
         self.email_verification_label = QtWidgets.QLabel(parent=self.centralwidget)
         self.email_verification_label.setGeometry(QtCore.QRect(40, 30, 361, 71))
+        self.email_verification_label.setText(("Email Verification"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -46,6 +54,7 @@ class EmailVerificationWindow(object):
         self.email_verification_label.setObjectName("email_verification_label")
         self.enter_otp_label = QtWidgets.QLabel(parent=self.centralwidget)
         self.enter_otp_label.setGeometry(QtCore.QRect(110, 110, 201, 28))
+        self.enter_otp_label.setText(("Please enter the otp"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -64,6 +73,7 @@ class EmailVerificationWindow(object):
         self.enter_otp_label.setObjectName("enter_otp_label")
         self.otp_txtfield = QtWidgets.QLineEdit(parent=self.centralwidget)
         self.otp_txtfield.setGeometry(QtCore.QRect(40, 210, 361, 41))
+        self.otp_txtfield.setPlaceholderText(("enter otp"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -84,6 +94,7 @@ class EmailVerificationWindow(object):
         self.otp_txtfield.setObjectName("otp_txtfield")
         self.verify_otp_button = QtWidgets.QPushButton(parent=self.centralwidget)
         self.verify_otp_button.setGeometry(QtCore.QRect(40, 270, 361, 41))
+        self.verify_otp_button.setText(("Verify Email"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -114,25 +125,7 @@ class EmailVerificationWindow(object):
 "    transform: scale(0.95);  /* Slight shrink effect */\n"
 "}")
         self.verify_otp_button.setObjectName("verify_otp_button")
-        MainWindow.setCentralWidget(self.centralwidget)
+        self.setCentralWidget(self.centralwidget)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(self)
 
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.email_verification_label.setText(_translate("MainWindow", "Email Verification"))
-        self.enter_otp_label.setText(_translate("MainWindow", "Please enter the otp"))
-        self.otp_txtfield.setPlaceholderText(_translate("MainWindow", "enter otp"))
-        self.verify_otp_button.setText(_translate("MainWindow", "Verify Email"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = EmailVerificationWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec())

@@ -7,7 +7,7 @@ from GUI.main_window_ui.tabs.about_tab import AboutTab
 
 from GUI.theme_switch.theme_manager import ThemeSwitcher
 
-class Ui_MainWindow(object):
+class Ui_MainWindow(QtWidgets.QMainWindow):
 
     @staticmethod
     def load_stylesheet(file_path):
@@ -19,21 +19,25 @@ class Ui_MainWindow(object):
             print(f"Warning: Stylesheet '{file_path}' not found.")
             return ""
 
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1099, 693)
+    def __init__(self):
+        super().__init__()
+        self.init_ui()
 
-        MainWindow.setWindowIcon(QtGui.QIcon("icons/S_logo.png"))
+    def init_ui(self):
+        self.setObjectName("MainWindow")
+        self.resize(1099, 693)
+
+        self.setWindowIcon(QtGui.QIcon("icons/S_logo.png"))
 
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
-        MainWindow.setSizePolicy(sizePolicy)
-        MainWindow.setStyleSheet("QMainWindow{\n"
+        sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
+        self.setSizePolicy(sizePolicy)
+        self.setStyleSheet("QMainWindow{\n"
 "    background-color:black\n"
 "}")
-        self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
+        self.centralwidget = QtWidgets.QWidget(parent=self)
         self.centralwidget.setObjectName("centralwidget")
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -44,7 +48,7 @@ class Ui_MainWindow(object):
         self.tabWidget = QtWidgets.QTabWidget(parent=self.centralwidget)
         layout = QtWidgets.QVBoxLayout(self.centralwidget)  # Use vertical layout
         layout.addWidget(self.tabWidget)
-        MainWindow.setCentralWidget(self.centralwidget)  
+        self.setCentralWidget(self.centralwidget)  
         self.tabWidget.setObjectName("tabWidget")
 
         self.home_tab = QuickScanTab(parent=self.tabWidget)
@@ -65,21 +69,16 @@ class Ui_MainWindow(object):
         self.tabWidget.setCurrentIndex(0)
         print("Total Tabs:", self.tabWidget.count())
         
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "SecureScan"))
+        QtCore.QMetaObject.connectSlotsByName(self)
 
-def center_window(MainWindow):
+def center_window(self):
     """Centers the MainWindow on the screen."""
     screen = QtWidgets.QApplication.primaryScreen().geometry()  # Get screen size
-    window = MainWindow.frameGeometry()  # Get window size
+    window = self.frameGeometry()  # Get window size
 
     center_x = (screen.width() - window.width()) // 2
     center_y = (screen.height() - window.height()) // 2
-    MainWindow.move(center_x, center_y)
+    self.move(center_x, center_y)
 
 if __name__ == "__main__":
     import sys
