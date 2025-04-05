@@ -16,7 +16,6 @@ QPushButton {
                 border: solid;
                 border-radius: 20px;
                 border-width: 0.1px;
-                transition: all 0.2s ease;
                 font-size: 25px;
                 font-weight: bold;
                 padding: 10px 5px;
@@ -28,7 +27,6 @@ QPushButton {
             }
             QPushButton:pressed {
                 background-color: #1e8449;
-                transform: scale(0.95);
             }
 
 QComboBox {
@@ -37,7 +35,6 @@ QComboBox {
                 border: solid;
                 border-radius: 20px;
                 border-width: 0.1px;
-                transition: all 0.2s ease;
                 font-size: 25px;
                 font-weight: bold;
                 padding-top: 10px;
@@ -50,7 +47,6 @@ QComboBox {
             }
             QPushButton:pressed {
                 background-color: #1e8449;
-                transform: scale(0.95);
             }
 
 QLabel {
@@ -97,7 +93,6 @@ QToolButton {
     border: solid;
     border-radius: 20px;
     border-width: 0.1px;
-    transition: all 0.2s ease;
     font-size: 25px;
     font-weight: bold;
     padding: 10px 20px;
@@ -111,7 +106,6 @@ QToolButton:hover {
 
 QToolButton:pressed {
     background-color: #1e8449;
-    transform: scale(0.95);
 }
 
 QMenu {

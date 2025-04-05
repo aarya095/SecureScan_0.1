@@ -26,7 +26,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     def init_ui(self):
         self.setObjectName("MainWindow")
         self.resize(1099, 693)
-
+    
         self.setWindowIcon(QtGui.QIcon("icons/S_logo.png"))
 
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
@@ -64,7 +64,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.tabWidget.addTab(self.profile_tab, "Profile")
         self.tabWidget.addTab(self.about_tab, "About")
 
-        MainWindow.setCentralWidget(self.centralwidget)
+        self.setCentralWidget(self.centralwidget)
 
         self.tabWidget.setCurrentIndex(0)
         print("Total Tabs:", self.tabWidget.count())
@@ -89,9 +89,8 @@ if __name__ == "__main__":
 
     # 🔹 Initialize Main Window
     MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    center_window(MainWindow)
+    window = Ui_MainWindow()
+    window.show()
+    center_window(window)
 
     sys.exit(app.exec())

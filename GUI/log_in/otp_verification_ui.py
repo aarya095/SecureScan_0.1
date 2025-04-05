@@ -96,7 +96,6 @@ class OTPVerificationWindow(QtWidgets.QMainWindow):
 "\n"
 "QPushButton:pressed {\n"
 "    background-color: #1e8449;\n"
-"    transform: scale(0.95);  /* Slight shrink effect */\n"
 "}")
         self.verify_otp_button.setObjectName("verify_otp_button")
         self.enter_otp_label = QtWidgets.QLabel(parent=self.centralwidget)

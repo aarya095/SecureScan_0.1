@@ -11,7 +11,6 @@ class QuickScanTab(QtWidgets.QWidget):
 
     def setupUi(self):
 
-        # Main Layout
         self.horizontalLayout = QtWidgets.QHBoxLayout(self)
         
         # Left 
@@ -87,13 +86,6 @@ class QuickScanTab(QtWidgets.QWidget):
 
         self.horizontalLayout.addWidget(self.home_right_frame)
 
-        # Set main layout
-        main_layout = QtWidgets.QVBoxLayout(self)
-        main_layout.addWidget(self)
-        self.setLayout(main_layout)
-
-        self.retranslateUi()
-
     def update_greeting(self):
 
             current_hour = datetime.datetime.now().hour
@@ -130,5 +122,3 @@ class QuickScanTab(QtWidgets.QWidget):
             print(f"Error loading security tips: {e}")
             self.security_tip_label.setText("Tip of the Day: Stay safe online!")
 
-    def retranslateUi(self):
-        _translate = QtCore.QCoreApplication.translate

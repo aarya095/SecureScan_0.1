@@ -174,7 +174,6 @@ class SignUpWindow(QtWidgets.QMainWindow):
 "    border: solid;\n"
 "    border-radius: 20px;\n"
 "    border-width: 0.1px;\n"
-"    transition: all 0.2s ease;\n"
 "}\n"
 "\n"
 "QPushButton:hover {\n"
@@ -183,7 +182,6 @@ class SignUpWindow(QtWidgets.QMainWindow):
 "\n"
 "QPushButton:pressed {\n"
 "    background-color: #1e8449;\n"
-"    transform: scale(0.95);  /* Slight shrink effect */\n"
 "}")
         self.next_button.setObjectName("next_button")
         self.line = QtWidgets.QFrame(parent=self.main_frame)

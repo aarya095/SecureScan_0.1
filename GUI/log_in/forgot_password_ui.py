@@ -107,7 +107,6 @@ class ForgotPasswordWindow(QtWidgets.QMainWindow):
 "\n"
 "QPushButton:pressed {\n"
 "    background-color: #1e8449;\n"
-"    transform: scale(0.95);  /* Slight shrink effect */\n"
 "}")
         self.sent_otp_button.setObjectName("sent_otp_button")
         MainWindow.setCentralWidget(self.centralwidget)
