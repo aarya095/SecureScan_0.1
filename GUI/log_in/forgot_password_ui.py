@@ -1,7 +1,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtWidgets import QMessageBox
 
-
-class ForgotPasswordWindow(object):
+class ForgotPasswordWindow(QtWidgets.QMainWindow):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(431, 451)
@@ -41,36 +41,36 @@ class ForgotPasswordWindow(object):
 "    font-weight:bold;\n"
 "}")
         self.forgot_password_label.setObjectName("forgot_password_label")
-        self.enter_email_label = QtWidgets.QLabel(parent=self.centralwidget)
-        self.enter_email_label.setGeometry(QtCore.QRect(130, 110, 231, 28))
+        self.enter_username_label = QtWidgets.QLabel(parent=self.centralwidget)
+        self.enter_username_label.setGeometry(QtCore.QRect(130, 110, 231, 28))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.enter_email_label.sizePolicy().hasHeightForWidth())
-        self.enter_email_label.setSizePolicy(sizePolicy)
+        sizePolicy.setHeightForWidth(self.enter_username_label.sizePolicy().hasHeightForWidth())
+        self.enter_username_label.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setFamily("Nirmala Text")
         font.setPointSize(12)
         font.setBold(True)
         font.setWeight(75)
-        self.enter_email_label.setFont(font)
-        self.enter_email_label.setStyleSheet("QLabel {\n"
+        self.enter_username_label.setFont(font)
+        self.enter_username_label.setStyleSheet("QLabel {\n"
 "    color:white;\n"
 "    font-weight:bold;\n"
 "}")
-        self.enter_email_label.setObjectName("enter_email_label")
-        self.email_txtfield = QtWidgets.QLineEdit(parent=self.centralwidget)
-        self.email_txtfield.setGeometry(QtCore.QRect(40, 230, 361, 41))
+        self.enter_username_label.setObjectName("enter_username_label")
+        self.username_txtfield = QtWidgets.QLineEdit(parent=self.centralwidget)
+        self.username_txtfield.setGeometry(QtCore.QRect(40, 230, 361, 41))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.email_txtfield.sizePolicy().hasHeightForWidth())
-        self.email_txtfield.setSizePolicy(sizePolicy)
+        sizePolicy.setHeightForWidth(self.username_txtfield.sizePolicy().hasHeightForWidth())
+        self.username_txtfield.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setFamily("Nirmala Text")
         font.setPointSize(14)
-        self.email_txtfield.setFont(font)
-        self.email_txtfield.setStyleSheet("QLineEdit {\n"
+        self.username_txtfield.setFont(font)
+        self.username_txtfield.setStyleSheet("QLineEdit {\n"
 "    border: solid;\n"
 "    border-radius: 20px;\n"
 "    border-width: 0.5px;\n"
@@ -78,7 +78,7 @@ class ForgotPasswordWindow(object):
 "    padding-left: 20px; \n"
 "    padding-right: 20px;\n"
 "}")
-        self.email_txtfield.setObjectName("email_txtfield")
+        self.username_txtfield.setObjectName("username_txtfield")
         self.sent_otp_button = QtWidgets.QPushButton(parent=self.centralwidget)
         self.sent_otp_button.setGeometry(QtCore.QRect(40, 290, 361, 41))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
@@ -99,7 +99,6 @@ class ForgotPasswordWindow(object):
 "    border: solid;\n"
 "    border-radius: 20px;\n"
 "    border-width: 0.1px;\n"
-"    transition: all 0.2s ease;\n"
 "}\n"
 "\n"
 "QPushButton:hover {\n"
@@ -120,14 +119,21 @@ class ForgotPasswordWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.forgot_password_label.setText(_translate("MainWindow", "Forgot Password"))
-        self.enter_email_label.setText(_translate("MainWindow", "Please enter your email"))
-        self.email_txtfield.setPlaceholderText(_translate("MainWindow", "email"))
+        self.enter_username_label.setText(_translate("MainWindow", "Please enter your username"))
+        self.username_txtfield.setPlaceholderText(_translate("MainWindow", "username"))
         self.sent_otp_button.setText(_translate("MainWindow", "Send OTP"))
+
+    def show_message(self, title, message):
+        """Displays a popup message."""
+        msg_box = QMessageBox()
+        msg_box.setWindowTitle(title)
+        msg_box.setText(message)
+        msg_box.exec()
     
-    def otp_verification_window(self):
+    def open_otp_verification_window(self):
         
         from GUI.log_in.otp_verification_ui import OTPVerificationWindow 
-        self.hide()
+        self.close()
         self.otp_verification_window = OTPVerificationWindow()  
         self.otp_verification_window.show()
 

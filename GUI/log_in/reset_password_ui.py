@@ -1,7 +1,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtWidgets import QMessageBox
 
-
-class ResetPasswordWindow(object):
+class ResetPasswordWindow(QtWidgets.QMainWindow):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(431, 451)
@@ -127,7 +127,6 @@ class ResetPasswordWindow(object):
 "    border: solid;\n"
 "    border-radius: 20px;\n"
 "    border-width: 0.1px;\n"
-"    transition: all 0.2s ease;\n"
 "}\n"
 "\n"
 "QPushButton:hover {\n"
@@ -153,12 +152,14 @@ class ResetPasswordWindow(object):
         self.confirm_password_txtfield.setPlaceholderText(_translate("MainWindow", "confirm password"))
         self.set_password_button.setText(_translate("MainWindow", "Set Password"))
 
-    def open_login_window(self):
-        
-        from GUI.log_in.login_gui import LoginWindow 
-        self.hide()
-        self.login_window = LoginWindow()  
-        self.login_window.show()
+    def close_reset_password_ui(self):
+        self.close()
+    def show_message(self, title, message):
+        """Displays a popup message."""
+        msg_box = QMessageBox()
+        msg_box.setWindowTitle(title)
+        msg_box.setText(message)
+        msg_box.exec()
 
 if __name__ == "__main__":
     import sys

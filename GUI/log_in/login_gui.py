@@ -1,44 +1,52 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtWidgets import QMessageBox
+from Database.db_connection import DatabaseConnection
 
+class LoginWindow(QtWidgets.QMainWindow):
+    
+    def __init__(self):
+        super().__init__()
+        self.init_ui()
+        self.db = DatabaseConnection()
+        self.controller = None
 
-class LoginWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1001, 621)
-        MainWindow.setMinimumSize(QtCore.QSize(1001, 621))
+    def closeEvent(self, event):
+        print("🛑 Login window is closing...")
+        if self.controller:
+            self.controller.cleanup()
+        event.accept()
+    
+    def init_ui(self):
+
+        self.setObjectName("MainWindow")
+        self.resize(1001, 621)
+        self.setMinimumSize(QtCore.QSize(1001, 621))
         font = QtGui.QFont()
         font.setFamily("Pristina")
         font.setPointSize(18)
-        MainWindow.setFont(font)
+        self.setFont(font)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("../SecureScan_01/icons/S_logo.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
-        MainWindow.setWindowIcon(icon)
-        MainWindow.setStyleSheet("""
+        self.setWindowIcon(icon)
+        self.setStyleSheet("""
     QMainWindow {  
         background-repeat: no-repeat;
         background-position: center;
     }
 """)
 
-        MainWindow.setTabShape(QtWidgets.QTabWidget.TabShape.Rounded)
-        MainWindow.setDockNestingEnabled(False)
+        self.setTabShape(QtWidgets.QTabWidget.TabShape.Rounded)
+        self.setDockNestingEnabled(False)
 
-        self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
-        MainWindow.setCentralWidget(self.centralwidget)
+        self.centralwidget = QtWidgets.QWidget(parent=self)
+        self.setCentralWidget(self.centralwidget)
 
         self.bg_label = QtWidgets.QLabel(self.centralwidget)
-        self.bg_label.setGeometry(0, 0, MainWindow.width(), MainWindow.height())  
+        self.bg_label.setGeometry(0, 0, self.width(), self.height())  
         self.bg_label.setPixmap(QtGui.QPixmap("../SecureScan_01/icons/blur_login3.png").scaled(
-            MainWindow.width(), MainWindow.height(), QtCore.Qt.AspectRatioMode.KeepAspectRatioByExpanding
+            self.width(), self.height(), QtCore.Qt.AspectRatioMode.KeepAspectRatioByExpanding
         ))
 
-        def resize_bg():
-            self.bg_label.setGeometry(0, 0, MainWindow.width(), MainWindow.height())
-            self.bg_label.setPixmap(QtGui.QPixmap("../SecureScan_01/icons/blur_login3.png").scaled(
-                MainWindow.width(), MainWindow.height(), QtCore.Qt.AspectRatioMode.KeepAspectRatioByExpanding
-            ))
-
-        MainWindow.resizeEvent = lambda event: resize_bg()
 
         self.main_frame = QtWidgets.QFrame(parent=self.centralwidget)
         self.main_frame.setMinimumSize(QtCore.QSize(1001, 621))
@@ -51,7 +59,6 @@ class LoginWindow(object):
         self.central_layout.setContentsMargins(0, 0, 0, 0)  # Remove margins
         self.central_layout.setSpacing(0)  # Remove spacing
         self.central_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter) 
-        self.centralwidget.setLayout(self.central_layout)
         self.central_layout.addWidget(self.main_frame, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
 
         self.image_label = QtWidgets.QLabel(parent=self.main_frame)
@@ -68,6 +75,7 @@ class LoginWindow(object):
         self.image_label.setObjectName("image_label")
         self.welcome_label = QtWidgets.QLabel(parent=self.main_frame)
         self.welcome_label.setGeometry(QtCore.QRect(270, 60, 641, 131))
+        self.welcome_label.setText("Welcome back!")
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -86,6 +94,7 @@ class LoginWindow(object):
         self.welcome_label.setObjectName("welcome_label")
         self.enter_cred_label = QtWidgets.QLabel(parent=self.main_frame)
         self.enter_cred_label.setGeometry(QtCore.QRect(390, 200, 275, 28))
+        self.enter_cred_label.setText(("Please enter your credentials"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -102,18 +111,19 @@ class LoginWindow(object):
 "    font-weight:bold;\n"
 "}")
         self.enter_cred_label.setObjectName("enter_cred_label")
-        self.uesrname_txtfield = QtWidgets.QLineEdit(parent=self.main_frame)
-        self.uesrname_txtfield.setGeometry(QtCore.QRect(320, 250, 361, 41))
+        self.username_txtfield = QtWidgets.QLineEdit(parent=self.main_frame)
+        self.username_txtfield.setGeometry(QtCore.QRect(320, 250, 361, 41))
+        self.username_txtfield.setPlaceholderText(("Username"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.uesrname_txtfield.sizePolicy().hasHeightForWidth())
-        self.uesrname_txtfield.setSizePolicy(sizePolicy)
+        sizePolicy.setHeightForWidth(self.username_txtfield.sizePolicy().hasHeightForWidth())
+        self.username_txtfield.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setFamily("Nirmala Text")
         font.setPointSize(14)
-        self.uesrname_txtfield.setFont(font)
-        self.uesrname_txtfield.setStyleSheet("QLineEdit {\n"
+        self.username_txtfield.setFont(font)
+        self.username_txtfield.setStyleSheet("QLineEdit {\n"
 "    border: solid;\n"
 "    border-radius: 20px;\n"
 "    border-width: 0.5px;\n"
@@ -121,11 +131,11 @@ class LoginWindow(object):
 "    padding-left: 20px; \n"
 "    padding-right: 20px;\n"
 "}")
-        self.uesrname_txtfield.setObjectName("uesrname_txtfield")
+        self.username_txtfield.setObjectName("username_txtfield")
         self.password_txtfield = QtWidgets.QLineEdit(parent=self.main_frame)
         self.password_txtfield.setGeometry(QtCore.QRect(320, 310, 361, 41))
         self.password_txtfield.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
-
+        self.password_txtfield.setPlaceholderText(("Password"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -143,10 +153,10 @@ class LoginWindow(object):
 "    padding-left: 20px;        \n"
 "    padding-right: 20px;\n"
 "}")    
-        self.password_txtfield.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
         self.password_txtfield.setObjectName("password_txtfield")
         self.forgot_pass_linkbutton = QtWidgets.QCommandLinkButton(parent=self.main_frame)
         self.forgot_pass_linkbutton.setGeometry(QtCore.QRect(520, 350, 161, 41))
+        self.forgot_pass_linkbutton.setText(("forgot password?"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -154,7 +164,7 @@ class LoginWindow(object):
         self.forgot_pass_linkbutton.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setFamily("57")
-        font.setPointSize(-1)
+        font.setPointSize(12)
         font.setBold(True)
         font.setItalic(False)
         font.setUnderline(True)
@@ -180,6 +190,7 @@ class LoginWindow(object):
         self.forgot_pass_linkbutton.setObjectName("forgot_pass_linkbutton")
         self.login_button = QtWidgets.QPushButton(parent=self.main_frame)
         self.login_button.setGeometry(QtCore.QRect(320, 400, 361, 41))
+        self.login_button.setText(("LOG IN"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -198,7 +209,6 @@ class LoginWindow(object):
 "    border: solid;\n"
 "    border-radius: 20px;\n"
 "    border-width: 0.1px;\n"
-"    transition: all 0.2s ease;\n"
 "}\n"
 "\n"
 "QPushButton:hover {\n"
@@ -207,7 +217,6 @@ class LoginWindow(object):
 "\n"
 "QPushButton:pressed {\n"
 "    background-color: #1e8449;\n"
-"    transform: scale(0.95);  /* Slight shrink effect */\n"
 "}")
         self.login_button.setObjectName("login_button")
         self.line = QtWidgets.QFrame(parent=self.main_frame)
@@ -222,13 +231,14 @@ class LoginWindow(object):
         self.line.setObjectName("line")
         self.new_usr_label = QtWidgets.QLabel(parent=self.main_frame)
         self.new_usr_label.setGeometry(QtCore.QRect(350, 490, 181, 41))
+        self.new_usr_label.setText(("New to SecureScan?"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.new_usr_label.sizePolicy().hasHeightForWidth())
         self.new_usr_label.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
-        font.setPointSize(-1)
+        font.setPointSize(12)
         font.setBold(True)
         font.setWeight(75)
         self.new_usr_label.setFont(font)
@@ -240,6 +250,7 @@ class LoginWindow(object):
         self.new_usr_label.setObjectName("new_usr_label")
         self.signup_commandLinkButton = QtWidgets.QCommandLinkButton(parent=self.main_frame)
         self.signup_commandLinkButton.setGeometry(QtCore.QRect(520, 490, 91, 48))
+        self.signup_commandLinkButton.setText(("Sign Up"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -247,7 +258,7 @@ class LoginWindow(object):
         self.signup_commandLinkButton.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setFamily("57")
-        font.setPointSize(-1)
+        font.setPointSize(12)
         font.setBold(True)
         font.setItalic(False)
         font.setUnderline(True)
@@ -263,29 +274,33 @@ class LoginWindow(object):
 "    background-color: rgba(255, 255, 255, 0);\n"
 "}")
         self.signup_commandLinkButton.setObjectName("signup_commandLinkButton")
-        MainWindow.setCentralWidget(self.centralwidget)
+        self.centralwidget.setLayout(self.central_layout)
+        QtCore.QMetaObject.connectSlotsByName(self)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+    def open_forgot_password_window(self):
+        
+        from GUI.log_in.forgot_password_ui import ForgotPasswordWindow 
+        self.hide()
+        self.forgot_password_window = ForgotPasswordWindow()  
+        self.forgot_password_window.show()
 
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.welcome_label.setText(_translate("MainWindow", "Welcome back!"))
-        self.enter_cred_label.setText(_translate("MainWindow", "Please enter your credentials"))
-        self.uesrname_txtfield.setPlaceholderText(_translate("MainWindow", "Username"))
-        self.password_txtfield.setPlaceholderText(_translate("MainWindow", "Password"))
-        self.forgot_pass_linkbutton.setText(_translate("MainWindow", "forgot password?"))
-        self.login_button.setText(_translate("MainWindow", "LOG IN"))
-        self.new_usr_label.setText(_translate("MainWindow", "New to SecureScan?"))
-        self.signup_commandLinkButton.setText(_translate("MainWindow", "Sign Up"))
+    def open_home_window(self):
+        
+        from GUI.main_window_ui.user_interface import Ui_MainWindow
+        self.hide()
+        self.home_window = Ui_MainWindow()  
+        self.home_window.show()
 
+    def show_message(self, title, message):
+        msg_box = QMessageBox(self)  
+        msg_box.setWindowTitle(title)
+        msg_box.setText(message)
+        msg_box.setIcon(QMessageBox.Icon.Critical if title == "Error" else QMessageBox.Icon.Information)
+        msg_box.exec()
 
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = LoginWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec())
+    def resizeEvent(self, event):
+        event.accept()
+        self.bg_label.setGeometry(0, 0, self.width(), self.height())
+        self.bg_label.setPixmap(QtGui.QPixmap("../SecureScan_01/icons/blur_login3.png").scaled(
+                self.width(), self.height(), QtCore.Qt.AspectRatioMode.KeepAspectRatioByExpanding
+        ))

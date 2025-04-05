@@ -1,11 +1,11 @@
-import mysql.connector
+import pymysql
 import os
-from mysql.connector import Error
+from pymysql.err import MySQLError
 
 class DatabaseConnection:
     def __init__(self):
         """Initialize database connection using environment variables."""
-        self.host = os.getenv('DB_HOST', 'localhost')
+        self.host = os.getenv('DB_HOST')
         self.user = os.getenv('DB_USER')
         self.password = os.getenv('DB_PASSWORD')
         self.database = os.getenv('DB_NAME')
@@ -14,35 +14,43 @@ class DatabaseConnection:
             raise ValueError("❌ Missing database environment variables!")
 
         self.connection = None
-        self.cursor = None  # ✅ Prevent AttributeError
+        self.cursor = None 
 
     def connect(self):
         """Establish a connection to the database."""
         try:
             print("🔌 Connecting to the database...")
-            self.connection = mysql.connector.connect(
+            print(f"🧠 Host: {self.host}, User: {self.user}, DB: {self.database}")
+
+            self.connection = pymysql.connect(
                 host=self.host,
                 user=self.user,
                 password=self.password,
-                database=self.database
+                database=self.database,
+                connect_timeout=5
             )
-            if self.connection.is_connected():
-                self.cursor = self.connection.cursor()
-                print("✅ Successfully connected to the database.")
-            else:
-                print("❌ Failed to connect to the database.")
-                self.connection = None
-        except Error as e:
-            print(f"❌ Error connecting to MySQL: {e}")
+            print("Connected object created.")
+            self.cursor = self.connection.cursor()
+            print("✅ Successfully connected to the database.")
+            return True 
+        except Exception as e:
+            print(f"💥 Exception while connecting to MySQL: {e}")
+            import traceback
+            traceback.print_exc()
             self.connection = None
+            return False
 
     def close(self):
         """Close the database connection."""
-        if self.connection and self.connection.is_connected():
+        try:
             if self.cursor:
                 self.cursor.close()
-            self.connection.close()
-            print("🔒 Connection closed.")
+            if self.connection:
+                self.connection.close()
+                print("🔒 Connection closed.")
+        except Exception as e:
+            print(f"⚠️ Error while closing DB connection: {e}")
+
 
     def execute_query(self, query, params=None, return_last_insert_id=False):
         """Execute an SQL query (INSERT, UPDATE, DELETE)."""
@@ -54,7 +62,7 @@ class DatabaseConnection:
             self.connection.commit()
             if return_last_insert_id:
                 return cursor.lastrowid
-        except Error as e:
+        except MySQLError as e:
             print(f"❌ Error executing query: {e}")
         finally:
             cursor.close()  # ✅ Close cursor manually
@@ -68,7 +76,7 @@ class DatabaseConnection:
             cursor.execute(query, params)
             result = cursor.fetchall()
             return result
-        except Error as e:
+        except MySQLError as e:
             print(f"❌ Database error: {e}")
             return None
         finally:
@@ -82,7 +90,7 @@ class DatabaseConnection:
             cursor = self.connection.cursor()
             cursor.execute(query, params)
             return cursor.fetchone()
-        except Error as e:
+        except MySQLError as e:
             print(f"❌ Database error: {e}")
             return None
         finally:
@@ -109,3 +117,8 @@ class DatabaseConnection:
         VALUES (%s, %s, %s, %s)
         """
         self.execute_query(query, (scan_id, scanner_name, scanner_result, risk_level))
+
+if __name__ == "__main__":
+    db = DatabaseConnection()
+    connected = db.connect()
+    print("Manual DB connection success:", connected)

@@ -7,9 +7,9 @@
 
 
 from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtWidgets import QMessageBox
 
-
-class OTPVerificationWindow(object):
+class OTPVerificationWindow(QtWidgets.QMainWindow):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(431, 451)
@@ -87,7 +87,6 @@ class OTPVerificationWindow(object):
 "    border: solid;\n"
 "    border-radius: 20px;\n"
 "    border-width: 0.1px;\n"
-"    transition: all 0.2s ease;\n"
 "}\n"
 "\n"
 "QPushButton:hover {\n"
@@ -121,6 +120,13 @@ class OTPVerificationWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+    
+    def show_message(self, title, message):
+        """Displays a popup message."""
+        msg_box = QMessageBox()
+        msg_box.setWindowTitle(title)
+        msg_box.setText(message)
+        msg_box.exec()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -130,10 +136,9 @@ class OTPVerificationWindow(object):
         self.verify_otp_button.setText(_translate("MainWindow", "Verify OTP"))
         self.enter_otp_label.setText(_translate("MainWindow", "Please enter the otp"))
 
-    def reset_password_window(self):
-        
+    def open_reset_password_window(self):
         from GUI.log_in.reset_password_ui import ResetPasswordWindow 
-        self.hide()
+        self.close()
         self.reset_password_window = ResetPasswordWindow()  
         self.reset_password_window.show()
 
