@@ -4,9 +4,12 @@ class ThemeSwitcher(QtWidgets.QPushButton):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.dark_mode = False  # Start in light mode
-        self.setIcon(QtGui.QIcon("icons/light_mode_icon.png"))
+        self.dark_mode = True  
+        self.setIcon(QtGui.QIcon("icons/dark_mode_icon.png")) 
         self.setIconSize(QtCore.QSize(32, 32))
+
+        self.apply_stylesheet("GUI/theme_switch/dark_style.qss") 
+
         self.clicked.connect(self.toggle_theme)
 
     def apply_stylesheet(self, file_path):
@@ -14,7 +17,7 @@ class ThemeSwitcher(QtWidgets.QPushButton):
         try:
             with open(file_path, "r") as file:
                 style = file.read()
-                QtWidgets.QApplication.instance().setStyleSheet(style)  # Apply to the whole app
+                QtWidgets.QApplication.instance().setStyleSheet(style)
         except Exception as e:
             print(f"Error loading stylesheet: {e}")
 

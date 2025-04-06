@@ -2,15 +2,22 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QMessageBox
 
 class ForgotPasswordWindow(QtWidgets.QMainWindow):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(431, 451)
-        MainWindow.setMinimumSize(QtCore.QSize(431, 451))
-        MainWindow.setMaximumSize(QtCore.QSize(431, 451))
-        MainWindow.setStyleSheet("QMainWindow{\n"
+    def __init__(self):
+        super().__init__()
+        self.init_ui()
+
+    def init_ui(self):
+        self.setObjectName("MainWindow")
+        self.resize(431, 451)
+        self.setMinimumSize(QtCore.QSize(431, 451))
+        self.setMaximumSize(QtCore.QSize(431, 451))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("../SecureScan_01/icons/S_logo.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        self.setWindowIcon(icon)
+        self.setStyleSheet("QMainWindow{\n"
 "    background-color=white;\n"
 "}")
-        self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
+        self.centralwidget = QtWidgets.QWidget(parent=self)
         self.centralwidget.setObjectName("centralwidget")
         self.bg_image_label = QtWidgets.QLabel(parent=self.centralwidget)
         self.bg_image_label.setGeometry(QtCore.QRect(0, 0, 431, 451))
@@ -25,6 +32,7 @@ class ForgotPasswordWindow(QtWidgets.QMainWindow):
         self.bg_image_label.setObjectName("bg_image_label")
         self.forgot_password_label = QtWidgets.QLabel(parent=self.centralwidget)
         self.forgot_password_label.setGeometry(QtCore.QRect(100, 40, 341, 71))
+        self.forgot_password_label.setText(("Forgot Password"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -43,6 +51,7 @@ class ForgotPasswordWindow(QtWidgets.QMainWindow):
         self.forgot_password_label.setObjectName("forgot_password_label")
         self.enter_username_label = QtWidgets.QLabel(parent=self.centralwidget)
         self.enter_username_label.setGeometry(QtCore.QRect(130, 110, 231, 28))
+        self.enter_username_label.setText(("Please enter your username"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -61,6 +70,7 @@ class ForgotPasswordWindow(QtWidgets.QMainWindow):
         self.enter_username_label.setObjectName("enter_username_label")
         self.username_txtfield = QtWidgets.QLineEdit(parent=self.centralwidget)
         self.username_txtfield.setGeometry(QtCore.QRect(40, 230, 361, 41))
+        self.username_txtfield.setPlaceholderText(("username"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -81,6 +91,7 @@ class ForgotPasswordWindow(QtWidgets.QMainWindow):
         self.username_txtfield.setObjectName("username_txtfield")
         self.sent_otp_button = QtWidgets.QPushButton(parent=self.centralwidget)
         self.sent_otp_button.setGeometry(QtCore.QRect(40, 290, 361, 41))
+        self.sent_otp_button.setText(("Send OTP"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -109,38 +120,14 @@ class ForgotPasswordWindow(QtWidgets.QMainWindow):
 "    background-color: #1e8449;\n"
 "}")
         self.sent_otp_button.setObjectName("sent_otp_button")
-        MainWindow.setCentralWidget(self.centralwidget)
+        self.setCentralWidget(self.centralwidget)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.forgot_password_label.setText(_translate("MainWindow", "Forgot Password"))
-        self.enter_username_label.setText(_translate("MainWindow", "Please enter your username"))
-        self.username_txtfield.setPlaceholderText(_translate("MainWindow", "username"))
-        self.sent_otp_button.setText(_translate("MainWindow", "Send OTP"))
+        QtCore.QMetaObject.connectSlotsByName(self)
 
     def show_message(self, title, message):
-        """Displays a popup message."""
-        msg_box = QMessageBox()
+        msg_box = QMessageBox(self)  
         msg_box.setWindowTitle(title)
         msg_box.setText(message)
+        msg_box.setIcon(QMessageBox.Icon.Critical if title == "Error" else QMessageBox.Icon.Information)
         msg_box.exec()
     
-    def open_otp_verification_window(self):
-        
-        from GUI.log_in.otp_verification_ui import OTPVerificationWindow 
-        self.close()
-        self.otp_verification_window = OTPVerificationWindow()  
-        self.otp_verification_window.show()
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = ForgotPasswordWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec())

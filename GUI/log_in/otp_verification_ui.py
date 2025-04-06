@@ -13,6 +13,9 @@ class OTPVerificationWindow(QtWidgets.QMainWindow):
         self.resize(431, 451)
         self.setMinimumSize(QtCore.QSize(431, 451))
         self.setMaximumSize(QtCore.QSize(431, 451))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("../SecureScan_01/icons/S_logo.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        self.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(parent=self)
         self.centralwidget.setObjectName("centralwidget")
         self.label = QtWidgets.QLabel(parent=self.centralwidget)
@@ -127,10 +130,4 @@ class OTPVerificationWindow(QtWidgets.QMainWindow):
         msg_box.setText(message)
         msg_box.setIcon(QMessageBox.Icon.Critical if title == "Error" else QMessageBox.Icon.Information)
         msg_box.exec()
-
-    def open_reset_password_window(self):
-        from GUI.log_in.reset_password_ui import ResetPasswordWindow 
-        self.close()
-        self.reset_password_window = ResetPasswordWindow()  
-        self.reset_password_window.show()
 

@@ -277,20 +277,6 @@ class LoginWindow(QtWidgets.QMainWindow):
         self.centralwidget.setLayout(self.central_layout)
         QtCore.QMetaObject.connectSlotsByName(self)
 
-    def open_forgot_password_window(self):
-        
-        from GUI.log_in.forgot_password_ui import ForgotPasswordWindow 
-        self.hide()
-        self.forgot_password_window = ForgotPasswordWindow()  
-        self.forgot_password_window.show()
-
-    def open_home_window(self):
-        
-        from GUI.main_window_ui.user_interface import Ui_MainWindow
-        self.hide()
-        self.home_window = Ui_MainWindow()  
-        self.home_window.show()
-
     def show_message(self, title, message):
         msg_box = QMessageBox(self)  
         msg_box.setWindowTitle(title)

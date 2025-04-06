@@ -16,6 +16,9 @@ class ResetPasswordWindow(QtWidgets.QMainWindow):
         self.setSizePolicy(sizePolicy)
         self.setMinimumSize(QtCore.QSize(431, 451))
         self.setMaximumSize(QtCore.QSize(431, 451))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("../SecureScan_01/icons/S_logo.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        self.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(parent=self)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -150,8 +153,6 @@ class ResetPasswordWindow(QtWidgets.QMainWindow):
 
         QtCore.QMetaObject.connectSlotsByName(self)
 
-    def close_reset_password_ui(self):
-        self.close()
     def show_message(self, title, message):
         msg_box = QMessageBox(self)  
         msg_box.setWindowTitle(title)

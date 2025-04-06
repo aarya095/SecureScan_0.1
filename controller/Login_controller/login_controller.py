@@ -8,9 +8,8 @@ class LoginController:
         self.view = view
         self.model = LoginLogic()
 
-        # Connect button to the controller’s login handler
         self.view.login_button.clicked.connect(self.handle_login)
-        self.view.forgot_pass_linkbutton.clicked.connect(self.view.open_forgot_password_window)
+        self.view.forgot_pass_linkbutton.clicked.connect(self.open_forgot_password_window)
 
         self.view.destroyed.connect(self.cleanup)
 
@@ -19,7 +18,6 @@ class LoginController:
         username = self.view.username_txtfield.text().strip()
         password = self.view.password_txtfield.text().strip()
 
-        # Prevent double clicks / disable UI if needed
         self.view.login_button.setEnabled(False)
 
         db = self.model.db
@@ -46,10 +44,32 @@ class LoginController:
         if success:
             print("✅ Login success block reached")
             self.view.show_message("Success", message)
-            self.view.open_home_window()
+            self.open_home_window()
         else:
             print("❌ Login failed block reached")
             self.view.show_message("Error", message)
+
+    def open_forgot_password_window(self):
+        from GUI.log_in.forgot_password_ui import ForgotPasswordWindow
+        from controller.Login_controller.forgot_password_controller import ForgotPasswordController
+
+        self.forgot_password_view = ForgotPasswordWindow()
+        self.forgot_password_controller = ForgotPasswordController(self.forgot_password_view)
+
+        self.forgot_password_view.show()
+        self.view.hide()
+
+    def open_home_window(self):
+        from GUI.main_window_ui.user_interface import Ui_MainWindow
+        from PyQt6 import QtWidgets
+
+        stylesheet = Ui_MainWindow.load_stylesheet("GUI/theme_switch/dark_style.qss")
+        QtWidgets.QApplication.instance().setStyleSheet(stylesheet)
+        
+        self.main_window = Ui_MainWindow()
+        self.main_window.show()
+
+        self.view.close()
 
     def cleanup(self):
         if hasattr(self, "thread") and self.thread.isRunning():

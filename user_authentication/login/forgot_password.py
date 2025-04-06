@@ -1,14 +1,20 @@
 import random
 import bcrypt
 import re
+import time
+import os
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-import Database.db_connection as db
-
+from Database.db_connection import DatabaseConnection
 
 class ForgotPasswordLogic:
     def __init__(self):
+        self.email = os.getenv('ATHARVA_GMAIL_ID')
+        self.password = os.getenv('ATHARVA_GMAIL_PASSWORD')
+        
+        if not all([self.email, self.password]):
+            raise ValueError("❌ Missing database environment variables!")
         pass
 
     def send_otp(self, username):
@@ -27,25 +33,26 @@ class ForgotPasswordLogic:
 
     def get_user_email(self, username):
         """Retrieve user email from the database."""
-        db.connect_to_database()
+        db = DatabaseConnection()
+        db.connect()
         email = db.fetch_user_email(username)
-        db.close_connection()
+        db.close()
         return email
 
     def generate_otp(self):
         """Generate a 6-digit OTP."""
         return str(random.randint(100000, 999999))
 
-    def send_email(self, email, otp):
+    def send_email(self, recipient_email, otp):
         """Send OTP via email."""
-        sender_email = "your_email@gmail.com"
-        sender_password = "your_password"
+        sender_email = self.email
+        sender_password = self.password
         subject = "Secure Scan - OTP for Password Reset"
         body = f"Your OTP is: {otp}"
 
         msg = MIMEMultipart()
         msg['From'] = sender_email
-        msg['To'] = email
+        msg['To'] = recipient_email
         msg['Subject'] = subject
         msg.attach(MIMEText(body, 'plain'))
 
@@ -53,12 +60,40 @@ class ForgotPasswordLogic:
             with smtplib.SMTP('smtp.gmail.com', 587) as server:
                 server.starttls()
                 server.login(sender_email, sender_password)
-                server.sendmail(sender_email, email, msg.as_string())
+                server.sendmail(sender_email, recipient_email, msg.as_string())
                 return True
         except Exception as e:
             print(f"Email error: {e}")
             return False
 
+class OTPVerificationLogic:
+    def __init__(self):
+        self.otp_store = {}  # Temporary in-memory store: {username: (otp, timestamp)}
+
+    def store_otp(self, username, otp):
+        """Stores the OTP with a timestamp."""
+        timestamp = time.time()
+        self.otp_store[username] = (otp, timestamp)
+
+    def verify_otp(self, username, entered_otp, expiry_seconds=300):
+        """Verifies the entered OTP."""
+        if username not in self.otp_store:
+            return False, "No OTP found for this user."
+
+        stored_otp, timestamp = self.otp_store[username]
+        current_time = time.time()
+
+        # Check expiry
+        if current_time - timestamp > expiry_seconds:
+            del self.otp_store[username]  # Clean up
+            return False, "OTP has expired. Please request a new one."
+
+        # Check match
+        if entered_otp == stored_otp:
+            del self.otp_store[username]  # Invalidate OTP after successful verification
+            return True, "OTP verified successfully."
+        else:
+            return False, "Incorrect OTP."
 
 class ResetPasswordLogic:
     def __init__(self, username):
@@ -102,7 +137,8 @@ class ResetPasswordLogic:
 
     def update_password_in_database(self, hashed_password):
         """Updates the user's password in the database."""
-        db.connect_to_database()
+        db = DatabaseConnection()
+        db.connect()
         query = "UPDATE login SET password=%s WHERE username=%s"
         db.execute_query(query, (hashed_password, self.username))
-        db.close_connection()
+        db.close()

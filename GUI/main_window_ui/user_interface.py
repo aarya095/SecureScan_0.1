@@ -84,7 +84,7 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
 
-    stylesheet = Ui_MainWindow.load_stylesheet("GUI/theme_switch/light_style.qss")
+    stylesheet = Ui_MainWindow.load_stylesheet("GUI/theme_switch/dark_style.qss")
     app.setStyleSheet(stylesheet)
 
     # 🔹 Initialize Main Window
