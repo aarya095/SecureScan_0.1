@@ -87,8 +87,7 @@ class SecurityScanner:
 
     def run_all_scanners(self):
         """Runs all security scanners in sequence and updates scan summary."""
-        print("\n🚀 Running Security Scanners...\n")
-
+        
         self.scan_summary = {
             "execution_times": {},
             "target_urls": [],

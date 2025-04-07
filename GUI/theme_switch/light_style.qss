@@ -10,6 +10,10 @@ QFrame {
     padding: 10px;
 }
 
+QTextBrowser {
+    font-size:20px;
+} 
+
 QPushButton {
                 background-color: rgb(35, 222, 104);
                 color: white;
@@ -28,6 +32,28 @@ QPushButton {
             QPushButton:pressed {
                 background-color: #1e8449;
             }
+
+QPushButton#smallButton {
+
+    background-color: rgb(35, 222, 104);
+                color: white;
+                border: solid;
+                border-radius: 10px;
+                border-width: 0.1px;
+                font-size: 10px;
+                font-weight: bold;
+                padding: 5px 5px;
+                padding-right: 3px;
+                padding-left: 3px;
+            }
+
+QPushButton:hover#smallButton {
+                background-color: #27ae60;
+            }
+QPushButton:pressed#smallButton {
+                background-color: #1e8449;
+    }
+
 
 QComboBox {
                 background-color: rgb(35, 222, 104);

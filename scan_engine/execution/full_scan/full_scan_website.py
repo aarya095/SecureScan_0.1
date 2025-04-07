@@ -63,7 +63,6 @@ class SecurityScanManager:
 
     def run_crawler(self, target_url:str):
         """Runs the web crawler and logs execution time."""
-        print("🚀 Running Crawler...")
         if not target_url:
             print("❌ URL is required for crawling.")
             return
@@ -78,7 +77,6 @@ class SecurityScanManager:
 
     def run_scanners(self):
         """Runs all security scanners and logs execution time for each."""
-        print("\n🚀 Running Security Scanners...")
         start_time = time.time()
 
         results_file = "scan_engine/reports/scan_results.json"  
@@ -95,6 +93,19 @@ class SecurityScanManager:
 
         self.update_scan_results("total_scan", round(scan_time, 2))
         return scan_time
+    
+    def get_total_scan_count():
+        from Database.db_connection import DatabaseConnection
+        db = DatabaseConnection()
+        try:
+            db.connect()
+            query = "SELECT COUNT(*) FROM scan_results"
+            result = db.fetch_one(query)
+            db.close()
+            return result[0] if result else 0
+        except Exception as e:
+            print(f"❌ Error fetching scan count: {e}")
+            return 0
 
     def store_results(self):
         """Stores scan results from all JSON files in the database and logs execution time."""

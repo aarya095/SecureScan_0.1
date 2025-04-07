@@ -1,7 +1,10 @@
 import re
 from PyQt6.QtCore import QThread, Qt
+from PyQt6.QtCore import QTimer
 from Worker.UI_tab_workers.home_quick_scan_worker import ScanWorker
+from Worker.UI_tab_workers.home_quick_scan_worker import GetScanCountWorker
 from GUI.main_window_ui.tabs.home_quick_scan import QuickScanTab
+from scan_engine.execution.full_scan.full_scan_website import SecurityScanManager
 
 class QuickScanController:
     """
@@ -9,10 +12,11 @@ class QuickScanController:
     """
     def __init__(self, view: QuickScanTab):
         self.view = view
-        self.thread = None          # 🧠 Track background thread
-        self.worker = None          # Worker object
-        self.scan_running = False   # 🟢 Flag to prevent re-trigger
+        self.thread = None         
+        self.worker = None         
+        self.scan_running = False  
         self.connect_signals()
+        self.update_total_scan_count()
 
     def connect_signals(self):
         self.view.quick_scan_pushButton.clicked.connect(self.run_full_scan)
@@ -42,12 +46,13 @@ class QuickScanController:
         self.thread.finished.connect(self.thread.deleteLater)
 
         self.thread.start()
-        self.scan_running = True  # 🔒 Lock scanning
+        self.scan_running = True  
         self.display_output("🚀 Starting full scan...\n")
 
     def scan_finished(self):
         self.display_output("✅ Scan process finished.\n")
-        self.scan_running = False  # 🔓 Unlock
+        self.scan_running = False  
+        self.update_total_scan_count()
 
     def display_output(self, text):
         self.view.quick_scan_output_textBrowser.append(text)
@@ -75,3 +80,21 @@ class QuickScanController:
             return False
 
         return True
+    
+    def update_total_scan_count(self):
+        self.count_worker = GetScanCountWorker()
+        self.count_thread = QThread()
+        
+        self.count_worker.moveToThread(self.count_thread)
+        self.count_thread.started.connect(self.count_worker.run)
+        self.count_worker.finished.connect(self.on_scan_count_ready)
+        self.count_worker.finished.connect(self.count_thread.quit)
+        self.count_worker.finished.connect(self.count_worker.deleteLater)
+        self.count_thread.finished.connect(self.count_thread.deleteLater)
+
+        self.count_thread.start()
+
+
+    def on_scan_count_ready(self, count):
+        self.view.num_of_quick_scan_label.setText(f"Total No. of Full Scans: {count}")
+

@@ -154,8 +154,7 @@ class WebCrawler:
 
     def run_scanners(self):
         """Runs the appropriate scanner script after crawling."""
-        print(f"\n🚀 Running Scanners... (Mode: {self.mode})")
-
+        
         try:
             if self.mode == "custom_scan":
                 # Directly call the custom_scan function
