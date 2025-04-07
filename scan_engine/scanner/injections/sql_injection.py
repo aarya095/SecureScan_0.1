@@ -113,8 +113,3 @@ class SQLInjectionScanner:
 
         self.save_scan_results()
         return True
-
-
-if __name__ == "__main__":
-    scanner = SQLInjectionScanner()
-    scanner.run()

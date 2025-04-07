@@ -29,8 +29,8 @@ class FullScanResultHandler:
                 with open(file, "r") as f:
                     scan_data = json.load(f)
 
-                # Merge scan data
-                combined_results["scans"][os.path.basename(file).replace(".json", "")] = scan_data.get("scans", {})
+                filename = os.path.basename(file).replace(".json", "")
+                combined_results["scans"][filename] = scan_data if isinstance(scan_data, dict) else {}
 
                 # Merge execution times if available
                 if "execution_times" in scan_data:
@@ -101,7 +101,8 @@ class FullScanResultHandler:
             print(f"❌ Error while executing the query or saving results to the database: {e}")
             self.db.close()
 
-if __name__ == "__main__":
-    json_files = ["scan_results_json/http.json", "scan_results_json/sql_injection.json", "scan_results_json/xss_injection.json", "scan_results_json/broken_authentication.json", "scan_results_json/csrf.json"]
-    scan_handler = FullScanResultHandler(json_files)
-    scan_handler.store_scan_results()
+    def run(self):
+            """Convenience method to execute the full result storage pipeline."""
+            print("🚀 Running Full Scan Result Handler...")
+            self.store_scan_results()
+            print("✅ Full Scan Result Handler execution complete.")

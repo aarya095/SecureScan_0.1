@@ -1,16 +1,18 @@
 import json
 import os
+import sys
 import time
 from scan_engine.scanner.crawler import WebCrawler
 from scan_engine.execution.full_scan.run_all_scanners import SecurityScanner
 from scan_engine.reports.scan_report.store_full_scan import FullScanResultHandler
+from PyQt6.QtWidgets import QApplication
 
 class SecurityScanManager:
     """Class to manage security scans, read results, and store findings."""
 
     def __init__(self):
         self.project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-        self.scanner_results_dir = "scan_engine/reports/scan_resutls_json"
+        self.scanner_results_dir = "scan_engine/reports/scan_results_json"
 
     def update_scan_results(self, scanner_name, execution_time):
         """Update the execution time for a specific scanner in its existing result JSON file."""
@@ -19,9 +21,10 @@ class SecurityScanManager:
         scanner_file_paths = {
             "http": "scan_engine/reports/scan_results_json/http.json",
             "sql_injection": "scan_engine/reports/scan_results_json/sql_injection.json",
-            "xss_injection": "scan_engine/reports/scan_results_json/xss_injection.json",
             "broken_authentication": "scan_engine/reports/scan_results_json/broken_authentication.json",
-            "csrf": "scan_engine/reports/scan_results_json/csrf.json"
+            "csrf": "scan_engine/reports/scan_results_json/csrf.json",
+            "store" : "scan_engine/reports/final_report/severity_report.json",
+            "total_scan" : "scan_engine/reports/final_report/scan_summary.json"
         }
 
         # Get the file path for the given scanner_name
@@ -58,17 +61,18 @@ class SecurityScanManager:
         except (FileNotFoundError, json.JSONDecodeError) as e:
             print(f"❌ Error updating {results_file}: {e}")
 
-    def run_crawler(self):
+    def run_crawler(self, target_url:str):
         """Runs the web crawler and logs execution time."""
         print("🚀 Running Crawler...")
-        target_url = input("Enter the target URL (e.g., http://example.com): ")
+        if not target_url:
+            print("❌ URL is required for crawling.")
+            return
         start_time = time.time()
-        WebCrawler(target_url)  # Run crawler
+        WebCrawler(target_url)  
         crawl_time = time.time() - start_time
 
         print(f"\n⏱️ Crawler completed in {crawl_time:.2f} seconds")
 
-        # Store execution time in crawler_results.json
         self.update_scan_results("crawler", round(crawl_time, 2))
         return crawl_time
 
@@ -79,7 +83,7 @@ class SecurityScanManager:
 
         results_file = "scan_engine/reports/scan_results.json"  
         scanner = SecurityScanner(results_file) 
-        scanner.run_all_scanners() 
+        scanner.run() 
 
         from scan_engine.scanner.network.http_scanner import URLSecurityScanner
         url_scanner = URLSecurityScanner()
@@ -89,8 +93,7 @@ class SecurityScanManager:
 
         print(f"\n⏱️ Security Scanners completed in {scan_time:.2f} seconds")
 
-        # Store execution time in scanner_results.json
-        self.update_scan_results("scanner", round(scan_time, 2))
+        self.update_scan_results("total_scan", round(scan_time, 2))
         return scan_time
 
     def store_results(self):
@@ -98,40 +101,37 @@ class SecurityScanManager:
         print("\n🚀 Storing Results...")
         start_time = time.time()
 
-        # Directly provide paths to the result JSON files
         scan_files = [
-            "scan_engine/reports/scan_results_json/http.json"
+            "scan_engine/reports/scan_results_json/http.json",
             "scan_engine/reports/scan_results_json/broken_authentication.json",
             "scan_engine/reports/scan_results_json/csrf.json",
             "scan_engine/reports/scan_results_json/sql_injection.json"
-            "scan_engine/reports/scan_results_json/xss_injection.json"
-        ]
+            ]
 
-
-        for scan_file in scan_files:
-            scan_handler = FullScanResultHandler(scan_file)
-            scan_handler.store_scan_results()  
+        scan_handler = FullScanResultHandler(scan_files)
+        scan_handler.run()  
 
         store_time = time.time() - start_time
 
         print(f"\n⏱️ Results stored in {store_time:.2f} seconds")
 
-        # Store execution time in a general storage_results.json
-        self.update_scan_results("store", round(store_time, 2))
+        self.update_scan_results("total_scan", round(store_time, 2))
         return store_time
 
-    def run_full_scan(self):
+    def run_full_scan(self, url:str):
         """Runs the full scan process and tracks total execution time."""
+        if not url:
+            print("❌ URL is required for crawling.")
+            return
         total_start_time = time.time()
 
-        crawl_time = self.run_crawler()
+        crawl_time = self.run_crawler(url)
         scan_time = self.run_scanners()
         print("\n✅ Security Scan Completed! Results saved in individual scanner files")
         store_time = self.store_results()
 
-        total_time = time.time() - total_start_time  # Calculate total execution time
+        total_time = time.time() - total_start_time 
 
-        # Store total execution time
         self.update_scan_results("total_scan", round(total_time, 2))
 
         print("\n✅ Security Scan Completed!")
@@ -142,5 +142,27 @@ class SecurityScanManager:
 
 
 if __name__ == "__main__":
-    manager = SecurityScanManager()
-    manager.run_full_scan()
+    if "--cli" in sys.argv:
+        try:
+            url_index = sys.argv.index("--url") + 1
+            url = sys.argv[url_index]
+        except (ValueError, IndexError):
+            print("❌ Please provide a URL with --url <URL>")
+            sys.exit(1)
+
+        manager = SecurityScanManager()
+        manager.run_full_scan(url)
+    
+    elif "--dev" in sys.argv:
+        from GUI.main_window_ui.user_interface import Ui_MainWindow
+        window = Ui_MainWindow()
+        # optional: attach MainController here
+        window.show()
+
+    else:
+        from GUI.log_in.login_gui import LoginWindow
+        login = LoginWindow()
+        login.show()
+    app = QApplication(sys.argv)
+    sys.exit(app.exec())
+

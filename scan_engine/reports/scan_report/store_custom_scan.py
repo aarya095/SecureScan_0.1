@@ -151,6 +151,12 @@ class CustomScanResultHandler:
                     except Exception as e:
                         print(f"❌ Error inserting scan result: {e}")
 
+    def run(self):
+        """Run the complete custom scan result handling pipeline."""
+        print("🚀 Running Custom Scan Result Handler...")
+        self.store_custom_scan_results()
+        print("✅ Custom Scan Result Handler execution complete.")
+
 
 if __name__ == "__main__":
     custom_scan_handler = CustomScanResultHandler("security_scan_results.json")

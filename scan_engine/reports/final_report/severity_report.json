@@ -42,5 +42,8 @@
             "Low": 0,
             "Safe": 0
         }
+    },
+    "execution_times": {
+        "store": 0.04
     }
 }

@@ -184,8 +184,3 @@ class BrokenAuthScanner:
             }
 
         self.save_scan_results()
-
-
-if __name__ == "__main__":
-    scanner = BrokenAuthScanner()
-    scanner.run()

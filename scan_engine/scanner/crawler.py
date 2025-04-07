@@ -171,11 +171,35 @@ class WebCrawler:
             print(f"❌ Error running scanner script: {e}")
 
 if __name__ == "__main__":
-    print("✅ Script Started!")  # Debugging - Check if script starts execution
-    target_url = input("Enter the target URL (e.g., http://example.com): ").strip()
-    print(f"✅ Received Input URL: {target_url}")  # Debugging - Check if input is received
-    if target_url.startswith("http"):
-        print("✅ URL is valid, initializing WebCrawler...")  # Debugging
-        WebCrawler(target_url).crawl()
+    import sys
+
+    print("✅ Script Started!")
+
+    if "--cli" in sys.argv:
+        try:
+            url_index = sys.argv.index("--url") + 1
+            target_url = sys.argv[url_index]
+            print(f"✅ Received Input URL: {target_url}")
+        except (ValueError, IndexError):
+            print("❌ Please provide a URL using --url <URL>")
+            sys.exit(1)
+
+        if target_url.startswith("http"):
+            print("✅ URL is valid, initializing WebCrawler...")
+            WebCrawler(target_url).crawl()
+        else:
+            print("❌ Invalid URL! Make sure to include 'http://' or 'https://'.")
+            sys.exit(1)
+
+    elif "--gui" in sys.argv or len(sys.argv) == 1:
+        from PyQt6.QtWidgets import QApplication
+        from GUI.log_in.login_gui import LoginWindow 
+
+        app = QApplication(sys.argv)
+        login = LoginWindow()
+        login.show()
+        sys.exit(app.exec_())
+
     else:
-        print("❌ Invalid URL! Make sure to include 'http://' or 'https://'.")
+        print("❌ Invalid argument. Use '--cli --url <URL>' for CLI mode or '--gui' to launch the GUI.")
+

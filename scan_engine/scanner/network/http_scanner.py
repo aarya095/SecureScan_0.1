@@ -92,8 +92,3 @@ class URLSecurityScanner:
         self.load_urls_from_json()
         self.scan_urls()
         self.save_scan_results()
-
-
-if __name__ == "__main__":
-    scanner = URLSecurityScanner()
-    scanner.run()

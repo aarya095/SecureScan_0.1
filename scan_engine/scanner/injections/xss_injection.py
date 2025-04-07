@@ -147,8 +147,3 @@ class XSSScanner:
                     self.detect_xss(form["action"], form)
 
         self.save_scan_results()
-
-
-if __name__ == "__main__":
-    scanner = XSSScanner()
-    scanner.run()

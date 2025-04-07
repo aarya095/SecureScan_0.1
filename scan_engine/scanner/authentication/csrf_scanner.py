@@ -133,8 +133,3 @@ class CSRFScanner:
                 self.scan_results[url] = csrf_results
 
         self.save_scan_results()
-
-
-if __name__ == "__main__":
-    scanner = CSRFScanner()
-    scanner.run()
