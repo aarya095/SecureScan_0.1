@@ -6,25 +6,29 @@ from Database.db_connection import DatabaseConnection
 class FullScanResultHandler:
     """Handles combining scan results from multiple JSON files and saving to the database."""
 
-    def __init__(self, json_files):
-        """Initialize with the list of JSON files containing scan results."""
+    def __init__(self, json_files, mapped_data_path="mapped_data.json"):
+        """Initialize with the list of JSON files containing scan results and path to mapped data."""
         self.json_files = json_files  # List of JSON files
+        self.mapped_data_path = "scan_engine/scanner/mapped_data.json"
         self.db = DatabaseConnection()
 
     def load_scan_results(self):
         """Load and combine scan results from multiple JSON files."""
-        combined_results = {"scans": {}, "execution_times": {}, "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-        
-        # Ensure self.json_files is a proper list of file paths
+        combined_results = {
+            "scans": {},
+            "execution_times": {},
+            "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+
         if not isinstance(self.json_files, list) or not all(isinstance(f, str) for f in self.json_files):
             print(f"❌ Error: self.json_files must be a list of valid file paths. Received: {self.json_files}")
             return combined_results
 
         for file in self.json_files:
-            if not os.path.isfile(file):  # Ensure it's a valid file, not a directory or invalid string
+            if not os.path.isfile(file):
                 print(f"⚠️ Warning: {file} not found or is not a valid file. Skipping...")
                 continue
-            
+
             try:
                 with open(file, "r") as f:
                     scan_data = json.load(f)
@@ -41,6 +45,55 @@ class FullScanResultHandler:
 
         return combined_results
 
+    def load_website_url(self):
+        """Load website URL from mapped_data.json."""
+        if not os.path.isfile(self.mapped_data_path):
+            print(f"❌ Error: Mapped data file '{self.mapped_data_path}' not found.")
+            return "Unknown"
+
+        try:
+            with open(self.mapped_data_path, "r") as f:
+                mapped_data = json.load(f)
+                return mapped_data.get("target_url", "Unknown")
+        except Exception as e:
+            print(f"❌ Error reading mapped_data.json: {e}")
+            return "Unknown"
+
+    def load_scan_summary(self):
+            """Load vulnerability counts and execution time from scan_summary.json."""
+            summary_path = "scan_engine/reports/final_report/scan_summary.json"
+
+            if not os.path.isfile(summary_path):
+                print(f"⚠️ Warning: {summary_path} not found. Using default vulnerability values.")
+                return {
+                    "vulnerabilities_found": 0,
+                    "high_risk_vulnerabilities": 0,
+                    "medium_risk_vulnerabilities": 0,
+                    "low_risk_vulnerabilities": 0,
+                    "total_scan_time": None
+                }
+
+            try:
+                with open(summary_path, "r") as f:
+                    summary_data = json.load(f)
+
+                return {
+                    "vulnerabilities_found": summary_data.get("vulnerabilities_found", 0),
+                    "high_risk_vulnerabilities": summary_data.get("high_risk_vulnerabilities", 0),
+                    "medium_risk_vulnerabilities": summary_data.get("medium_risk_vulnerabilities", 0),
+                    "low_risk_vulnerabilities": summary_data.get("low_risk_vulnerabilities", 0),
+                    "total_scan_time": summary_data.get("execution_times", {}).get("Total Scan Time", None)
+                }
+            except Exception as e:
+                print(f"❌ Error reading scan_summary.json: {e}")
+                return {
+                    "vulnerabilities_found": 0,
+                    "high_risk_vulnerabilities": 0,
+                    "medium_risk_vulnerabilities": 0,
+                    "low_risk_vulnerabilities": 0,
+                    "total_scan_time": None
+                }
+
     def store_scan_results(self):
         """Save the combined scan results to the database."""
         scan_results = self.load_scan_results()
@@ -48,21 +101,16 @@ class FullScanResultHandler:
             print("❌ Error: No valid scan data found.")
             return
 
-        # Count vulnerabilities using SecurityScanner
-        try:
-            from scan_engine.execution.full_scan.run_all_scanners import SecurityScanner
-            vulnerability_count = SecurityScanner.count_vulnerabilities(scan_results)
-        except ImportError as e:
-            print(f"❌ Error: Unable to import run_all_scanners module. {e}")
-            return
+        # ✅ Load vulnerability summary from scan_summary.json
+        vulnerability_count = self.load_scan_summary()
 
-        # Extract website URL (default to "Unknown" if missing)
-        website_url = next(iter(scan_results["scans"].keys()), "Unknown")
+        # ✅ Load website URL from mapped_data.json
+        website_url = self.load_website_url()
 
-        # Extract total scan time if available
-        total_scan_time = scan_results.get("execution_times", {}).get("total_scan_time", None)
+        # ✅ Extract total scan time from summary file
+        total_scan_time = vulnerability_count["total_scan_time"]
 
-        # Convert scan results dictionary into a JSON string
+        # Convert full scan results into a JSON string
         scan_json = json.dumps(scan_results, indent=4)
 
         # Insert query
@@ -89,7 +137,6 @@ class FullScanResultHandler:
             self.db.execute_query(query, values)
             self.db.close()
 
-            # Success messages
             print(f"✅ Scan result stored successfully for {website_url}!")
             print(f"🕒 Total Scan Time Stored: {total_scan_time:.2f} seconds" if total_scan_time else "🕒 Total Scan Time: Not Available")
             print(f"⚠️ Total Vulnerabilities Found: {vulnerability_count['vulnerabilities_found']}")
@@ -101,8 +148,9 @@ class FullScanResultHandler:
             print(f"❌ Error while executing the query or saving results to the database: {e}")
             self.db.close()
 
+
     def run(self):
-            """Convenience method to execute the full result storage pipeline."""
-            print("🚀 Running Full Scan Result Handler...")
-            self.store_scan_results()
-            print("✅ Full Scan Result Handler execution complete.")
+        """Convenience method to execute the full result storage pipeline."""
+        print("🚀 Running Full Scan Result Handler...")
+        self.store_scan_results()
+        print("✅ Full Scan Result Handler execution complete.")
