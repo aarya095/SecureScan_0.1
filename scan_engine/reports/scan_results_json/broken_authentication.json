@@ -8,5 +8,8 @@
                 "Overall Severity": "High"
             }
         }
+    },
+    "execution_times": {
+        "broken_authentication": 0.1
     }
 }

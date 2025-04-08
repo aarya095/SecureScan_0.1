@@ -1,9 +1,11 @@
 import re
-from PyQt6.QtCore import QThread, Qt
-from PyQt6.QtCore import QTimer
+from PyQt6.QtCore import QThread, Qt, QTimer, QUrl
+from PyQt6.QtGui import QDesktopServices
+from PyQt6.QtWidgets import QMessageBox
 from Worker.UI_tab_workers.home_quick_scan_worker import ScanWorker
 from Worker.UI_tab_workers.home_quick_scan_worker import GetScanCountWorker
 from Worker.UI_tab_workers.home_quick_scan_worker import FetchRecentScansWorker
+from Worker.UI_tab_workers.home_quick_scan_worker import GeneratePDFWorker
 from GUI.main_window_ui.tabs.home_quick_scan import QuickScanTab
 from scan_engine.execution.full_scan.full_scan_website import SecurityScanManager
 
@@ -22,6 +24,8 @@ class QuickScanController:
 
     def connect_signals(self):
         self.view.quick_scan_pushButton.clicked.connect(self.run_full_scan)
+        self.view.pdf_requested.connect(self.generate_pdf_report)
+        self.view.refresh_requested.connect(self.fetch_recent_scans)
 
     def run_full_scan(self):
         if self.scan_running:
@@ -102,14 +106,37 @@ class QuickScanController:
 
     def fetch_recent_scans(self):
         print("🛠️ Fetching recent scans...")
+        self.view.refresh_button.setEnabled(False)
         self.scan_list_worker = FetchRecentScansWorker()
         self.scan_list_thread = QThread()
 
         self.scan_list_worker.moveToThread(self.scan_list_thread)
         self.scan_list_thread.started.connect(self.scan_list_worker.run)
-        self.scan_list_worker.finished.connect(self.view.load_recent_scans)
+        self.scan_list_worker.finished.connect(self.on_recent_scans_fetched)
         self.scan_list_worker.finished.connect(self.scan_list_thread.quit)
         self.scan_list_worker.finished.connect(self.scan_list_worker.deleteLater)
         self.scan_list_thread.finished.connect(self.scan_list_thread.deleteLater)
 
         self.scan_list_thread.start()
+
+    def on_recent_scans_fetched(self, scans):
+        self.view.load_recent_scans(scans)
+        self.view.refresh_button.setEnabled(True)
+
+    def generate_pdf_report(self, scan_id):
+        self.pdf_thread = QThread()
+        self.pdf_worker = GeneratePDFWorker(scan_id)
+        self.pdf_worker.moveToThread(self.pdf_thread)
+
+        self.pdf_thread.started.connect(self.pdf_worker.run)
+        self.pdf_worker.finished.connect(self.open_pdf)
+        self.pdf_worker.error.connect(lambda msg: QMessageBox.critical(self.view, "PDF Error", msg))
+        self.pdf_worker.finished.connect(self.pdf_thread.quit)
+        self.pdf_worker.finished.connect(self.pdf_worker.deleteLater)
+        self.pdf_thread.finished.connect(self.pdf_thread.deleteLater)
+
+        self.pdf_thread.start()
+
+    def open_pdf(self, path):
+        QDesktopServices.openUrl(QUrl.fromLocalFile(path))
+

@@ -2,10 +2,14 @@ import datetime
 import json
 import os
 from PyQt6 import QtCore, QtGui, QtWidgets
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import QFont, QIcon
+from PyQt6.QtCore import pyqtSignal, QSize
 
 
 class QuickScanTab(QtWidgets.QWidget):
+    pdf_requested = pyqtSignal(int)
+    refresh_requested = pyqtSignal()
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi()
@@ -49,10 +53,20 @@ class QuickScanTab(QtWidgets.QWidget):
 
         self.top_right_layout = QtWidgets.QHBoxLayout()
         self.top_right_spacer = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        # Refresh button
+        self.refresh_button = QtWidgets.QPushButton(self.home_right_frame)
+        self.refresh_button.setIcon(QIcon("icons/refresh.png")) 
+        self.refresh_button.setIconSize(QSize(32, 32))
+        self.refresh_button.setToolTip("Refresh scan history")
+        self.refresh_button.setFixedSize(40, 40)
+        self.refresh_button.setStyleSheet("background-color: transparent; border: none;")
+        self.quick_scan_label.setObjectName("refreshButton")
+        self.refresh_button.clicked.connect(self.refresh_requested)
 
         from GUI.theme_switch.theme_manager import ThemeSwitcher
         self.theme_toggle_button = ThemeSwitcher(self.home_right_frame)
         self.theme_toggle_button.setFixedSize(40, 40)
+        self.top_right_layout.addWidget(self.refresh_button)
         self.top_right_layout.addItem(self.top_right_spacer)
         self.top_right_layout.addWidget(self.theme_toggle_button)
 
@@ -77,7 +91,7 @@ class QuickScanTab(QtWidgets.QWidget):
         self.scan_history_listWidget.setSpacing(2)
         self.scan_history_listWidget.setStyleSheet("QListWidget { border: 2px; }")
         self.scan_history_listWidget.setMinimumHeight(200)
-        self.scan_history_listWidget.setFixedHeight(400)
+        self.scan_history_listWidget.setFixedHeight(350)
 
         self.verticalLayout_2.addWidget(self.security_tip_label)
         self.verticalLayout_2.addWidget(self.num_of_quick_scan_label)
@@ -111,8 +125,8 @@ class QuickScanTab(QtWidgets.QWidget):
             pdf_button.setObjectName("smallButton")
             pdf_button.setFixedSize(100, 30)
             pdf_button.setProperty("scan_id", scan_id)
-            pdf_button.clicked.connect(lambda _, s_id=scan_id: print(f"Generate PDF for scan {s_id}"))  # Placeholder
-
+            pdf_button.clicked.connect(lambda _, s_id=scan_id: self.pdf_requested.emit(s_id)) # connect the signal here
+            
             layout.addWidget(url_label)
             layout.addWidget(time_label)
             layout.addItem(spacer)

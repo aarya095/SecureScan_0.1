@@ -79,21 +79,41 @@ class SecurityScanManager:
         """Runs all security scanners and logs execution time for each."""
         start_time = time.time()
 
-        results_file = "scan_engine/reports/scan_results.json"  
-        scanner = SecurityScanner(results_file) 
-        scanner.run() 
-
-        from scan_engine.scanner.network.http_scanner import URLSecurityScanner
-        url_scanner = URLSecurityScanner()
-        url_scanner.run()
+        results_file = "scan_engine/reports/scan_results.json"
+        scanner = SecurityScanner(results_file)
+        scanner.run()  # This saves scan_summary.json
 
         scan_time = time.time() - start_time
-
         print(f"\n⏱️ Security Scanners completed in {scan_time:.2f} seconds")
 
-        self.update_scan_results("total_scan", round(scan_time, 2))
+        # Load scan_summary to extract execution times
+        summary_path = "scan_engine/reports/final_report/scan_summary.json"
+        if os.path.exists(summary_path):
+            try:
+                with open(summary_path, "r") as f:
+                    summary_data = json.load(f)
+                    exec_times = summary_data.get("execution_times", {})
+
+                    # Map the names used in scan_summary to internal scanner keys
+                    name_mapping = {
+                        "HTTP Scanner": "http",
+                        "Broken Authentication Scanner": "broken_authentication",
+                        "CSRF Scanner": "csrf",
+                        "SQL Injection Scanner": "sql_injection",
+                        "Total Scan Time": "total_scan"
+                    }
+
+                    for pretty_name, internal_key in name_mapping.items():
+                        if pretty_name in exec_times:
+                            self.update_scan_results(internal_key, round(exec_times[pretty_name], 2))
+
+            except json.JSONDecodeError as e:
+                print(f"❌ Failed to parse scan_summary.json: {e}")
+        else:
+            print("⚠️ scan_summary.json not found.")
+
         return scan_time
-    
+
     def get_total_scan_count():
         from Database.db_connection import DatabaseConnection
         db = DatabaseConnection()

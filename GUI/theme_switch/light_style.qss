@@ -54,6 +54,22 @@ QPushButton:pressed#smallButton {
                 background-color: #1e8449;
     }
 
+QPushButton#refreshButton {
+    background-color: transparent;
+    border: none;
+    padding: 4px;
+    border-radius: 16px;
+}
+
+QPushButton:hover#refreshButton {
+    background-color: rgba(0, 0, 0, 0.07);
+}
+
+QPushButton:pressed#refreshButton {
+    background-color: rgba(0, 0, 0, 0.15);
+    padding: 6px; 
+    margin: 0px 0px 1px 1px; 
+}
 
 QComboBox {
                 background-color: rgb(35, 222, 104);

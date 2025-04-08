@@ -1,6 +1,7 @@
 from PyQt6.QtCore import QObject, pyqtSignal
 from contextlib import redirect_stdout, redirect_stderr
 import sys
+import time
 
 class EmittingStream(QObject):
     text_written = pyqtSignal(str)
@@ -18,7 +19,7 @@ class ScanWorker(QObject):
 
     def __init__(self, target_url):
         super().__init__()
-        self.target_url = target_url  # More explicit name
+        self.target_url = target_url 
 
     def run(self):
         from scan_engine.execution.full_scan.full_scan_website import SecurityScanManager
@@ -107,3 +108,4 @@ class GeneratePDFWorker(QObject):
             self.finished.emit(path)
         except Exception as e:
             self.error.emit(str(e))
+

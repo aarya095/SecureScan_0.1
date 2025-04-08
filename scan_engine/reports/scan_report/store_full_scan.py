@@ -101,22 +101,17 @@ class FullScanResultHandler:
             print("❌ Error: No valid scan data found.")
             return
 
-        # ✅ Load vulnerability summary from scan_summary.json
         vulnerability_count = self.load_scan_summary()
 
-        # ✅ Load website URL from mapped_data.json
         website_url = self.load_website_url()
 
-        # ✅ Extract total scan time from summary file
         total_scan_time = vulnerability_count["total_scan_time"]
 
-        # Convert full scan results into a JSON string
         scan_json = json.dumps(scan_results, indent=4)
 
-        # Insert query
         query = """
             INSERT INTO scan_results (
-                website_url, scan_data, execution_time, vulnerabilities_found,
+                scanned_url, scan_data, execution_time, vulnerabilities_found,
                 high_risk_vulnerabilities, medium_risk_vulnerabilities, low_risk_vulnerabilities
             ) 
             VALUES (%s, %s, %s, %s, %s, %s, %s)
@@ -131,7 +126,6 @@ class FullScanResultHandler:
             vulnerability_count["low_risk_vulnerabilities"]
         )
 
-        # Execute query
         try:
             self.db.connect()
             self.db.execute_query(query, values)

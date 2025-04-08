@@ -1,121 +1,113 @@
-import json
 import os
+import json
 from datetime import datetime
-from fpdf import FPDF
-from PyQt6.QtWidgets import QFileDialog
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.lib.enums import TA_LEFT
 
-class ScanReportGenerator:
-    """Generates a PDF security scan report using mapped data and scan results."""
+from tkinter import Tk
+from tkinter.filedialog import asksaveasfilename
 
-    def __init__(self, parent=None, mapped_data_file="mapped_data.json", results_file="security_scan_results.json"):
-        self.mapped_data_file = mapped_data_file
-        self.results_file = results_file
-        self.report_data = {}
-        self.parent = parent  # For QFileDialog
+from Database.db_connection import DatabaseConnection
 
-    def load_json(self, file_path):
-        """Load JSON data from a file."""
-        try:
-            with open(file_path, "r") as file:
-                return json.load(file)
-        except (FileNotFoundError, json.JSONDecodeError):
-            print(f"❌ Error loading {file_path}")
-            return None
 
-    def collect_report_data(self):
-        """Collect scan details from files."""
-        print("\n📌 Collecting scan details...")
+def generate_report(scan_id: int) -> str:
+    # Connect to DB
+    db = DatabaseConnection()
+    db.connect()
 
-        self.report_data["scan_datetime"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    query = "SELECT scanned_url, scan_timestamp, scan_data FROM scan_results WHERE scan_id = %s"
+    result = db.fetch_one(query, (scan_id,))
+    db.close()
 
-        mapped_data = self.load_json(self.mapped_data_file)
-        self.report_data["website_info"] = mapped_data.get("website_info", {}) if mapped_data else {}
+    if not result:
+        raise ValueError("Scan ID not found in database.")
 
-        scan_results = self.load_json(self.results_file)
-        self.report_data["scan_results"] = scan_results if scan_results else {}
+    url, timestamp, scan_data = result
 
-        print("✅ Data collection complete.")
+    if isinstance(scan_data, str):
+        scan_data = json.loads(scan_data)
 
-    def save_as_pdf(self, output_file):
-        """Generate the PDF report."""
-        pdf = FPDF()
-        pdf.set_auto_page_break(auto=True, margin=15)
-        pdf.add_page()
-        pdf.set_font("Arial", "B", 30)
-        pdf.cell(200, 10, "Security Scan Report", ln=True, align="C")
-        pdf.ln(10)
+    # Ask user where to save the file
+    root = Tk()
+    root.withdraw()  # Hide main window
+    filename = asksaveasfilename(
+        defaultextension=".pdf",
+        filetypes=[("PDF files", "*.pdf")],
+        title="Save Security Report As",
+        initialfile=f"scan_report_{scan_id}.pdf"
+    )
+    root.destroy()
 
-        # Date and time
-        pdf.set_font("Arial", "B", 12)
-        pdf.cell(0, 10, f"Scan Date & Time: {self.report_data['scan_datetime']}", ln=True)
-        pdf.ln(5)
+    if not filename:
+        print("User canceled save dialog.")
+        return ""
 
-        # Execution Times
-        execution_times = self.report_data["scan_results"].get("execution_times", {})
-        pdf.cell(0, 10, "Execution Times:", ln=True)
-        pdf.set_font("Arial", "", 11)
-        pdf.cell(0, 10, f"  - Total Scan Time: {execution_times.get('total_scan_time', 'N/A')} seconds", ln=True)
-        pdf.cell(0, 10, f"  - Scanner Time: {execution_times.get('scanner_time', 'N/A')} seconds", ln=True)
-        pdf.cell(0, 10, f"  - Store Time: {execution_times.get('store_time', 'N/A')} seconds", ln=True)
-        pdf.ln(10)
+    # Set up PDF
+    doc = SimpleDocTemplate(filename, pagesize=A4,
+                            rightMargin=50, leftMargin=50,
+                            topMargin=50, bottomMargin=50)
+    styles = getSampleStyleSheet()
+    kv_style = ParagraphStyle(
+        'kv_style',
+        parent=styles['Normal'],
+        fontSize=10,
+        leading=14,
+        spaceAfter=6,
+        alignment=TA_LEFT
+    )
 
-        # Website Info
-        website_info = self.report_data["website_info"]
-        pdf.set_font("Arial", "B", 12)
-        pdf.cell(0, 10, "Website Information:", ln=True)
-        pdf.set_font("Arial", "", 11)
-        if website_info:
-            for key, value in website_info.items():
-                pdf.cell(0, 10, f"  - {key}: {str(value)}", ln=True)
+    story = []
+
+    # Header
+    story.append(Paragraph("🔐 <b>Security Scan Report</b>", styles['Title']))
+    story.append(Spacer(1, 0.3 * inch))
+    story.append(Paragraph(f"<b>Scan ID:</b> {scan_id}", kv_style))
+    story.append(Paragraph(f"<b>Scanned URL:</b> {url}", kv_style))
+    story.append(Paragraph(f"<b>Timestamp:</b> {timestamp.strftime('%Y-%m-%d %H:%M:%S')}", kv_style))
+    story.append(Spacer(1, 0.3 * inch))
+
+    # Helper to recursively render nested data
+    def render_dict(data, indent=0):
+        elements = []
+        indent_space = "&nbsp;" * (4 * indent)
+        for key, value in data.items():
+            if isinstance(value, dict):
+                elements.append(Paragraph(f"{indent_space}<b>{key}:</b>", kv_style))
+                elements.extend(render_dict(value, indent + 1))
+            elif isinstance(value, list):
+                elements.append(Paragraph(f"{indent_space}<b>{key}:</b>", kv_style))
+                for i, item in enumerate(value, start=1):
+                    elements.append(Paragraph(f"{indent_space}&nbsp;&nbsp;- <i>Item {i}:</i>", kv_style))
+                    if isinstance(item, dict):
+                        elements.extend(render_dict(item, indent + 2))
+                    else:
+                        elements.append(Paragraph(f"{indent_space * 2}{item}", kv_style))
+            else:
+                elements.append(Paragraph(f"{indent_space}<b>{key}:</b> {value}", kv_style))
+        return elements
+
+    # Body - scan results
+    for section, findings in scan_data.items():
+        story.append(Paragraph(f"📄 <b>{section.replace('_', ' ').title()}</b>", styles['Heading2']))
+        story.append(Spacer(1, 0.1 * inch))
+
+        if isinstance(findings, dict):
+            story.extend(render_dict(findings))
+        elif isinstance(findings, list):
+            for idx, item in enumerate(findings, start=1):
+                story.append(Paragraph(f"<b>Item {idx}</b>", kv_style))
+                if isinstance(item, dict):
+                    story.extend(render_dict(item))
+                else:
+                    story.append(Paragraph(str(item), kv_style))
         else:
-            pdf.cell(0, 10, "  - No website information available.", ln=True)
-        pdf.ln(10)
+            story.append(Paragraph(str(findings), kv_style))
 
-        # Scan Results
-        scan_results = self.report_data["scan_results"].get("scans", {})
-        pdf.set_font("Arial", "B", 12)
-        pdf.cell(0, 10, "Security Scan Results:", ln=True)
+        story.append(Spacer(1, 0.3 * inch))
 
-        for scanner_name, scanner_data in scan_results.items():
-            pdf.set_font("Arial", "B", 12)
-            pdf.cell(0, 10, f"\n{scanner_name}", ln=True)
+    doc.build(story)
 
-            for url, results in scanner_data.items():
-                pdf.set_font("Arial", "I", 11)
-                pdf.cell(0, 10, f"  - URL: {url}", ln=True)
-
-                if isinstance(results, list):
-                    for item in results:
-                        pdf.set_font("Arial", "", 11)
-                        pdf.cell(0, 10, f"    Vulnerable: {item.get('vulnerable', False)}", ln=True)
-                        pdf.cell(0, 10, f"    Severity: {item.get('severity', 'N/A')}", ln=True)
-                        pdf.cell(0, 10, f"    Description: {item.get('severity_description', 'No description.')}", ln=True)
-                        pdf.ln(3)
-                elif isinstance(results, dict):
-                    for vuln_type, severity in results.items():
-                        pdf.set_font("Arial", "", 11)
-                        pdf.cell(0, 10, f"    {vuln_type}: {severity}", ln=True)
-                    pdf.ln(3)
-
-        pdf.output(output_file)
-        print(f"📄 Report saved as PDF: {output_file}")
-
-    def generate_report(self):
-        """Generate the report and ask user for save path."""
-        self.collect_report_data()
-
-        options = QFileDialog.Options()
-        options |= QFileDialog.Option.DontUseNativeDialog
-        file_path, _ = QFileDialog.getSaveFileName(
-            parent=self.parent,
-            caption="Save PDF Report",
-            filter="PDF Files (*.pdf)",
-            options=options
-        )
-
-        if file_path:
-            if not file_path.endswith(".pdf"):
-                file_path += ".pdf"
-            self.save_as_pdf(file_path)
-        else:
-            print("⚠️ PDF save cancelled by user.")
+    return filename
