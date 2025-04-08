@@ -3,6 +3,7 @@ from PyQt6.QtCore import QThread, Qt
 from PyQt6.QtCore import QTimer
 from Worker.UI_tab_workers.home_quick_scan_worker import ScanWorker
 from Worker.UI_tab_workers.home_quick_scan_worker import GetScanCountWorker
+from Worker.UI_tab_workers.home_quick_scan_worker import FetchRecentScansWorker
 from GUI.main_window_ui.tabs.home_quick_scan import QuickScanTab
 from scan_engine.execution.full_scan.full_scan_website import SecurityScanManager
 
@@ -17,6 +18,7 @@ class QuickScanController:
         self.scan_running = False  
         self.connect_signals()
         self.update_total_scan_count()
+        self.fetch_recent_scans()
 
     def connect_signals(self):
         self.view.quick_scan_pushButton.clicked.connect(self.run_full_scan)
@@ -53,6 +55,7 @@ class QuickScanController:
         self.display_output("✅ Scan process finished.\n")
         self.scan_running = False  
         self.update_total_scan_count()
+        self.fetch_recent_scans()
 
     def display_output(self, text):
         self.view.quick_scan_output_textBrowser.append(text)
@@ -94,7 +97,19 @@ class QuickScanController:
 
         self.count_thread.start()
 
-
     def on_scan_count_ready(self, count):
         self.view.num_of_quick_scan_label.setText(f"Total No. of Full Scans: {count}")
 
+    def fetch_recent_scans(self):
+        print("🛠️ Fetching recent scans...")
+        self.scan_list_worker = FetchRecentScansWorker()
+        self.scan_list_thread = QThread()
+
+        self.scan_list_worker.moveToThread(self.scan_list_thread)
+        self.scan_list_thread.started.connect(self.scan_list_worker.run)
+        self.scan_list_worker.finished.connect(self.view.load_recent_scans)
+        self.scan_list_worker.finished.connect(self.scan_list_thread.quit)
+        self.scan_list_worker.finished.connect(self.scan_list_worker.deleteLater)
+        self.scan_list_thread.finished.connect(self.scan_list_thread.deleteLater)
+
+        self.scan_list_thread.start()
