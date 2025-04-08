@@ -4,7 +4,8 @@ import os
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtGui import QFont, QIcon
 from PyQt6.QtCore import pyqtSignal, QSize
-
+from GUI.animation.rotation_animation import RotatingButton
+from PyQt6.QtCore import QPropertyAnimation
 
 class QuickScanTab(QtWidgets.QWidget):
     pdf_requested = pyqtSignal(int)
@@ -54,13 +55,14 @@ class QuickScanTab(QtWidgets.QWidget):
         self.top_right_layout = QtWidgets.QHBoxLayout()
         self.top_right_spacer = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
         # Refresh button
-        self.refresh_button = QtWidgets.QPushButton(self.home_right_frame)
+        self.refresh_button = RotatingButton(self.home_right_frame)
         self.refresh_button.setIcon(QIcon("icons/refresh.png")) 
         self.refresh_button.setIconSize(QSize(32, 32))
         self.refresh_button.setToolTip("Refresh scan history")
         self.refresh_button.setFixedSize(40, 40)
         self.refresh_button.setStyleSheet("background-color: transparent; border: none;")
-        self.quick_scan_label.setObjectName("refreshButton")
+        self.refresh_button.setObjectName("refreshButton")
+        self.refresh_button.clicked.connect(self.animate_refresh_icon)
         self.refresh_button.clicked.connect(self.refresh_requested)
 
         from GUI.theme_switch.theme_manager import ThemeSwitcher
@@ -117,15 +119,16 @@ class QuickScanTab(QtWidgets.QWidget):
             url_label.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
 
             time_label = QtWidgets.QLabel(f"🕒 {timestamp}")
-            time_label.setStyleSheet("color: gray; font-size: 11px;")
+            time_label.setStyleSheet("color: gray; font-size: 15px;")
 
-            spacer = QtWidgets.QSpacerItem(30, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+            spacer = QtWidgets.QSpacerItem(10, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
 
             pdf_button = QtWidgets.QPushButton("View PDF")
             pdf_button.setObjectName("smallButton")
-            pdf_button.setFixedSize(100, 30)
+            pdf_button.setFixedSize(150, 40)
+            pdf_button.setStyleSheet("font-size: 20px;")
             pdf_button.setProperty("scan_id", scan_id)
-            pdf_button.clicked.connect(lambda _, s_id=scan_id: self.pdf_requested.emit(s_id)) # connect the signal here
+            pdf_button.clicked.connect(lambda _, s_id=scan_id: self.pdf_requested.emit(s_id))
             
             layout.addWidget(url_label)
             layout.addWidget(time_label)
@@ -168,6 +171,14 @@ class QuickScanTab(QtWidgets.QWidget):
             print(f"Error loading security tips: {e}")
             self.security_tip_label.setText("Tip of the Day: Stay safe online!")
 
+    def animate_refresh_icon(self):
+        animation = QPropertyAnimation(self.refresh_button, b"rotation")
+        animation.setStartValue(0)
+        animation.setEndValue(360)
+        animation.setDuration(500)
+        animation.setLoopCount(1)
+        animation.start()
+        self._refresh_animation = animation
 
 if __name__ == "__main__":
     import sys

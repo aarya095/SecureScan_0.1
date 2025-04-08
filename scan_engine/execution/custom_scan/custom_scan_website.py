@@ -137,19 +137,17 @@ class CustomSecurityScanner:
 
         for scanner_name in selected_scanners:
             if scanner_name in scanner_mapping:
-                if scanner_name in scans_results["scans"]:  # 🔹 Prevent duplicate execution
-                    continue  # Skip if already scanned
+                if scanner_name in scans_results["scans"]: 
+                    continue 
 
-                scanner_instance = scanner_mapping[scanner_name]()  # Create a new scanner object
-                scanner_instance.run()  # Run the scanner once
+                scanner_instance = scanner_mapping[scanner_name]()  
+                scanner_instance.run() 
                 scans_results["scans"][scanner_name] = scanner_instance.scan_results
 
                 executed_scanners.add(scanner_name)
 
-        # ✅ First, insert into `custom_scans` table and get scan_id
         scan_id = self.store_custom_scan_entry(url, scans_results)
 
-        # ✅ Now store results in `custom_scan_results`
         self.store_scan_results(scan_id, scans_results)
 
         return scans_results

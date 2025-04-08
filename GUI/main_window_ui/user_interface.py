@@ -46,7 +46,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.centralwidget.setSizePolicy(sizePolicy)
 
         self.tabWidget = QtWidgets.QTabWidget(parent=self.centralwidget)
-        layout = QtWidgets.QVBoxLayout(self.centralwidget)  # Use vertical layout
+        layout = QtWidgets.QVBoxLayout(self.centralwidget)
         layout.addWidget(self.tabWidget)
         self.setCentralWidget(self.centralwidget)  
         self.tabWidget.setObjectName("tabWidget")

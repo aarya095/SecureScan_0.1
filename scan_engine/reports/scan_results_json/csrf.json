@@ -24,6 +24,6 @@
         }
     },
     "execution_times": {
-        "csrf": 0.01
+        "csrf": 0.02
     }
 }

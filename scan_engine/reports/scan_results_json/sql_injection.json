@@ -12,6 +12,6 @@
         }
     },
     "execution_times": {
-        "sql_injection": 0.01
+        "sql_injection": 0.02
     }
 }

@@ -5,9 +5,9 @@ QWidget {
 }
 
 QFrame {
-    background-color: #2c2c2c; /* Dark grey */
+    background-color: #2c2c2c; 
     border-radius: 10px;
-    border: 2px solid #23DE68; /* Green border */
+    border: 2px solid #23DE68; 
     padding: 10px;
 }
 
@@ -70,6 +70,23 @@ QPushButton:hover#refreshButton {
 QPushButton:pressed#refreshButton {
     background-color: rgba(0, 0, 0, 0.15);
     padding: 6px; 
+    margin: 0px 0px 1px 1px; 
+}
+
+QToolButton#undoButton {
+    background-color: transparent;
+    border: none;
+    border-radius: 16px;
+    padding: 4px;
+}
+
+QToolButton#undoButton:hover {
+    background-color: rgba(0, 0, 0, 0.07);
+}
+
+QToolButton#undoButton:pressed {
+    background-color: rgba(0, 0, 0, 0.15);
+    padding: 4px; 
     margin: 0px 0px 1px 1px; 
 }
 

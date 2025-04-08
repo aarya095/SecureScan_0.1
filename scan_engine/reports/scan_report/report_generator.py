@@ -30,9 +30,8 @@ def generate_report(scan_id: int) -> str:
     if isinstance(scan_data, str):
         scan_data = json.loads(scan_data)
 
-    # Ask user where to save the file
     root = Tk()
-    root.withdraw()  # Hide main window
+    root.withdraw()  
     filename = asksaveasfilename(
         defaultextension=".pdf",
         filetypes=[("PDF files", "*.pdf")],
@@ -45,7 +44,6 @@ def generate_report(scan_id: int) -> str:
         print("User canceled save dialog.")
         return ""
 
-    # Set up PDF
     doc = SimpleDocTemplate(filename, pagesize=A4,
                             rightMargin=50, leftMargin=50,
                             topMargin=50, bottomMargin=50)
