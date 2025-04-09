@@ -154,6 +154,45 @@ class HistoryTab(QtWidgets.QWidget):
         self.pie_chart_container.addWidget(label)
         self.pie_chart_container.addWidget(chart)
 
+class FullScanHistoryWindow(QtWidgets):
+    def __init__(self):
+        super().__init__()
+
+        # Sample scan history data (You can replace this with your actual data from the database)
+        self.scan_history = [
+            {'timestamp': '2025-04-09 12:30:00', 'url': 'http://example.com', 'execution_time': '2 minutes'},
+            {'timestamp': '2025-04-09 14:00:00', 'url': 'http://anotherurl.com', 'execution_time': '5 minutes'}
+        ]
+
+        # Set up the layout
+        layout = QtWidgets.QVBoxLayout()
+
+        self.table = QtWidgets.QTableWidget(len(self.scan_history), 4)  # 4 columns
+        self.table.setHorizontalHeaderLabels(['Timestamp', 'Scanned URL', 'Execution Time', 'View PDF'])
+
+        # Populate the table with data
+        for row, scan in enumerate(self.scan_history):
+            # Set the timestamp, URL, and execution time in the respective columns
+            self.table.setItem(row, 0, QtWidgets.QTableWidgetItem(scan['timestamp']))
+            self.table.setItem(row, 1, QtWidgets.QTableWidgetItem(scan['url']))
+            self.table.setItem(row, 2, QtWidgets.QTableWidgetItem(scan['execution_time']))
+
+            # Create a button for "View PDF" in the last column
+            view_pdf_button = QtWidgets.QPushButton("View PDF")
+            view_pdf_button.clicked.connect(lambda checked, scan=scan: self.view_pdf(scan))
+            self.table.setCellWidget(row, 3, view_pdf_button)
+
+        # Add the table to the layout
+        layout.addWidget(self.table)
+
+        # Set the layout for the window
+        self.setLayout(layout)
+        self.setWindowTitle("Scan History")
+        self.resize(800, 400)
+
+    def view_pdf(self, scan):
+        # Simulate opening the PDF (In a real application, you'd open the PDF file associated with the scan)
+        print(f"Opening PDF for scan at {scan['timestamp']}...")
 
 if __name__ == "__main__":
     import sys
