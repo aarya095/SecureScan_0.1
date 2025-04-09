@@ -2,9 +2,12 @@ from PyQt6 import QtCore, QtWidgets
 from PyQt6.QtCore import QSize, pyqtSignal
 from PyQt6.QtGui import QAction, QIcon
 from functools import partial
+from GUI.animation.rotation_animation import RotatingButton
+from PyQt6.QtCore import QPropertyAnimation
 
 class CustomScanTab(QtWidgets.QWidget):
-    pdf_requested = pyqtSignal(str)  # Signal emitted when PDF view is requested
+    pdf_requested = pyqtSignal(int) 
+    refresh_requested = pyqtSignal()
 
     def __init__(self, parent=None, tab_widget=None):
         super().__init__(parent)
@@ -70,17 +73,36 @@ class CustomScanTab(QtWidgets.QWidget):
         self.custom_scan_rightframe = QtWidgets.QFrame(self)
         self.custom_scan_rightframe.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.custom_scan_rightframe.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
+        
+        self.top_right_layout = QtWidgets.QHBoxLayout()
+        self.top_right_spacer = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        # Refresh button
+        self.refresh_button = RotatingButton(self.custom_scan_rightframe)
+        self.refresh_button.setIcon(QIcon("icons/refresh.png")) 
+        self.refresh_button.setIconSize(QSize(32, 32))
+        self.refresh_button.setToolTip("Refresh scan history")
+        self.refresh_button.setFixedSize(40, 40)
+        self.refresh_button.setStyleSheet("background-color: transparent; border: none;")
+        self.refresh_button.setObjectName("refreshButton")
+        self.refresh_button.clicked.connect(self.animate_refresh_icon)
+        self.refresh_button.clicked.connect(self.refresh_requested)
+        
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.custom_scan_rightframe)
 
-        self.num_of_custom_scan_label = QtWidgets.QLabel("Total No. of Custom Scans:", self.custom_scan_rightframe)
+        self.top_info_layout = QtWidgets.QHBoxLayout()
+        self.num_of_custom_scan_label = QtWidgets.QLabel("Total No. of Custom Scans: <count>", self.custom_scan_rightframe)
         self.num_of_custom_scan_label.setObjectName("subTitle")
-        self.verticalLayout_4.addWidget(self.num_of_custom_scan_label)
+        self.top_info_layout.addWidget(self.num_of_custom_scan_label)
+
+        self.top_info_layout.addStretch()
+        self.top_info_layout.addWidget(self.refresh_button)
+        self.verticalLayout_4.addLayout(self.top_info_layout)
+
 
         self.custom_scan_history_label = QtWidgets.QLabel("History of Custom Scans:", self.custom_scan_rightframe)
         self.custom_scan_history_label.setObjectName("subTitle")
         self.verticalLayout_4.addWidget(self.custom_scan_history_label)
 
-        # ✅ Replace text browser with QListWidget
         self.scan_history_listWidget = QtWidgets.QListWidget(self.custom_scan_rightframe)
         self.scan_history_listWidget.setSpacing(2)
         self.scan_history_listWidget.setStyleSheet("QListWidget { border: 2px; }")
@@ -143,8 +165,7 @@ class CustomScanTab(QtWidgets.QWidget):
 
             time_label = QtWidgets.QLabel(f"🕒 {timestamp}")
             time_label.setStyleSheet("color: gray; font-size: 15px;")
-            time_label.setMaximumWidth(150)
-
+            
             spacer = QtWidgets.QSpacerItem(10, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
 
             pdf_button = QtWidgets.QPushButton("View PDF")
@@ -163,6 +184,15 @@ class CustomScanTab(QtWidgets.QWidget):
             list_item.setSizeHint(widget.sizeHint())
             self.scan_history_listWidget.addItem(list_item)
             self.scan_history_listWidget.setItemWidget(list_item, widget)
+
+    def animate_refresh_icon(self):
+        animation = QPropertyAnimation(self.refresh_button, b"rotation")
+        animation.setStartValue(0)
+        animation.setEndValue(360)
+        animation.setDuration(500)
+        animation.setLoopCount(1)
+        animation.start()
+        self._refresh_animation = animation
 
     @staticmethod
     def load_stylesheet(file_path):
