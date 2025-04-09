@@ -2,6 +2,7 @@ import sys
 from PyQt6.QtWidgets import QApplication
 from GUI.log_in.login_gui import LoginWindow
 from controller.Login_controller.login_controller import LoginController
+from PyQt6.QtWebEngineWidgets import QWebEngineView
 
 def main():
     try:

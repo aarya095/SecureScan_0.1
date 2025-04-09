@@ -2,7 +2,7 @@ from GUI.main_window_ui.user_interface import Ui_MainWindow
 from PyQt6.QtWidgets import QMainWindow
 from controller.Tabs_Controller.home_tab_controller import QuickScanController
 from controller.Tabs_Controller.custom_scan_controller import CustomScanController
-
+from controller.Tabs_Controller.history_tab_controller import HistoryTabController
 
 class MainWindowController:
     def __init__(self):
@@ -10,6 +10,7 @@ class MainWindowController:
         
         self.quick_scan_controller = QuickScanController(self.window.home_tab)
         self.custom_scan_controller = CustomScanController(self.window.custom_scan_tab)
+        self.history_tab_controller = HistoryTabController(self.window.history_tab)
 
         self.setup_inter_tab_communication()
         self.window.show()
