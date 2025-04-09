@@ -6,11 +6,10 @@ from controller.Tabs_Controller.custom_scan_controller import CustomScanControll
 
 class MainWindowController:
     def __init__(self):
-        self.ui = Ui_MainWindow()
-        self.window = self.ui
+        self.window = Ui_MainWindow()
         
-        self.quick_scan_controller = QuickScanController(self.ui.home_tab)
-        self.custom_scan_controller = CustomScanController(self.ui.custom_scan_tab)
+        self.quick_scan_controller = QuickScanController(self.window.home_tab)
+        self.custom_scan_controller = CustomScanController(self.window.custom_scan_tab)
 
         self.setup_inter_tab_communication()
         self.window.show()
@@ -21,4 +20,8 @@ class MainWindowController:
 
     def get_window(self):
         """Returns the main UI window (used by login controller if needed)."""
-        return self.main_window
+        if hasattr(self, "window"):
+            return self.window
+        else:
+            print("❌ MainWindowController has no window attribute!")
+            return None

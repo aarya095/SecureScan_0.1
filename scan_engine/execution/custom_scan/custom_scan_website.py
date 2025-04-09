@@ -15,12 +15,16 @@ from Database.db_connection import DatabaseConnection as db
 class CustomSecurityScanner:
     """Class to manage and run custom-selected security scanners."""
 
-    SECURITY_SCAN_RESULTS_FILE = "security_scan_results.json"
+    SECURITY_SCAN_RESULTS_FILE = "scan_engine/reports/final_report/security_scan_results.json"
 
-    def __init__(self):
+    def __init__(self, url=None, selected_scanners=None):
         self.project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
         self._update_sys_path()
         self.db = db()
+
+        self.url = url
+        self.selected_scanners = selected_scanners
+        self.scan_results = None
 
     def _update_sys_path(self):
         """Ensure the project root is in sys.path."""
@@ -38,92 +42,10 @@ class CustomSecurityScanner:
             "CSRFScanner": "CSRF Scanner",
             "CSRF Scanner": "CSRF Scanner"
         }
-        return SCANNER_NAME_MAPPING.get(scanner_name, scanner_name)  # Default to given name if not mapped
+        return SCANNER_NAME_MAPPING.get(scanner_name, scanner_name)  
 
-
-    def store_custom_scan_entry(self, website_url, scan_results):
-
-        """Insert into `custom_scans` and return the generated scan_id."""
-        execution_time = scan_results.get("execution_times", {}).get("total_scan_time", 0.0)
-        vulnerabilities_found = sum(len(v) for scan in scan_results["scans"].values() for v in scan.values())
-
-        query = """
-            INSERT INTO custom_scans (website_url, execution_time, vulnerabilities_found) 
-            VALUES (%s, %s, %s)
-        """
-        values = (website_url, execution_time, vulnerabilities_found)
-
-        try:
-            self.db.connect()
-            scan_id = self.db.execute_query(query, values, return_last_insert_id=True)  
-            self.db.close()
-            return scan_id
-        except Exception as e:
-            print(f"❌ Error inserting custom scan entry: {e}")
-            self.db.close()
-            return None
-
-
-    def store_scan_results(self, scan_id, scan_results):
-        """Save individual scanner results to `custom_scan_results` table, avoiding duplicates."""
-
-        if scan_id is None:
-            print("❌ Error: scan_id is missing. Scan results will not be stored.")
-            return
-
-        inserted_hashes = set()  # ✅ Store hashes to prevent duplicate insertions
-
-        for scanner_name, scan_data in scan_results.get("scans", {}).items():
-            normalized_name = self.normalize_scanner_name(scanner_name) 
-
-            for url, vulnerabilities in scan_data.items():
-                for vuln in vulnerabilities:
-                    if not isinstance(vuln, dict):
-                        print(f"⚠️ Warning: Skipping invalid data: {vuln}")
-                        continue  
-
-                    risk_level = vuln.get("severity", "Info").strip()
-                    scanner_result_json = json.dumps(vuln, indent=4)
-
-                    # ✅ Compute a unique hash for deduplication
-                    result_hash = hashlib.sha256(f"{scan_id}{normalized_name}{url}{scanner_result_json}".encode()).hexdigest()
-
-                    if result_hash in inserted_hashes:
-                        print(f"⚠️ Skipping duplicate result for {normalized_name} at {url}")
-                        continue  # Skip duplicate
-
-                    try:
-                        query_check = """
-                            SELECT COUNT(*) FROM custom_scan_results
-                            WHERE scan_id = %s AND scanner_name = %s AND scanner_result = %s
-                        """
-                        values_check = (scan_id, normalized_name, scanner_result_json)
-                        self.db.connect()
-                        self.db.execute_query(query_check, values_check)
-                        existing_count = self.db.cursor.fetchone()[0]
-                        self.db.close()
-
-                        if existing_count > 0:
-                            print(f"⚠️ Skipping duplicate database entry for {normalized_name} at {url}")
-                            continue  # Skip insert
-
-                        query = """
-                            INSERT INTO custom_scan_results (
-                                scan_id, scanner_name, scanner_result, risk_level
-                            ) VALUES (%s, %s, %s, %s)
-                        """
-                        values = (scan_id, normalized_name, scanner_result_json, risk_level)
-
-                        self.db.execute_query(query, values)
-                        print(f"✅ Inserted result for {normalized_name} at {url}")
-                        inserted_hashes.add(result_hash)  # ✅ Mark as inserted
-
-                    except Exception as e:
-                        print(f"❌ Error inserting scan result: {e}")
-
-
-    def run_custom_scan(self, selected_scanners, url):
-        """Runs only the selected security scanners, ensuring no duplicate results."""
+    def run_custom_scan(self):
+        """Runs only the selected security scanners and stores results via CustomScanResultHandler."""
         scans_results = {"scans": {}}
         scanner_mapping = {
             "HTTP Scanner": URLSecurityScanner,
@@ -135,31 +57,42 @@ class CustomSecurityScanner:
 
         executed_scanners = set()
 
-        for scanner_name in selected_scanners:
-            if scanner_name in scanner_mapping:
-                if scanner_name in scans_results["scans"]: 
-                    continue 
+        for scanner_name in self.selected_scanners:
+            normalized_name = self.normalize_scanner_name(scanner_name)
+            if normalized_name in scanner_mapping:
+                if normalized_name in scans_results["scans"]:
+                    continue
+                scanner_instance = scanner_mapping[normalized_name]()
+                scanner_instance.run()
+                scans_results["scans"][normalized_name] = scanner_instance.scan_results
+                executed_scanners.add(normalized_name)
 
-                scanner_instance = scanner_mapping[scanner_name]()  
-                scanner_instance.run() 
-                scans_results["scans"][scanner_name] = scanner_instance.scan_results
+        # Save scan results to temporary JSON file
+        try:
+            with open(self.SECURITY_SCAN_RESULTS_FILE, "w") as f:
+                json.dump(scans_results, f, indent=4)
+            print(f"✅ Temporary scan results saved to {self.SECURITY_SCAN_RESULTS_FILE}")
+        except Exception as e:
+            print(f"❌ Failed to write scan results to file: {e}")
+            return scans_results
 
-                executed_scanners.add(scanner_name)
+        # Use the custom scan result handler
+        try:
+            handler = CustomScanResultHandler([self.SECURITY_SCAN_RESULTS_FILE])
+            handler.store_custom_scan_results()
+        except Exception as e:
+            print(f"❌ Failed to store scan results using CustomScanResultHandler: {e}")
 
-        scan_id = self.store_custom_scan_entry(url, scans_results)
-
-        self.store_scan_results(scan_id, scans_results)
-
+        self.scan_results = scans_results
         return scans_results
-
-
-
-
+    
+    def get_results(self):
+        return self.scan_results if self.scan_results else {}
 
 class SecurityCustomScanManager:
     """Manages security scans, stores findings, and provides selection menus."""
 
-    SECURITY_SCAN_RESULTS_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "security_scan_results.json"))
+    SECURITY_SCAN_RESULTS_FILE = "scan_engine/reports/final_report/security_scan_results.json"
 
     SCANNERS = {
         1: "SQL-Injection",
@@ -212,8 +145,8 @@ class SecurityCustomScanManager:
         print("\n🚀 Running Selected Security Scanners...")
         start_time = time.time()
 
-        scanner = CustomSecurityScanner()
-        scan_results = scanner.run_custom_scan(selected_scanners, target_url)
+        scanner = CustomSecurityScanner(target_url, selected_scanners)
+        scan_results = scanner.run_custom_scan()
 
         scan_time = time.time() - start_time
         print(f"\n⏱️ Security Scanners completed in {scan_time:.2f} seconds")
@@ -226,7 +159,7 @@ class SecurityCustomScanManager:
         print("\n🚀 Storing Results...")
         start_time = time.time()
 
-        scan_handler = CustomScanResultHandler(self.SECURITY_SCAN_RESULTS_FILE)
+        scan_handler = CustomScanResultHandler([self.SECURITY_SCAN_RESULTS_FILE])
         scan_handler.store_custom_scan_results()
 
         store_time = time.time() - start_time
@@ -274,7 +207,7 @@ class SecurityCustomScanManager:
         selected_scanners = self.select_scanners_menu()
 
         crawl_time = self.run_crawler(target_url)
-        scan_results, scan_time = self.run_scanners(target_url, selected_scanners)  # ✅ Only called once!
+        scan_results, scan_time = self.run_scanners(target_url, selected_scanners) 
 
         print("\n✅ Security Scan Completed! Results saved in", self.SECURITY_SCAN_RESULTS_FILE)
         store_time = self.store_results()
@@ -287,6 +220,28 @@ class SecurityCustomScanManager:
         print(f"🔹 Scanners Time: {scan_time:.2f} seconds")
         print(f"🔹 Storing Results Time: {store_time:.2f} seconds")
         print(f"\n🚀 **Total Scan Time:** {total_time:.2f} seconds")
+
+    def run(self):
+        """Generator method to stream progress updates for PyQt."""
+        yield f"🚀 Starting scan on {self.url} with: {', '.join(self.selected_scanners)}...\n"
+
+        start_time = time.time()
+
+        yield "🔎 Running web crawler...\n"
+        crawler = WebCrawler(self.url)
+        crawler.crawl()
+        yield "✅ Crawler finished.\n"
+
+        yield "🛡️ Running selected security scanners...\n"
+        self.scan_results = self.run_custom_scan(self.selected_scanners, self.url)
+        yield "✅ Security scanners finished.\n"
+
+        total_time = time.time() - start_time
+        if "execution_times" not in self.scan_results:
+            self.scan_results["execution_times"] = {}
+        self.scan_results["execution_times"]["total_scan_time"] = round(total_time, 2)
+
+        yield f"🕒 Total scan time: {total_time:.2f} seconds\n"
 
 
 if __name__ == "__main__":

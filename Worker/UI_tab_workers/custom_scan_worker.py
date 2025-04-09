@@ -20,7 +20,7 @@ class CustomScanWorker(QObject):
             self.progress.emit("🔍 Initializing custom scan...\n")
             scanner = CustomSecurityScanner(self.url, self.scanners)
 
-            for update in scanner.run():  
+            for update in scanner.run_custom_scan():  
                 self.progress.emit(update)
 
             self.progress.emit("🎉 Scan completed successfully!\n")

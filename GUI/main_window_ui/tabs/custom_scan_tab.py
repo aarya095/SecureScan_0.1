@@ -54,7 +54,7 @@ class CustomScanTab(QtWidgets.QWidget):
         self.verticalLayout_3.addLayout(self.selector_layout)
 
         self.scanners = [
-            "Http Scanner", "SQL-Injection", "XSS-Injection",
+            "SQL-Injection", "XSS-Injection",
             "Broken Authentication", "CSRF Scanner"
         ]
         self.init_scanner_selection()

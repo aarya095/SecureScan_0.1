@@ -52,7 +52,7 @@ class DatabaseConnection:
             print(f"⚠️ Error while closing DB connection: {e}")
 
 
-    def execute_query(self, query, params=None, return_last_insert_id=False):
+    def execute_query(self, query, params=None, return_cursor=False, return_last_insert_id=False):
         """Execute an SQL query (INSERT, UPDATE, DELETE)."""
         if not self.connection:
             raise ValueError("❌ Database connection is not established.")
@@ -60,12 +60,15 @@ class DatabaseConnection:
             cursor = self.connection.cursor()
             cursor.execute(query, params)
             self.connection.commit()
+
             if return_last_insert_id:
                 return cursor.lastrowid
+            elif return_cursor:
+                return cursor
         except MySQLError as e:
             print(f"❌ Error executing query: {e}")
         finally:
-            cursor.close()  # ✅ Close cursor manually
+            cursor.close() 
 
     def fetch_all(self, query, params=None):
         """Fetch all results from a SELECT query."""
