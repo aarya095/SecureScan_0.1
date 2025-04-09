@@ -70,3 +70,27 @@ class HistoryTab(QtWidgets.QWidget):
             if self.tabWidget.currentWidget() != self:  # ✅ Avoid unnecessary function calls
                 self.tabWidget.setCurrentWidget(self)
             print("History tab added successfully!")
+
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+
+class VulnerabilityPieChart(FigureCanvas):
+    def __init__(self, vuln_data, parent=None):
+        self.fig = Figure(figsize=(5, 5))
+        super().__init__(self.fig)
+        self.setParent(parent)
+        self.plot_chart(vuln_data)
+
+    def plot_chart(self, vuln_data):
+        ax = self.fig.add_subplot(111)
+        labels = list(vuln_data.keys())
+        sizes = list(vuln_data.values())
+
+        if not sizes:
+            ax.text(0.5, 0.5, "No Data Available", horizontalalignment='center', verticalalignment='center', transform=ax.transAxes)
+            return
+
+        colors = ['#FF6F61', '#6B5B95', '#88B04B', '#F7CAC9', '#92A8D1']
+        ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140, colors=colors)
+        ax.axis('equal')  # Equal aspect ratio to make it a circle
+        self.draw()
