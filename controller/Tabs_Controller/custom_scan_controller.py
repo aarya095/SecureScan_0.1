@@ -17,9 +17,7 @@ class CustomScanController:
         self.thread = None
         self.worker = None
         self.scan_running = False
-
         self.connect_signals()
-
         self.update_total_scan_count()
         self.fetch_recent_scans()
 
@@ -131,10 +129,10 @@ class CustomScanController:
         self.view.load_recent_scans(scans)
         self.view.refresh_button.setEnabled(True)
 
-    def generate_pdf_report(self, scan_id):
-        print(f"📝 Generating PDF for scan_id: {scan_id}")
+    def generate_pdf_report(self, scan_id, is_custom=True):
+        print(f"📝 Generating PDF for scan_id: {scan_id} (Custom: {is_custom})")
         self.pdf_thread = QThread()
-        self.pdf_worker = GeneratePDFWorker(scan_id)
+        self.pdf_worker = GeneratePDFWorker(scan_id, is_custom=is_custom)  # 👈 pass it here
         self.pdf_worker.moveToThread(self.pdf_thread)
 
         self.pdf_thread.started.connect(self.pdf_worker.run)
@@ -145,6 +143,7 @@ class CustomScanController:
         self.pdf_thread.finished.connect(self.pdf_thread.deleteLater)
 
         self.pdf_thread.start()
+
 
     def open_pdf(self, path):
         QDesktopServices.openUrl(QUrl.fromLocalFile(path))

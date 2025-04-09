@@ -1,4 +1,5 @@
 from PyQt6 import QtCore, QtWidgets
+from PyQt6.QtCore import Qt
 from PyQt6.QtCore import QSize, pyqtSignal
 from PyQt6.QtGui import QAction, QIcon
 from functools import partial
@@ -76,7 +77,9 @@ class CustomScanTab(QtWidgets.QWidget):
         
         self.top_right_layout = QtWidgets.QHBoxLayout()
         self.top_right_spacer = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
-        # Refresh button
+        
+        self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.custom_scan_rightframe)
+
         self.refresh_button = RotatingButton(self.custom_scan_rightframe)
         self.refresh_button.setIcon(QIcon("icons/refresh.png")) 
         self.refresh_button.setIconSize(QSize(32, 32))
@@ -86,18 +89,11 @@ class CustomScanTab(QtWidgets.QWidget):
         self.refresh_button.setObjectName("refreshButton")
         self.refresh_button.clicked.connect(self.animate_refresh_icon)
         self.refresh_button.clicked.connect(self.refresh_requested)
-        
-        self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.custom_scan_rightframe)
+        self.verticalLayout_4.addWidget(self.refresh_button)
 
-        self.top_info_layout = QtWidgets.QHBoxLayout()
         self.num_of_custom_scan_label = QtWidgets.QLabel("Total No. of Custom Scans: <count>", self.custom_scan_rightframe)
         self.num_of_custom_scan_label.setObjectName("subTitle")
-        self.top_info_layout.addWidget(self.num_of_custom_scan_label)
-
-        self.top_info_layout.addStretch()
-        self.top_info_layout.addWidget(self.refresh_button)
-        self.verticalLayout_4.addLayout(self.top_info_layout)
-
+        self.verticalLayout_4.addWidget(self.num_of_custom_scan_label)
 
         self.custom_scan_history_label = QtWidgets.QLabel("History of Custom Scans:", self.custom_scan_rightframe)
         self.custom_scan_history_label.setObjectName("subTitle")
@@ -173,7 +169,7 @@ class CustomScanTab(QtWidgets.QWidget):
             pdf_button.setFixedSize(150, 40)
             pdf_button.setStyleSheet("font-size: 20px;")
             pdf_button.setProperty("scan_id", scan_id)
-            pdf_button.clicked.connect(partial(self.pdf_requested.emit, scan_id))
+            pdf_button.clicked.connect(lambda _, s_id=scan_id: self.pdf_requested.emit(s_id))
 
             layout.addWidget(url_label)
             layout.addWidget(time_label)

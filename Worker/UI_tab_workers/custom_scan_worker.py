@@ -99,14 +99,15 @@ class GeneratePDFWorker(QObject):
     finished = pyqtSignal(str)
     error = pyqtSignal(str)
 
-    def __init__(self, scan_id):
+    def __init__(self, scan_id, is_custom=True):
         super().__init__()
         self.scan_id = scan_id
+        self.is_custom = is_custom
 
     def run(self):
         from scan_engine.reports.scan_report.report_generator import generate_report
         try:
-            path = generate_report(self.scan_id)
+            path = generate_report(self.scan_id, is_custom=self.is_custom)
             self.finished.emit(path)
         except Exception as e:
             self.error.emit(str(e))
