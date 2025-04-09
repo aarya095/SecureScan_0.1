@@ -124,6 +124,7 @@ class QuickScanController:
         self.view.refresh_button.setEnabled(True)
 
     def generate_pdf_report(self, scan_id):
+        print(f"📝 Generating PDF for scan_id: {scan_id}")
         self.pdf_thread = QThread()
         self.pdf_worker = GeneratePDFWorker(scan_id)
         self.pdf_worker.moveToThread(self.pdf_thread)

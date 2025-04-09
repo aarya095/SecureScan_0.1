@@ -46,7 +46,10 @@ class CustomSecurityScanner:
 
     def run_custom_scan(self):
         """Runs only the selected security scanners and stores results via CustomScanResultHandler."""
-        scans_results = {"scans": {}}
+        scans_results = {
+        "scans": {},
+        "execution_times": {}
+        }
         scanner_mapping = {
             "HTTP Scanner": URLSecurityScanner,
             "SQL Injection": SQLInjectionScanner,
@@ -55,19 +58,21 @@ class CustomSecurityScanner:
             "CSRF Scanner": CSRFScanner
         }
 
-        executed_scanners = set()
-
         for scanner_name in self.selected_scanners:
             normalized_name = self.normalize_scanner_name(scanner_name)
-            if normalized_name in scanner_mapping:
-                if normalized_name in scans_results["scans"]:
-                    continue
+            if normalized_name in scanner_mapping and normalized_name not in scans_results["scans"]:
                 scanner_instance = scanner_mapping[normalized_name]()
-                scanner_instance.run()
-                scans_results["scans"][normalized_name] = scanner_instance.scan_results
-                executed_scanners.add(normalized_name)
 
-        # Save scan results to temporary JSON file
+                start_time = time.time()
+                scanner_instance.run()
+                duration = time.time() - start_time
+
+                scans_results["scans"][normalized_name] = scanner_instance.scan_results
+                scans_results["execution_times"][normalized_name] = round(duration, 4)
+
+        total_scan_time = sum(scans_results["execution_times"].values())
+        scans_results["execution_times"]["Total Scan Time"] = round(total_scan_time, 4)
+
         try:
             with open(self.SECURITY_SCAN_RESULTS_FILE, "w") as f:
                 json.dump(scans_results, f, indent=4)
@@ -76,7 +81,6 @@ class CustomSecurityScanner:
             print(f"❌ Failed to write scan results to file: {e}")
             return scans_results
 
-        # Use the custom scan result handler
         try:
             handler = CustomScanResultHandler([self.SECURITY_SCAN_RESULTS_FILE])
             handler.store_custom_scan_results()

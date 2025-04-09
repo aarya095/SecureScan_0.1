@@ -108,7 +108,7 @@ class DatabaseConnection:
     def insert_scan(self, website_url, execution_time, vulnerabilities_found):
         """Insert a new custom scan and return its ID."""
         query = """
-        INSERT INTO custom_scans (website_url, execution_time, vulnerabilities_found) 
+        INSERT INTO custom_scans (sacnned_url, execution_time, vulnerabilities_found) 
         VALUES (%s, %s, %s)
         """
         return self.execute_query(query, (website_url, execution_time, vulnerabilities_found), return_last_insert_id=True)

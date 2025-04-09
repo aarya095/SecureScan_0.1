@@ -173,7 +173,7 @@ class CustomScanTab(QtWidgets.QWidget):
             pdf_button.setFixedSize(150, 40)
             pdf_button.setStyleSheet("font-size: 20px;")
             pdf_button.setProperty("scan_id", scan_id)
-            pdf_button.clicked.connect(lambda _, s_id=scan_id: self.pdf_requested.emit(s_id))
+            pdf_button.clicked.connect(partial(self.pdf_requested.emit, scan_id))
 
             layout.addWidget(url_label)
             layout.addWidget(time_label)

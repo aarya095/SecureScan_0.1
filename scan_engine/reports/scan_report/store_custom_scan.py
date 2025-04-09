@@ -47,7 +47,7 @@ class CustomScanResultHandler:
             return "Unknown"
 
     def load_scan_summary(self):
-        summary_path = "scan_engine/reports/final_report/scan_summary.json"
+        summary_path = "scan_engine/reports/final_report/security_scan_results.json"
 
         if not os.path.exists(summary_path):
             print(f"⚠️ {summary_path} not found. Using default summary.")
@@ -62,13 +62,43 @@ class CustomScanResultHandler:
         try:
             with open(summary_path, "r") as f:
                 summary = json.load(f)
+
+            high = medium = low = 0
+
+            scans = summary.get("scans", {})
+            for scanner_data in scans.values():
+                for url, findings in scanner_data.items():
+                    if isinstance(findings, list):  # For scanners like SQL Injection
+                        for item in findings:
+                            severity = item.get("severity", "").lower()
+                            if severity == "high":
+                                high += 1
+                            elif severity == "medium":
+                                medium += 1
+                            elif severity == "low":
+                                low += 1
+                    elif isinstance(findings, dict):  # For other types like Broken Auth
+                        for key, value in findings.items():
+                            if isinstance(value, str):
+                                sev = value.lower()
+                                if sev == "high":
+                                    high += 1
+                                elif sev == "medium":
+                                    medium += 1
+                                elif sev == "low":
+                                    low += 1
+
+            total_vulns = high + medium + low
+            total_scan_time = summary.get("execution_times", {}).get("Total Scan Time", None)
+
             return {
-                "vulnerabilities_found": summary.get("vulnerabilities_found", 0),
-                "high_risk_vulnerabilities": summary.get("high_risk_vulnerabilities", 0),
-                "medium_risk_vulnerabilities": summary.get("medium_risk_vulnerabilities", 0),
-                "low_risk_vulnerabilities": summary.get("low_risk_vulnerabilities", 0),
-                "total_scan_time": summary.get("execution_times", {}).get("Total Scan Time", None)
+                "vulnerabilities_found": total_vulns,
+                "high_risk_vulnerabilities": high,
+                "medium_risk_vulnerabilities": medium,
+                "low_risk_vulnerabilities": low,
+                "total_scan_time": total_scan_time
             }
+
         except Exception as e:
             print(f"❌ Error reading summary: {e}")
             return {
@@ -78,6 +108,7 @@ class CustomScanResultHandler:
                 "low_risk_vulnerabilities": 0,
                 "total_scan_time": None
             }
+
 
     def store_custom_scan_results(self):
         scan_results = self.load_scan_results()
@@ -91,7 +122,7 @@ class CustomScanResultHandler:
 
         query = """
             INSERT INTO custom_scans (
-                website_url, scan_data, execution_time, vulnerabilities_found,
+                scanned_url, scan_data, execution_time, vulnerabilities_found,
                 high_risk_vulnerabilities, medium_risk_vulnerabilities, low_risk_vulnerabilities
             )
             VALUES (%s, %s, %s, %s, %s, %s, %s)

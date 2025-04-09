@@ -10,13 +10,32 @@
                 }
             ]
         },
-        "Broken Authentication": {
-            "http://localhost:3000/login": {
-                "Weak Passwords Severity": "High",
-                "Brute Force Protection Severity": "High",
-                "Session Management Severity": "High",
-                "Overall Severity": "High"
-            }
+        "CSRF Scanner": {
+            "http://localhost:3000": [
+                {
+                    "form_number": 1,
+                    "method": "POST",
+                    "action": "http://localhost:3000/comment",
+                    "csrf_protection": false,
+                    "severity": "High",
+                    "severity_description": "Critical CSRF vulnerability. A malicious user can perform actions on behalf of another user."
+                }
+            ],
+            "http://localhost:3000/login": [
+                {
+                    "form_number": 1,
+                    "method": "POST",
+                    "action": "http://localhost:3000/login",
+                    "csrf_protection": false,
+                    "severity": "High",
+                    "severity_description": "Critical CSRF vulnerability. A malicious user can perform actions on behalf of another user."
+                }
+            ]
         }
+    },
+    "execution_times": {
+        "SQL Injection": 0.0188,
+        "CSRF Scanner": 0.0161,
+        "Total Scan Time": 0.0349
     }
 }
