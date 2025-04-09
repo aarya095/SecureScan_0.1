@@ -1,6 +1,6 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
-class Ui_MainWindow(QtWidgets.QMainWindow):
+class FullScanHistoryWindow(QtWidgets.QMainWindow):
 
     def __init__(self):
         super().__init__()
@@ -107,10 +107,21 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # Simulate opening the PDF (you would implement real PDF viewing functionality here)
         print(f"Opening PDF for scan at {scan['timestamp']}...")
 
-# Main code to run the window
+    @staticmethod
+    def load_stylesheet(file_path):
+        
+        try:
+            with open(file_path, "r") as f:
+                return f.read()
+        except FileNotFoundError:
+            print(f"Warning: Stylesheet '{file_path}' not found.")
+            return ""
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    MainWindow = Ui_MainWindow()
+    stylesheet = FullScanHistoryWindow.load_stylesheet("GUI/theme_switch/dark_style.qss")
+    app.setStyleSheet(stylesheet)
+    MainWindow = FullScanHistoryWindow()
     MainWindow.show()
     sys.exit(app.exec())
