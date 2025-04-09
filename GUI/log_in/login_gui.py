@@ -209,6 +209,7 @@ class LoginWindow(QtWidgets.QMainWindow):
 "    border: solid;\n"
 "    border-radius: 20px;\n"
 "    border-width: 0.1px;\n"
+"    font-weight: bold;\n"
 "}\n"
 "\n"
 "QPushButton:hover {\n"

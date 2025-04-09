@@ -57,6 +57,9 @@ class CustomScanController:
 
     def display_output(self, message):
         self.view.custom_scan_output_textBrowser.append(message)
+        self.view.custom_scan_output_textBrowser.verticalScrollBar().setValue(
+        self.view.custom_scan_output_textBrowser.verticalScrollBar().maximum()
+    )
 
     def validate_url(self, url):
         if not url:
