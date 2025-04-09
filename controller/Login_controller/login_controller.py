@@ -61,15 +61,14 @@ class LoginController:
 
     def open_home_window(self):
         from GUI.main_window_ui.user_interface import Ui_MainWindow
-        from controller.Tabs_Controller.home_tab_controller import QuickScanController
+        from controller.Tabs_Controller.main_controller import MainWindowController
         from PyQt6 import QtWidgets
 
         stylesheet = Ui_MainWindow.load_stylesheet("GUI/theme_switch/dark_style.qss")
         QtWidgets.QApplication.instance().setStyleSheet(stylesheet)
         
-        self.main_window = Ui_MainWindow()
-        self.quick_scan_controller = QuickScanController(self.main_window.home_tab)
-        self.main_window.show()
+        self.main_window_controller = MainWindowController()
+        self.main_window_controller.get_window().show()
 
         self.view.close()
 

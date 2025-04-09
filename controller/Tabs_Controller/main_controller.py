@@ -6,10 +6,9 @@ from controller.Tabs_Controller.custom_scan_controller import CustomScanControll
 
 class MainWindowController:
     def __init__(self):
-        self.window = QMainWindow()
         self.ui = Ui_MainWindow()
-        self.ui.init_ui(self.window)
-
+        self.window = self.ui
+        
         self.quick_scan_controller = QuickScanController(self.ui.home_tab)
         self.custom_scan_controller = CustomScanController(self.ui.custom_scan_tab)
 
@@ -18,7 +17,7 @@ class MainWindowController:
 
     def setup_inter_tab_communication(self):
         """If you need tabs to talk to each other, wire their signals here."""
-        pass  # Implement shared logic or event forwarding here if necessary
+        pass 
 
     def get_window(self):
         """Returns the main UI window (used by login controller if needed)."""
