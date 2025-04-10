@@ -1,52 +1,44 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
-import plotly.graph_objects as go
-from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtCore import QUrl
 import tempfile
 import os
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
 
-class VulnerabilityPieChart(QWebEngineView):
+class VulnerabilityPieChart(QtWidgets.QWidget):
     def __init__(self, vuln_data, parent=None):
         super().__init__(parent)
-        self.setMinimumHeight(400)
-        self.setMinimumWidth(600)
-        self.plot_chart(vuln_data)
+        self.vuln_data = vuln_data
+        self.layout = QtWidgets.QVBoxLayout(self)
+        self.canvas = FigureCanvas(Figure(figsize=(5, 4)))
+        self.layout.addWidget(self.canvas)
+        self.plot_chart()
 
-    def plot_chart(self, vuln_data):
-        labels = list(vuln_data.keys())
-        sizes = list(vuln_data.values())
+    def plot_chart(self):
+        labels = list(self.vuln_data.keys())
+        sizes = list(self.vuln_data.values())
+        total = sum(sizes)
 
-        if not sizes:
-            html = "<h2 style='text-align:center; color:gray;'>No Data Available</h2>"
-            self.setHtml(html)
-            return
-
-        colors = ['#FF6F61', '#6B5B95', '#88B04B', '#F7CAC9', '#92A8D1',
-                  '#955251', '#B565A7', '#009B77', '#DD4124', '#D65076']
-
-        fig = go.Figure(
-            data=[go.Pie(
-                labels=labels,
-                values=sizes,
-                marker=dict(colors=colors[:len(labels)], line=dict(color='#FFFFFF', width=1)),
-                hoverinfo='label+percent+value',
-                textinfo='percent',
-                textfont_size=14,
-                textfont=dict(family='Arial', color='black')
-            )]
+        ax = self.canvas.figure.subplots()
+        wedges, texts, autotexts = ax.pie(
+            sizes,
+            labels=labels,
+            autopct='%1.1f%%',
+            startangle=90,
+            textprops=dict(color="white"),
+            wedgeprops=dict(picker=True)  # <--- Enables picking!
         )
+        ax.axis('equal')
 
-        fig.update_layout(
-            title_font_size=20,
-            showlegend=True,
-            paper_bgcolor="rgba(0,0,0,0)",
-            margin=dict(t=50, b=20, l=20, r=20)
-        )
+        def on_pick(event):
+            wedge = event.artist
+            index = wedges.index(wedge)
+            label = labels[index]
+            value = sizes[index]
+            ax.set_title(f"{label}: {value} ({(value/total)*100:.1f}%)")
+            self.canvas.draw_idle()
 
-        # Save plot to a temporary HTML file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as f:
-            fig.write_html(f.name)
-            self.load(QUrl.fromLocalFile(os.path.abspath(f.name)))
+        self.canvas.mpl_connect('pick_event', on_pick)
 
 
 class HistoryTab(QtWidgets.QWidget):
@@ -54,6 +46,10 @@ class HistoryTab(QtWidgets.QWidget):
         super().__init__(parent)
         self.tabWidget = tab_widget
         self.setupUi()
+
+        from controller.Tabs_Controller.history_tab_controller import HistoryTabController
+        self.controller = HistoryTabController(self)  
+        self.controller.load_pie_chart_async()
 
     def setupUi(self):
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self)
@@ -89,10 +85,6 @@ class HistoryTab(QtWidgets.QWidget):
 
         self.horizontalLayout_main.addLayout(self.labels_container)
 
-        from controller.Tabs_Controller.history_tab_controller import HistoryTabController
-        self.controller = HistoryTabController(self)
-        self.controller.load_pie_chart_async()
-
         self.verticalLayout_5.addWidget(self.history_tab_frame)
 
         self.frame_6 = QtWidgets.QFrame(parent=self)
@@ -124,21 +116,13 @@ class HistoryTab(QtWidgets.QWidget):
 
         self.verticalLayout_5.addWidget(self.frame_6)
 
-
         if self.tabWidget:
             self.tabWidget.addTab(self, "History")
             if self.tabWidget.currentWidget() != self:
                 self.tabWidget.setCurrentWidget(self)
                 print("History tab added successfully!")
 
-    @staticmethod
-    def load_stylesheet(file_path):
-        try:
-            with open(file_path, "r") as f:
-                return f.read()
-        except FileNotFoundError:
-            print(f"Warning: Stylesheet '{file_path}' not found.")
-            return ""
+    
 
     def display_pie_chart(self, vuln_counter):
         chart = VulnerabilityPieChart(vuln_counter, parent=self)
@@ -154,57 +138,13 @@ class HistoryTab(QtWidgets.QWidget):
         self.pie_chart_container.addWidget(label)
         self.pie_chart_container.addWidget(chart)
 
-class FullScanHistoryWindow(QtWidgets):
-    def __init__(self):
-        super().__init__()
-
-        # Sample scan history data (You can replace this with your actual data from the database)
-        self.scan_history = [
-            {'timestamp': '2025-04-09 12:30:00', 'url': 'http://example.com', 'execution_time': '2 minutes'},
-            {'timestamp': '2025-04-09 14:00:00', 'url': 'http://anotherurl.com', 'execution_time': '5 minutes'}
-        ]
-
-        # Set up the layout
-        layout = QtWidgets.QVBoxLayout()
-
-        self.table = QtWidgets.QTableWidget(len(self.scan_history), 4)  # 4 columns
-        self.table.setHorizontalHeaderLabels(['Timestamp', 'Scanned URL', 'Execution Time', 'View PDF'])
-
-        # Populate the table with data
-        for row, scan in enumerate(self.scan_history):
-            # Set the timestamp, URL, and execution time in the respective columns
-            self.table.setItem(row, 0, QtWidgets.QTableWidgetItem(scan['timestamp']))
-            self.table.setItem(row, 1, QtWidgets.QTableWidgetItem(scan['url']))
-            self.table.setItem(row, 2, QtWidgets.QTableWidgetItem(scan['execution_time']))
-
-            # Create a button for "View PDF" in the last column
-            view_pdf_button = QtWidgets.QPushButton("View PDF")
-            view_pdf_button.clicked.connect(lambda checked, scan=scan: self.view_pdf(scan))
-            self.table.setCellWidget(row, 3, view_pdf_button)
-
-        # Add the table to the layout
-        layout.addWidget(self.table)
-
-        # Set the layout for the window
-        self.setLayout(layout)
-        self.setWindowTitle("Scan History")
-        self.resize(800, 400)
-
-    def view_pdf(self, scan):
-        # Simulate opening the PDF (In a real application, you'd open the PDF file associated with the scan)
-        print(f"Opening PDF for scan at {scan['timestamp']}...")
-
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle("Fusion")
-
-    stylesheet = HistoryTab.load_stylesheet("GUI/theme_switch/dark_style.qss")
-    app.setStyleSheet(stylesheet)
     window = QtWidgets.QMainWindow()
     history_tab = HistoryTab()
-    from controller.Tabs_Controller.history_tab_controller import HistoryTabController
-    controller = HistoryTabController(history_tab)
+
     window.setCentralWidget(history_tab)
     window.setWindowTitle("Security Scanner")
     window.resize(1000, 600)

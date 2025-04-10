@@ -59,3 +59,77 @@ class VulnerabilityDistributionWorker(QObject):
         finally:
             self.finished.emit()
 
+class RetrieveFullScanResultsWorker(QObject):
+    # Signal to pass data to the main thread
+    data_fetched = pyqtSignal(list)
+    error_occurred = pyqtSignal(str)
+
+    def __init__(self, db_connection):
+        super().__init__()
+        self.db_connection = db_connection
+
+    def fetch_scan_history(self):
+        db = DatabaseConnection()
+        db.connect()
+        query = """
+        SELECT scan_id, scan_timestamp, scanned_url, execution_time, vulnerabilities_found
+        FROM scan_results
+        """
+        try:
+            scan_history = db.fetch_all(query)
+            db.close()
+            if scan_history:
+                formatted_history = [
+                    {
+                        'id': row[0],
+                        'timestamp': row[1],
+                        'url': row[2],
+                        'execution_time': row[3],
+                        'vulnerabilities_detected': row[4]
+                    }
+                    for row in scan_history
+                ]
+                self.data_fetched.emit(formatted_history)
+            else:
+                self.error_occurred.emit("No scan history found in the database.")
+        except Exception as e:
+            self.error_occurred.emit(f"Error fetching scan history: {e}")
+
+
+class RetrieveCustomScanResultsWorker(QObject):
+    # Signal to pass data to the main thread
+    data_fetched = pyqtSignal(list)
+    error_occurred = pyqtSignal(str)
+
+    def __init__(self, db_connection):
+        super().__init__()
+        self.db_connection = db_connection
+
+    def fetch_scan_history(self):
+        db = DatabaseConnection()
+        db.connect()
+        query = """
+        SELECT scan_id, scan_timestamp, scanned_url, execution_time, vulnerabilities_found
+        FROM custom_scans
+        """
+        try:
+            scan_history = db.fetch_all(query)
+            db.close()
+            if scan_history:
+                formatted_history = [
+                    {
+                        'id': row[0],
+                        'timestamp': row[1],
+                        'url': row[2],
+                        'execution_time': row[3],
+                        'vulnerabilities_detected': row[4]
+                    }
+                    for row in scan_history
+                ]
+                self.data_fetched.emit(formatted_history)
+                
+            else:
+                self.error_occurred.emit("No scan history found in the database.")
+        except Exception as e:
+            self.error_occurred.emit(f"Error fetching scan history: {e}")
+            

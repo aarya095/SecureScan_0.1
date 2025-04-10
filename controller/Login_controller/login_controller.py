@@ -63,9 +63,9 @@ class LoginController:
         from GUI.main_window_ui.user_interface import Ui_MainWindow
         from controller.Tabs_Controller.main_controller import MainWindowController
         from PyQt6 import QtWidgets
-        
-        stylesheet = Ui_MainWindow.load_stylesheet("GUI/theme_switch/dark_style.qss")
-        QtWidgets.QApplication.instance().setStyleSheet(stylesheet)
+        if not QtWidgets.QApplication.instance().styleSheet():
+            stylesheet = Ui_MainWindow.load_stylesheet("GUI/theme_switch/dark_style.qss")
+            QtWidgets.QApplication.instance().setStyleSheet(stylesheet)
         
         self.main_window_controller = MainWindowController()
         self.main_window_controller.get_window().show()

@@ -1,127 +1,156 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
+from datetime import datetime
+from PyQt6.QtCore import pyqtSignal, pyqtSlot
 
 class FullScanHistoryWindow(QtWidgets.QMainWindow):
+    view_pdf_callback = pyqtSignal(object)
+
+    @pyqtSlot(str)
+    def show_error_message(self, msg):
+        QtWidgets.QMessageBox.critical(self, "Error", msg)
 
     def __init__(self):
         super().__init__()
         self.setupUi()
 
     def setupUi(self):
-        self.setObjectName("MainWindow")
+        self.setObjectName("HistoryWindow")
         self.resize(1099, 693)
         self.setMinimumSize(1099, 693)
-        
-        # Create central widget and layout
+        self.setStyleSheet("background-color: #2c3e50;")
+
         self.centralwidget = QtWidgets.QWidget(parent=self)
         self.setCentralWidget(self.centralwidget)
-        
+        self.centralwidget.setObjectName("listwindow")
+
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
-        self.verticalLayout.setObjectName("verticalLayout")
 
-        # Frame for header and buttons
+        # === Header Frame ===
         self.frame = QtWidgets.QFrame(parent=self.centralwidget)
-        self.frame.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
-        self.frame.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
-        self.frame.setObjectName("frame")
+        self.frame.setStyleSheet("QFrame { border: 2px solid #23DE68; border-radius: 10px; }")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.frame)
-        self.horizontalLayout.setObjectName("horizontalLayout")
 
-        # Label for "Custom Scan History"
-        self.custom_scan_history_label = QtWidgets.QLabel(parent=self.frame)
-        self.custom_scan_history_label.setObjectName("custom_scan_history_label")
-        self.custom_scan_history_label.setText("Custom Scan History")  # Set text directly here
+        self.custom_scan_history_label = QtWidgets.QLabel("Full Scan History")
+        self.custom_scan_history_label.setStyleSheet("color: white; font-size: 30px; font-weight: bold;")
         self.horizontalLayout.addWidget(self.custom_scan_history_label)
 
-        # Spacer item for layout alignment
         spacerItem = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
 
-        # Button for deleting history
-        self.delete_history_pushButton = QtWidgets.QPushButton(parent=self.frame)
-        self.delete_history_pushButton.setObjectName("delete_history_pushButton")
-        self.delete_history_pushButton.setText("Delete History")  # Set text directly here
+        self.delete_history_pushButton = QtWidgets.QPushButton("Delete History")
+        self.delete_history_pushButton.setStyleSheet("""
+            QPushButton {
+                background-color: rgb(35, 222, 104);
+                color: white;
+                border-radius: 20px;
+                font-size: 25px;
+                font-weight: bold;
+                padding: 10px 30px;
+            }
+            QPushButton:hover { background-color: #27ae60; }
+            QPushButton:pressed { background-color: #1e8449; }
+        """)
         self.horizontalLayout.addWidget(self.delete_history_pushButton)
-
         self.verticalLayout.addWidget(self.frame)
-        self.verticalLayout.setStretch(1, 1)
 
-        # Frame for table
+        # === List Frame ===
         self.frame_2 = QtWidgets.QFrame(parent=self.centralwidget)
-        self.frame_2.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
-        self.frame_2.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
-        self.frame_2.setObjectName("frame_2")
+        self.frame_2.setStyleSheet("QFrame { border: 3px solid #23DE68; border-radius: 10px; }")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.frame_2)
-        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
 
-        # Table for scan history
-        self.custom_scan_history_tableWidget = QtWidgets.QTableWidget(parent=self.frame_2)
-        self.custom_scan_history_tableWidget.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
-        self.custom_scan_history_tableWidget.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.custom_scan_history_tableWidget.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        self.custom_scan_history_tableWidget.setAlternatingRowColors(False)
-        self.custom_scan_history_tableWidget.setGridStyle(QtCore.Qt.PenStyle.DashLine)
-        self.custom_scan_history_tableWidget.setObjectName("custom_scan_history_tableWidget")
-        self.custom_scan_history_tableWidget.setColumnCount(6)  # Increase column count to 6 (5 data columns + 1 button column)
-        self.custom_scan_history_tableWidget.setRowCount(0)
-
-        # Setting headers for the columns directly
-        self.custom_scan_history_tableWidget.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Sr. No."))
-        self.custom_scan_history_tableWidget.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("Scan Date and Time"))
-        self.custom_scan_history_tableWidget.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem("Website URL"))
-        self.custom_scan_history_tableWidget.setHorizontalHeaderItem(3, QtWidgets.QTableWidgetItem("Execution Time"))
-        self.custom_scan_history_tableWidget.setHorizontalHeaderItem(4, QtWidgets.QTableWidgetItem("Vulnerabilities Detected"))
-        self.custom_scan_history_tableWidget.setHorizontalHeaderItem(5, QtWidgets.QTableWidgetItem("View PDF"))  # Add new header for PDF column
-
-        # Set the table to resize columns proportionally with window resizing
-        header = self.custom_scan_history_tableWidget.horizontalHeader()
-        header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Stretch)  # This ensures the columns stretch with the window
-
-        # Set the table's size policy to expand and fill the space
-        self.custom_scan_history_tableWidget.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
-
-        # Example scan history data (you can replace this with your actual data)
-        scan_history = [
-            {'timestamp': '2025-04-09 12:30:00', 'url': 'http://example.com', 'execution_time': '2 minutes'},
-            {'timestamp': '2025-04-09 14:00:00', 'url': 'http://anotherurl.com', 'execution_time': '5 minutes'}
-        ]
-
-        # Populate the table with scan data
-        for row, scan in enumerate(scan_history):
-            self.custom_scan_history_tableWidget.setItem(row, 0, QtWidgets.QTableWidgetItem(str(row + 1)))  # Sr. No.
-            self.custom_scan_history_tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(scan['timestamp']))  # Scan Date and Time
-            self.custom_scan_history_tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(scan['url']))  # Website URL
-            self.custom_scan_history_tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem(scan['execution_time']))  # Execution Time
-            self.custom_scan_history_tableWidget.setItem(row, 4, QtWidgets.QTableWidgetItem("N/A"))  # Vulnerabilities Detected (dummy data)
-
-            # Add a "View PDF" button to the last column
-            view_pdf_button = QtWidgets.QPushButton("View PDF")
-            view_pdf_button.clicked.connect(lambda checked, scan=scan: self.view_pdf(scan))
-            self.custom_scan_history_tableWidget.setCellWidget(row, 5, view_pdf_button)  # View PDF button
-
-        # Adding table to the layout
-        self.horizontalLayout_2.addWidget(self.custom_scan_history_tableWidget)
-        self.horizontalLayout_2.setStretch(0, 1)
+        self.scan_list_widget = QtWidgets.QListWidget(parent=self.frame_2)
+        self.scan_list_widget.setStyleSheet("""
+            QListWidget {
+                background-color: white;
+                font-size: 15px;
+                color: #2c3e50;
+                border: none;
+            }
+        """)
+        self.horizontalLayout_2.addWidget(self.scan_list_widget)
         self.verticalLayout.addWidget(self.frame_2)
 
-    def view_pdf(self, scan):
-        # Simulate opening the PDF (you would implement real PDF viewing functionality here)
-        print(f"Opening PDF for scan at {scan['timestamp']}...")
+    def load_scan_history(self, scan_history):
+        self.scan_list_widget.clear()
 
-    @staticmethod
-    def load_stylesheet(file_path):
-        
-        try:
-            with open(file_path, "r") as f:
-                return f.read()
-        except FileNotFoundError:
-            print(f"Warning: Stylesheet '{file_path}' not found.")
-            return ""
+        def safe_parse_timestamp(ts):
+            if isinstance(ts, datetime):
+                return ts
+            elif isinstance(ts, str):
+                return datetime.strptime(ts, "%Y-%m-%d %H:%M:%S")
+            else:
+                # fallback for invalid types
+                return datetime.min  # put invalid timestamps at the beginning
+
+        sorted_history = sorted(scan_history, key=lambda x: safe_parse_timestamp(x["timestamp"]), reverse=True)
+
+        for index, scan in enumerate(sorted_history):
+            item_widget = self.create_scan_item_widget(index + 1, scan)
+            list_item = QtWidgets.QListWidgetItem(self.scan_list_widget)
+            list_item.setSizeHint(item_widget.sizeHint())
+            self.scan_list_widget.addItem(list_item)
+            self.scan_list_widget.setItemWidget(list_item, item_widget)
+
+    def create_scan_item_widget(self, serial_no, scan):
+        widget = QtWidgets.QWidget()
+        layout = QtWidgets.QHBoxLayout(widget)
+        layout.setContentsMargins(10, 5, 10, 5)
+
+        # === Serial No Label ===
+        serial_label = QtWidgets.QLabel(f"{serial_no}")
+        serial_label.setFixedWidth(50)
+        serial_label.setStyleSheet("font-weight: bold; font-size: 14px;")
+        layout.addWidget(serial_label)
+
+        # === Scan Info Label ===
+        text = (
+            f"🕒 {scan['timestamp']}    🌐 {scan['url']}    ⏱ {scan['execution_time']}    🛡 {scan['vulnerabilities_detected']} Vulnerabilities"
+        )
+        label = QtWidgets.QLabel(text)
+        label.setStyleSheet("font-size: 14px;")
+        layout.addWidget(label)
+
+        # === View PDF Button ===
+        button = QtWidgets.QPushButton("View PDF")
+        button.clicked.connect(lambda _, s=scan['id']: self.view_pdf_callback.emit(s))
+
+        button.setStyleSheet("""
+            QPushButton {
+                background-color: rgb(35, 222, 104);
+                color: white;
+                border-radius: 10px;
+                font-size: 13px;
+                font-weight: bold;
+                padding: 5px 15px;
+            }
+            QPushButton:hover {
+                background-color: #27ae60;
+            }
+            QPushButton:pressed {
+                background-color: #1e8449;
+            }
+        """)
+        layout.addWidget(button)
+
+        return widget
+
+    def view_pdf(self, scan):
+        print(f"Opening PDF for scan at {scan['timestamp']}...")
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    stylesheet = FullScanHistoryWindow.load_stylesheet("GUI/theme_switch/dark_style.qss")
-    app.setStyleSheet(stylesheet)
     MainWindow = FullScanHistoryWindow()
     MainWindow.show()
+
+    # === Sample Data for Testing ===
+
+    scan_history = [
+    {'id': 1, 'timestamp': '2025-04-09 12:30:00', 'url': 'http://example.com', 'execution_time': '2 minutes', 'vulnerabilities_detected': 3},
+    {'id': 2, 'timestamp': '2025-04-09 14:00:00', 'url': 'http://anotherurl.com', 'execution_time': '5 minutes', 'vulnerabilities_detected': 1},
+    {'id': 3, 'timestamp': '2025-04-10 09:00:00', 'url': 'http://newscan.com', 'execution_time': '4 minutes', 'vulnerabilities_detected': 0}
+]
+
+    MainWindow.load_scan_history(scan_history)
+
     sys.exit(app.exec())
