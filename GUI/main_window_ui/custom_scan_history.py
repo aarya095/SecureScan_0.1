@@ -35,8 +35,8 @@ class CustomScanHistoryWindow(QtWidgets.QMainWindow):
 
         self.horizontalLayout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum))
 
-        self.delete_history_pushButton = QtWidgets.QPushButton("Delete History")
-        self.delete_history_pushButton.setStyleSheet("""
+        """self.delete_history_pushButton = QtWidgets.QPushButton("Delete History")
+        self.delete_history_pushButton.setStyleSheet(
             QPushButton {
                 background-color: rgb(35, 222, 104);
                 color: white;
@@ -47,8 +47,8 @@ class CustomScanHistoryWindow(QtWidgets.QMainWindow):
             }
             QPushButton:hover { background-color: #27ae60; }
             QPushButton:pressed { background-color: #1e8449; }
-        """)
-        self.horizontalLayout.addWidget(self.delete_history_pushButton)
+        )
+        self.horizontalLayout.addWidget(self.delete_history_pushButton)"""
         self.verticalLayout.addWidget(self.frame)
 
         # === List Frame ===

@@ -108,7 +108,7 @@ class CustomScanController:
         self.count_thread.start()
 
     def on_scan_count_ready(self, count):
-        self.view.num_of_custom_scan_label.setText(f"Total No. of Full Scans: {count}")
+        self.view.num_of_custom_scan_label.setText(f"Total No. of Custom Scans: {count}")
 
     def fetch_recent_scans(self):
         print("🛠️ Fetching recent scans...")
@@ -132,7 +132,7 @@ class CustomScanController:
     def generate_pdf_report(self, scan_id, is_custom=True):
         print(f"📝 Generating PDF for scan_id: {scan_id} (Custom: {is_custom})")
         self.pdf_thread = QThread()
-        self.pdf_worker = GeneratePDFWorker(scan_id, is_custom=is_custom)  # 👈 pass it here
+        self.pdf_worker = GeneratePDFWorker(scan_id, is_custom=is_custom)  
         self.pdf_worker.moveToThread(self.pdf_thread)
 
         self.pdf_thread.started.connect(self.pdf_worker.run)

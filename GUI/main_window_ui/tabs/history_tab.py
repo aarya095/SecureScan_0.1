@@ -26,7 +26,7 @@ class VulnerabilityPieChart(QtWidgets.QWidget):
             autopct='%1.1f%%',
             startangle=90,
             textprops=dict(color="white"),
-            wedgeprops=dict(picker=True)  # <--- Enables picking!
+            wedgeprops=dict(picker=True) 
         )
         ax.axis('equal')
 
@@ -104,7 +104,7 @@ class HistoryTab(QtWidgets.QWidget):
         self.view_custom_scan_history_pushButton.setMinimumWidth(400)
         self.horizontalLayout_3.addWidget(self.view_custom_scan_history_pushButton)
 
-        self.clear_history_comboBox = QtWidgets.QComboBox(parent=self.frame_6)
+        """self.clear_history_comboBox = QtWidgets.QComboBox(parent=self.frame_6)
         self.clear_history_comboBox.addItems([
             "Delete Full Scan History",
             "Delete Custom Scan History",
@@ -112,7 +112,7 @@ class HistoryTab(QtWidgets.QWidget):
         ])
         self.clear_history_comboBox.setMaximumWidth(500)
         self.clear_history_comboBox.setMinimumWidth(400)
-        self.horizontalLayout_3.addWidget(self.clear_history_comboBox)
+        self.horizontalLayout_3.addWidget(self.clear_history_comboBox)"""
 
         self.verticalLayout_5.addWidget(self.frame_6)
 
