@@ -1,5 +1,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
-
+from PyQt6.QtWidgets import QMessageBox
+from Database.db_connection import DatabaseConnection
+from GUI.sign_up.terms_dialog import TermsDialog
 
 class SignUpWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -153,9 +155,10 @@ class SignUpWindow(QtWidgets.QMainWindow):
 "}")
         self.password_txtfield.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
         self.password_txtfield.setObjectName("password_txtfield")
+
         self.next_button = QtWidgets.QPushButton(parent=self.main_frame)
         self.next_button.setGeometry(QtCore.QRect(320, 470, 361, 41))
-        self.next_button.setText(("NEXT"))
+        self.next_button.setText(("Sign Up"))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -184,6 +187,7 @@ class SignUpWindow(QtWidgets.QMainWindow):
 "    background-color: #1e8449;\n"
 "}")
         self.next_button.setObjectName("next_button")
+
         self.line = QtWidgets.QFrame(parent=self.main_frame)
         self.line.setGeometry(QtCore.QRect(290, 520, 421, 16))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
@@ -203,7 +207,7 @@ class SignUpWindow(QtWidgets.QMainWindow):
         sizePolicy.setHeightForWidth(self.already_have_acc_label.sizePolicy().hasHeightForWidth())
         self.already_have_acc_label.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
-        font.setPointSize(-1)
+        font.setPointSize(1)
         font.setBold(True)
         font.setWeight(75)
         self.already_have_acc_label.setFont(font)
@@ -223,7 +227,7 @@ class SignUpWindow(QtWidgets.QMainWindow):
         self.login_commandLinkButton.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setFamily("57")
-        font.setPointSize(-1)
+        font.setPointSize(1)
         font.setBold(True)
         font.setItalic(False)
         font.setUnderline(True)
@@ -252,7 +256,7 @@ class SignUpWindow(QtWidgets.QMainWindow):
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.uesrname_txtfield.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.username_txtfield.sizePolicy().hasHeightForWidth())
         self.username_txtfield.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
         font.setFamily("Nirmala Text")
@@ -266,7 +270,7 @@ class SignUpWindow(QtWidgets.QMainWindow):
 "    padding-left: 20px; \n"
 "    padding-right: 20px;\n"
 "}")
-        self.username_txtfield.setObjectName("uesrname_txtfield")
+        self.username_txtfield.setObjectName("username_txtfield")
         self.I_agree_checkBox = QtWidgets.QCheckBox(parent=self.main_frame)
         self.I_agree_checkBox.setGeometry(QtCore.QRect(340, 420, 131, 41))
         self.I_agree_checkBox.setText(("I agree with"))
@@ -299,6 +303,7 @@ class SignUpWindow(QtWidgets.QMainWindow):
 "    padding-top: 3px;\n"
 "}")
         self.terms_conditions_commandLinkButton.setObjectName("terms_conditions_commandLinkButton")
+        
         self.confirm_password_txtfield = QtWidgets.QLineEdit(parent=self.main_frame)
         self.confirm_password_txtfield.setGeometry(QtCore.QRect(320, 380, 361, 41))
         self.confirm_password_txtfield.setPlaceholderText(("Confirm Password"))
@@ -324,3 +329,20 @@ class SignUpWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self.centralwidget)
 
         QtCore.QMetaObject.connectSlotsByName(self)
+    def show_terms_dialog(self):
+        dialog = TermsDialog(self)
+        dialog.exec()
+
+    def show_message(self, title, message):
+        msg_box = QMessageBox(self)  
+        msg_box.setWindowTitle(title)
+        msg_box.setText(message)
+        msg_box.setIcon(QMessageBox.Icon.Critical if title == "Error" else QMessageBox.Icon.Information)
+        msg_box.exec()
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = SignUpWindow()
+    MainWindow.show()
+    sys.exit(app.exec())

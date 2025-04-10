@@ -10,6 +10,7 @@ class LoginController:
 
         self.view.login_button.clicked.connect(self.handle_login)
         self.view.forgot_pass_linkbutton.clicked.connect(self.open_forgot_password_window)
+        self.view.signup_commandLinkButton.clicked.connect(self.open_sign_up_window)
 
         self.view.destroyed.connect(self.cleanup)
 
@@ -71,6 +72,16 @@ class LoginController:
         self.main_window_controller.get_window().show()
 
         self.view.deleteLater()
+
+    def open_sign_up_window(self):
+        from GUI.sign_up.signup_gui import SignUpWindow
+        from controller.Signup_controller.signup_controller import SignupController
+        
+        self.sign_up_window = SignUpWindow()
+        self.sign_up_window_controller = SignupController(self.sign_up_window)
+
+        self.sign_up_window.show()
+        self.view.hide()
 
     def cleanup(self):
         if hasattr(self, "thread") and self.thread.isRunning():
