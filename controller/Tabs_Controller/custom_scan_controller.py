@@ -7,6 +7,7 @@ from Worker.UI_tab_workers.custom_scan_worker import CustomScanWorker
 from Worker.UI_tab_workers.custom_scan_worker import GetScanCountWorker
 from Worker.UI_tab_workers.custom_scan_worker import FetchRecentScansWorker
 from Worker.UI_tab_workers.custom_scan_worker import GeneratePDFWorker
+from Database.db_connection import DatabaseConnection
 
 class CustomScanController:
     """
@@ -17,6 +18,7 @@ class CustomScanController:
         self.thread = None
         self.worker = None
         self.scan_running = False
+        self.db_connection = DatabaseConnection()
         self.connect_signals()
         self.update_total_scan_count()
         self.fetch_recent_scans()
@@ -25,6 +27,7 @@ class CustomScanController:
         self.view.custom_scan_pushButton.clicked.connect(self.run_custom_scan)
         self.view.pdf_requested.connect(self.generate_pdf_report)
         self.view.refresh_requested.connect(self.fetch_recent_scans)
+        self.view.view_custom_scan_history_pushButton_2.clicked.connect(self.open_custom_scan_history_window)
 
     def run_custom_scan(self):
         if self.scan_running:
@@ -144,6 +147,13 @@ class CustomScanController:
 
         self.pdf_thread.start()
 
-
     def open_pdf(self, path):
         QDesktopServices.openUrl(QUrl.fromLocalFile(path))
+
+    def open_custom_scan_history_window(self):
+        from GUI.main_window_ui.custom_scan_history import CustomScanHistoryWindow
+        from controller.Tabs_Controller.history_windows_controller import CustomScanHistoryWindowController
+        
+        self.custom_scan_history_view = CustomScanHistoryWindow()
+        self.custom_scan_history_controller = CustomScanHistoryWindowController(self.custom_scan_history_view, self.db_connection)
+        self.custom_scan_history_view.show()

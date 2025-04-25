@@ -60,7 +60,6 @@ class VulnerabilityDistributionWorker(QObject):
             self.finished.emit()
 
 class RetrieveFullScanResultsWorker(QObject):
-    # Signal to pass data to the main thread
     data_fetched = pyqtSignal(list)
     error_occurred = pyqtSignal(str)
 

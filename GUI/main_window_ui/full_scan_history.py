@@ -19,6 +19,8 @@ class FullScanHistoryWindow(QtWidgets.QMainWindow):
         self.setMinimumSize(1099, 693)
         self.setStyleSheet("background-color: #2c3e50;")
 
+        self.setWindowIcon(QtGui.QIcon("icons/S_logo.png"))
+
         self.centralwidget = QtWidgets.QWidget(parent=self)
         self.setCentralWidget(self.centralwidget)
         self.centralwidget.setObjectName("listwindow")

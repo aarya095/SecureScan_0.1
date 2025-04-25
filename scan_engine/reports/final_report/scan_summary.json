@@ -1,17 +1,17 @@
 {
     "execution_times": {
-        "HTTP Scanner": 0.0020661354064941406,
-        "Broken Authentication Scanner": 0.13818907737731934,
-        "CSRF Scanner": 0.019077777862548828,
-        "SQL Injection Scanner": 0.015236616134643555,
-        "Total Scan Time": 0.18462276458740234,
-        "total_scan": 0.05
+        "HTTP Scanner": 0.04033184051513672,
+        "Broken Authentication Scanner": 0.29602527618408203,
+        "CSRF Scanner": 0.025282621383666992,
+        "SQL Injection Scanner": 0.03139638900756836,
+        "Total Scan Time": 0.39978837966918945,
+        "total_scan": 0.11
     },
     "target_urls": [
         "http://localhost:3000/login",
         "http://localhost:3000"
     ],
-    "scan_timestamp": "2025-04-08 17:05:18",
+    "scan_timestamp": "2025-04-17 12:07:35",
     "vulnerabilities_found": 3,
     "high_risk_vulnerabilities": 3,
     "medium_risk_vulnerabilities": 0,

@@ -2,7 +2,6 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from GUI.main_window_ui.tabs.home_quick_scan import QuickScanTab
 from GUI.main_window_ui.tabs.custom_scan_tab import CustomScanTab
 from GUI.main_window_ui.tabs.history_tab import HistoryTab
-from GUI.main_window_ui.tabs.profile_tab import ProfileTab
 from GUI.main_window_ui.tabs.about_tab import AboutTab
 
 from GUI.theme_switch.theme_manager import ThemeSwitcher
@@ -54,14 +53,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.home_tab = QuickScanTab(parent=self.tabWidget)
         self.custom_scan_tab = CustomScanTab(parent=self.tabWidget)
         self.history_tab = HistoryTab(parent=self.tabWidget)
-        self.profile_tab = ProfileTab(parent=self.tabWidget)
         self.about_tab = AboutTab(parent=self.tabWidget)
 
         # Add them to the tab widget
         self.tabWidget.addTab(self.home_tab, "Home")
         self.tabWidget.addTab(self.custom_scan_tab, "Custom Scan")
         self.tabWidget.addTab(self.history_tab, "History")
-        self.tabWidget.addTab(self.profile_tab, "Profile")
         self.tabWidget.addTab(self.about_tab, "About")
 
         self.setCentralWidget(self.centralwidget)

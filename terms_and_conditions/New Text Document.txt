@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureScan - Terms and Privacy Notice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        h3 {
+            color: #444;
+        }
+        p {
+            margin: 15px 0;
+        }
+        ul {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+        .contact-info {
+            margin-top: 30px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 0.9em;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Welcome to SecureScan!</h1>
+    
+    <h2>Introduction</h2>
+    <p>SecureScan is a comprehensive website security scanner designed to help users identify vulnerabilities in websites and web applications. Our mission is to empower website owners, developers, and security professionals with the tools they need to assess and improve the security of their digital assets. SecureScan enables you to scan websites for a wide range of vulnerabilities, including outdated software, security misconfigurations, and other potential risks. By using SecureScan, you agree to comply with the following Terms of Use and Privacy Notice, which outline the legal terms and data practices governing your use of the service.</p>
+
+    <h2>Terms of Use</h2>
+    <p>These Terms of Use (“Terms”) govern your access to and use of the SecureScan service, including the website and any associated tools and features. By accessing or using SecureScan, you agree to be bound by these Terms. If you do not agree to these Terms, please refrain from using SecureScan.</p>
+
+    <h3>1. Introduction</h3>
+    <p>SecureScan provides a service that allows users to scan websites for security vulnerabilities. The service is designed to assist with ethical security testing to enhance website security. By using SecureScan, you confirm that you have read, understood, and agreed to comply with these Terms.</p>
+
+    <h3>2. Permitted Use</h3>
+    <p>SecureScan is intended exclusively for ethical security testing. By using SecureScan, you agree to the following conditions:</p>
+    <ul>
+        <li><strong>Authorization:</strong> You must have explicit authorization from the website owner before conducting any scans. Scanning websites without the owner's permission is strictly prohibited.</li>
+        <li><strong>Ethical Testing:</strong> You may only use SecureScan to assess the security of websites that you have explicit permission to test. Unauthorized scanning or testing of websites could result in legal consequences.</li>
+        <li><strong>Prohibited Use:</strong> You may not use SecureScan for malicious activities such as hacking, unauthorized access, or any illegal purposes.</li>
+    </ul>
+
+    <h3>3. Restrictions</h3>
+    <p>You agree not to:</p>
+    <ul>
+        <li>Use SecureScan for malicious purposes, hacking, or unauthorized access.</li>
+        <li>Conduct any scans or tests that could disrupt, crash, or overload a website or server, including Distributed Denial of Service (DDoS) attacks.</li>
+        <li>Attempt to reverse engineer, modify, or resell SecureScan without prior permission.</li>
+        <li>Engage in activities that violate local, national, or international laws, including testing websites for illegal activities or obtaining sensitive data without authorization.</li>
+    </ul>
+
+    <h3>4. No Liability</h3>
+    <p><strong>Security Vulnerability Detection:</strong> SecureScan does not guarantee the detection of all vulnerabilities. While SecureScan provides a comprehensive set of tools, it is possible that some vulnerabilities may not be identified.</p>
+    <p><strong>Usage and Consequences:</strong> SecureScan is not liable for any damages, legal issues, or loss of data arising from the use or misuse of the service. Users assume full responsibility for how they use SecureScan.</p>
+    <p><strong>Indemnification:</strong> You agree to indemnify and hold SecureScan harmless from any legal action or financial loss resulting from the misuse of the service.</p>
+
+    <h3>5. Changes to Terms</h3>
+    <p>SecureScan reserves the right to update or modify these Terms at any time. You will be notified of any changes, and continued use of SecureScan after the changes take effect signifies your acceptance of the new Terms. It is your responsibility to review these Terms regularly for any updates.</p>
+
+    <h2>Privacy Notice</h2>
+    <p>This Privacy Notice explains how we collect, use, and protect your data when you use SecureScan. By using SecureScan, you acknowledge that you have read and understood this Privacy Notice.</p>
+
+    <h3>1. Data We Collect</h3>
+    <p>We collect various types of data to provide and improve the SecureScan service:</p>
+    <ul>
+        <li><strong>Scan Data:</strong> URLs of websites you scan, along with the scan results that include detected vulnerabilities.</li>
+        <li><strong>Usage Data:</strong> Information such as timestamps, scan frequency, and other metadata related to your use of SecureScan.</li>
+        <li><strong>User-Provided Data:</strong> Any settings, preferences, or other information that you voluntarily provide while using SecureScan.</li>
+    </ul>
+
+    <h3>2. How We Use Your Data</h3>
+    <p>We use the data we collect for several purposes:</p>
+    <ul>
+        <li><strong>Service Provision:</strong> To provide and maintain the functionality of SecureScan, including storing scan history and displaying results.</li>
+        <li><strong>Improvement:</strong> To analyze usage trends and improve the service by identifying areas for enhancement.</li>
+        <li><strong>Security and Compliance:</strong> To ensure the security and compliance of the service, including detecting fraudulent activity or misuse.</li>
+        <li><strong>Legal Requirements:</strong> To comply with applicable laws and regulations, and to respond to legal inquiries or requests.</li>
+    </ul>
+
+    <h3>3. Data Security</h3>
+    <p>We take your privacy seriously and implement industry-standard security measures to protect your data:</p>
+    <ul>
+        <li><strong>Encryption:</strong> All sensitive data is encrypted both during transmission and while stored.</li>
+        <li><strong>Access Control:</strong> We employ strict access control protocols to ensure that only authorized personnel can access your data.</li>
+        <li><strong>No Third-Party Sharing:</strong> We do not sell, share, or disclose your scan results or personal information to third parties without your explicit consent, except where required by law.</li>
+    </ul>
+
+    <h3>4. Your Rights</h3>
+    <p>You have the right to:</p>
+    <ul>
+        <li><strong>Access Your Data:</strong> You can request a copy of your scan results or personal data collected by SecureScan.</li>
+        <li><strong>Request Deletion:</strong> You may request the deletion of your scan data or account information at any time.</li>
+        <li><strong>Correct Information:</strong> If any of your information is incorrect or outdated, you can request corrections.</li>
+    </ul>
+
+    <h3>5. Changes to Privacy Policy</h3>
+    <p>We may update this Privacy Notice from time to time. When we do, we will notify you by updating the date at the top of the policy. Continued use of SecureScan after such changes indicates your acceptance of the updated Privacy Policy.</p>
+
+    <div class="contact-info">
+        <h2>Contact Information</h2>
+        <p>If you have any questions about these Terms, Privacy Notice, or your data, please contact us at:</p>
+        <ul>
+            <li><strong>Email:</strong> [your contact email]</li>
+            <li><strong>Address:</strong> [Your Company Address]</li>
+            <li><strong>Phone:</strong> [Your Contact Number]</li>
+        </ul>
+    </div>
+
+    <footer>
+        <p>By using SecureScan, you acknowledge that you have read, understood, and agreed to both the Terms of Use and the Privacy Notice. Thank you for choosing SecureScan to help protect your website’s security!</p>
+    </footer>
+</div>
+
+</body>
+</html>

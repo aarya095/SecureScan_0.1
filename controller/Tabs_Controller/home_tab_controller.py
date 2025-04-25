@@ -8,6 +8,7 @@ from Worker.UI_tab_workers.home_quick_scan_worker import FetchRecentScansWorker
 from Worker.UI_tab_workers.home_quick_scan_worker import GeneratePDFWorker
 from GUI.main_window_ui.tabs.home_quick_scan import QuickScanTab
 from scan_engine.execution.full_scan.full_scan_website import SecurityScanManager
+from Database.db_connection import DatabaseConnection
 
 class QuickScanController:
     """
@@ -18,6 +19,7 @@ class QuickScanController:
         self.thread = None         
         self.worker = None         
         self.scan_running = False  
+        self.db_connection = DatabaseConnection()
         self.connect_signals()
         self.update_total_scan_count()
         self.fetch_recent_scans()
@@ -26,6 +28,7 @@ class QuickScanController:
         self.view.quick_scan_pushButton.clicked.connect(self.run_full_scan)
         self.view.pdf_requested.connect(self.generate_pdf_report)
         self.view.refresh_requested.connect(self.fetch_recent_scans)
+        self.view.view_full_scan_history_pushButton_2.clicked.connect(self.open_full_scan_history_window)
 
     def run_full_scan(self):
         if self.scan_running:
@@ -140,4 +143,12 @@ class QuickScanController:
 
     def open_pdf(self, path):
         QDesktopServices.openUrl(QUrl.fromLocalFile(path))
+
+    def open_full_scan_history_window(self):
+        from GUI.main_window_ui.full_scan_history import FullScanHistoryWindow
+        from controller.Tabs_Controller.history_windows_controller import FullScanHistoryWindowController
+        
+        self.full_scan_history_view = FullScanHistoryWindow()
+        self.full_scan_history_controller = FullScanHistoryWindowController(self.full_scan_history_view, self.db_connection)
+        self.full_scan_history_view.show()
 
