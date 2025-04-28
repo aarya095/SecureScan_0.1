@@ -3,7 +3,6 @@ from PyQt6.QtWidgets import QApplication
 from GUI.log_in.login_gui import LoginWindow
 from controller.Login_controller.login_controller import LoginController
 
-
 def main():
     try:
         app = QApplication(sys.argv)
