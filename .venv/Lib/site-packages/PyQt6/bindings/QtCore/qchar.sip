@@ -218,6 +218,27 @@ public:
         Script_Vithkuqi,
         Script_Kawi,
         Script_NagMundari,
+%If (Qt_6_9_0 -)
+        Script_Garay,
+%End
+%If (Qt_6_9_0 -)
+        Script_GurungKhema,
+%End
+%If (Qt_6_9_0 -)
+        Script_KiratRai,
+%End
+%If (Qt_6_9_0 -)
+        Script_OlOnal,
+%End
+%If (Qt_6_9_0 -)
+        Script_Sunuwar,
+%End
+%If (Qt_6_9_0 -)
+        Script_Todhri,
+%End
+%If (Qt_6_9_0 -)
+        Script_TuluTigalari,
+%End
     };
 };
 

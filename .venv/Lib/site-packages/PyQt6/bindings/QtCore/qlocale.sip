@@ -428,6 +428,12 @@ public:
 %If (Qt_6_8_0 -)
         Kuvi,
 %End
+%If (Qt_6_9_0 -)
+        KaraKalpak,
+%End
+%If (Qt_6_9_0 -)
+        SwampyCree,
+%End
     };
 
     enum Country

@@ -64,13 +64,12 @@ class SQLInjectionScanner:
                         "severity_description": self.SEVERITY[severity]
                     })
 
-                    sql_injection_found = True  # ✅ Set flag to True if SQLi is detected
-                    break  # Stop testing once a vulnerability is found
+                    sql_injection_found = True  #Set flag to True if SQLi is detected
+                    break 
 
             except requests.RequestException as e:
                 print(f"  ❌ Error: {e}")
 
-        # ✅ If no SQL Injection was found, mark the page as "Safe"
         if not sql_injection_found:
             print(f"✅ No SQL Injection vulnerabilities found at {target_url}. Marking as Safe.")
             self.scan_results[target_url] = [{

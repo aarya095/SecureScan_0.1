@@ -216,6 +216,9 @@ public:
 %If (Qt_6_7_0 -)
         ResetIds,
 %End
+%If (Qt_6_9_0 -)
+        DisableCoreDumps,
+%End
     };
 
 %End

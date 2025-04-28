@@ -90,8 +90,8 @@ class WebCrawler:
 
     def crawl(self):
         """Main function to start crawling a website."""
-        print("\n🚀 Starting Web Crawler...")  # Debugging
-        print(f"🔎 Target URL: {self.target_url}")  # Debugging
+        print("\n🚀 Starting Web Crawler...") 
+        print(f"🔎 Target URL: {self.target_url}") 
 
         start_time = time.time()
 
@@ -106,7 +106,7 @@ class WebCrawler:
                 browser.close()
 
         crawl_time = time.time() - start_time
-        print(f"\n✅ Crawling Complete! Time: {crawl_time:.2f} seconds")
+        print(f"\n Crawling Complete! Time: {crawl_time:.2f} seconds")
 
         self.store_crawl_results(crawl_time)
         self.run_scanners()
@@ -118,7 +118,7 @@ class WebCrawler:
 
         # Ensure there's actual data to save (skip if empty)
         if not self.mapped_data["pages"]:
-            print("❌ No data to save. No pages crawled.")
+            print(" No data to save. No pages crawled.")
             return
 
         try:
@@ -126,19 +126,19 @@ class WebCrawler:
             if os.path.exists(self.results_file):
                 with open(self.results_file, "r+", encoding="utf-8") as file:
                     try:
-                        existing_data = json.load(file)  # ✅ Attempt to load existing data
+                        existing_data = json.load(file)
                         print(f"📂 Loaded existing data: {existing_data}")
                     except json.JSONDecodeError:
                         print(f"⚠️ {self.results_file} is empty or invalid. Creating a new one.")
-                        existing_data = {}  # ✅ Set default empty dictionary
+                        existing_data = {}
 
                     # Merge existing data with new crawl results
                     existing_data.update(self.mapped_data)
 
-                    # ✅ Write the updated JSON back to the file
+                    # Write the updated JSON back to the file
                     file.seek(0)
                     json.dump(existing_data, file, indent=4)
-                    file.truncate()  # ✅ Ensures old data is removed
+                    file.truncate() 
 
             else:
                 # If file doesn't exist, create and write new data
