@@ -1,4 +1,0 @@
-Connection Error for http://localhost:3000/login with payload: <script>alert('XSS')</script>
-Connection Error for http://localhost:3000/login with payload: <script>alert('XSS')</script>
-Connection Error for http://localhost:3000/login with payload: <script>alert('XSS')</script>
-Connection Error for http://localhost:3000/login with payload: <script>alert('XSS')</script>
